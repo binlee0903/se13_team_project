@@ -1,4 +1,4 @@
-package se13.block;
+package org.se13.block;
 
 public class LBlock {
 }

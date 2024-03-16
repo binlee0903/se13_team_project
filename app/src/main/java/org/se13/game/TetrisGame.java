@@ -1,4 +1,4 @@
-package se13.game;
+package org.se13.game;
 
 public class TetrisGame {
 }

@@ -1,4 +1,4 @@
-package se13.config;
+package org.se13.config;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;

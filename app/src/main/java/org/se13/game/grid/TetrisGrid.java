@@ -1,4 +1,4 @@
-package se13.grid;
+package org.se13.grid;
 
 /**
  * abstracted tetris grid. It contains 'Cells' to display 'Blocks'
