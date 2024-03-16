@@ -1,4 +1,4 @@
-package se13.block;
+package org.se13.block;
 
 /**
  * for tetris's abstracted block position, we have to separate block's position class
