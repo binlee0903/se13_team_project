@@ -18,7 +18,7 @@ public class BlockQueue {
     private final Random random;
     private final Queue<Block> queue;
 
-    BlockQueue(int seed) {
+    public BlockQueue(int seed) {
         this.random = new Random(seed);
         this.queue = new ArrayDeque<>();
     }
