@@ -7,6 +7,10 @@ plugins {
 group = "org.se13"
 version = "0.1-alpha"
 
+application {
+    mainClass = "org.se13.SE13Application"
+}
+
 repositories {
     mavenCentral()
 }
