@@ -15,3 +15,10 @@ javafx {
     modules("javafx.controls", "javafx.fxml")
 }
 
+dependencies {
+    // https://mvnrepository.com/artifact/org.openjfx/javafx-controls
+    implementation("org.openjfx:javafx-controls:21.0.2")
+
+    // https://mvnrepository.com/artifact/org.openjfx/javafx-fxml
+    implementation("org.openjfx:javafx-fxml:21.0.2")
+}
