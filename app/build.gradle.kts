@@ -1,5 +1,7 @@
 plugins {
     id("java")
+    id("application")
+    id("org.openjfx.javafxplugin") version "0.0.13"
 }
 
 group = "org.se13"
@@ -9,6 +11,7 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation("com.google.code.gson:gson:2.10.1")
+javafx {
+    modules("javafx.controls", "javafx.fxml")
 }
+
