@@ -1,0 +1,21 @@
+.root {
+    -fx-background-color: black;
+}
+
+.gameTitle {
+    -fx-font-size: 24px;
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
+
+.menuButton {
+    -fx-background-color: yellow;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+    -fx-padding: 10px;
+    -fx-min-width: 100px;
+}
+
+.menuButton:hover {
+    -fx-background-color: gold;
+}
