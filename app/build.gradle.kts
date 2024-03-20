@@ -9,6 +9,7 @@ version = "0.1-alpha"
 
 application {
     mainClass = "org.se13.SE13Application"
+    mainModule = "org.se13"
 }
 
 repositories {
