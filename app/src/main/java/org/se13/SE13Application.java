@@ -14,7 +14,7 @@ public class SE13Application extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("StartScreen.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingsScreen.fxml"));
         Scene scene = new Scene(loader.load());
 
         stage.setScene(scene);

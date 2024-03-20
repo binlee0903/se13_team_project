@@ -4,8 +4,12 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" spacing="10.0" stylesheets="@style.css" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.se13.view.StartScreenController">
-    <Text text="TETRIS" styleClass="gameTitle" />
+<VBox alignment="CENTER"
+      spacing="10.0"
+      stylesheets="@style.css"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.se13.view.StartScreenController">
+    <Text text="TETRIS" styleClass="gameTitle"/>
     <Button fx:id="startButton" text="START" styleClass="menuButton" onAction="#handleStartButtonAction"/>
     <Button fx:id="settingsButton" text="SETTINGS" styleClass="menuButton" onAction="#handleSettingsButtonAction"/>
     <Button fx:id="scoreButton" text="SCORE" styleClass="menuButton" onAction="#handleScoreButtonAction"/>
