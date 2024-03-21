@@ -36,5 +36,6 @@ dependencies {
     // https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-community-dialects
     implementation("org.hibernate.orm:hibernate-community-dialects:6.4.4.Final")
 
-    implementation("org.json:json:20240303")
+    // https://mvnrepository.com/artifact/jakarta.persistence/jakarta.persistence-api
+    implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
 }
