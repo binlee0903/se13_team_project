@@ -2,7 +2,7 @@ module org.se13 {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
-    requires org.json;
+    requires jakarta.persistence;
 
     opens org.se13 to javafx.fxml;
     opens org.se13.view to javafx.fxml;
