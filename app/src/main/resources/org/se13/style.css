@@ -19,3 +19,9 @@
 .menuButton:hover {
     -fx-background-color: gold;
 }
+
+.settingsTitle {
+    -fx-font-size: 24px;
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
