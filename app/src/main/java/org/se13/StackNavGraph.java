@@ -7,6 +7,7 @@ import org.se13.view.nav.Screen;
 
 import java.io.IOException;
 import java.util.Stack;
+import java.util.function.Consumer;
 
 public class StackNavGraph implements NavGraph {
 
@@ -29,16 +30,34 @@ public class StackNavGraph implements NavGraph {
     }
 
     @Override
+    public <T> void navigate(Screen screen, Consumer<T> consumer) {
+        try {
+            FXMLLoader loader = createLoader(screen);
+            Scene scene = createScene(loader);
+            consumer.accept(loader.getController());
+            show(backStack.push(scene));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void popBackStack() {
         backStack.pop();
         show(backStack.lastElement());
     }
 
     private Scene createScene(Screen screen) throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource(screen.resource)
-        );
-        return new Scene(loader.load(), 300, 400);
+        FXMLLoader loader = createLoader(screen);
+        return createScene(loader);
+    }
+
+    private Scene createScene(FXMLLoader loader) throws IOException {
+        return new Scene(loader.load(), 300,  400);
+    }
+
+    private FXMLLoader createLoader(Screen screen) {
+        return new FXMLLoader(getClass().getResource(screen.resource));
     }
 
     private void show(Scene scene) {
