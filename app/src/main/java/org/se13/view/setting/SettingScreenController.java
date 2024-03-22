@@ -1,10 +1,11 @@
-package org.se13.view;
+package org.se13.view.setting;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ToggleButton;
+import org.se13.SE13Application;
 
-public class SettingsScreenController {
+public class SettingScreenController {
 
     @FXML
     private ChoiceBox<String> screenSizeChoiceBox;
@@ -22,6 +23,7 @@ public class SettingsScreenController {
     @FXML
     private void handleBackButtonAction() {
         // Turn into last scene
+        SE13Application.navController.popBackStack();
     }
 
     @FXML
