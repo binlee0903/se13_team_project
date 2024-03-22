@@ -10,7 +10,7 @@
       stylesheets="@style.css"
       xmlns="http://javafx.com/javafx/17.0.2-ea"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.se13.view.SettingsScreenController">
+      fx:controller="org.se13.view.setting.SettingScreenController">
     <Text styleClass="settingsTitle" text="SETTINGS"/>
 
     <HBox alignment="CENTER" spacing="10">
