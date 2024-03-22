@@ -14,7 +14,7 @@ public class SE13Application extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         navController = new StackNavGraph(stage);
         navController.navigate(Screen.START);
     }
