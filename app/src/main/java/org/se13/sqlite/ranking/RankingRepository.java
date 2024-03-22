@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface RankingRepository {
-    void insertRanking(String name, int points);
+    void createNewTableRanking();
+    void insertRanking(String name, int score);
     List<Map<String, Object>> getRanking();
     void clearRanking();
 }
