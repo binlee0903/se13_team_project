@@ -16,21 +16,32 @@ public class CurrentBlock {
         return block.shape(rotate);
     }
 
+    public BlockPosition getPosition() {
+        return this.position;
+    }
+
     public void rotateCW() {
-        rotate = (rotate + 1) % block.cells.length;
+        rotate = (rotate + 1) % 4;
     }
 
     public void rotateCCW() {
         if (rotate == 0) {
-            rotate = block.cells.length - 1;
+            rotate = 3;
         } else {
             rotate--;
         }
     }
 
     public void move(int rows, int columns) {
-        position.setRowIndex(rows);
-        position.setColIndex(columns);
+        int newRowIndex = position.getRowPosition() + rows;
+        int newColIndex = position.getColIndex() + columns;
+
+        if (newRowIndex > 9 || newRowIndex < 0 || newColIndex > 21 || newColIndex < 0) {
+            return;
+        }
+
+        position.setRowIndex(newRowIndex);
+        position.setColIndex(newColIndex);
     }
 
     public void reset() {
@@ -39,4 +50,7 @@ public class CurrentBlock {
     }
 
     public int getId() { return block.blockId; }
+    public int getRotateState() {
+        return rotate;
+    }
 }
