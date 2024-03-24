@@ -6,29 +6,17 @@ package org.se13.game.grid;
  * @author binlee0903
  */
 public class TetrisGrid {
-
-    // column size of tetris board
-    private final int colSize;
-    // row size of tetris board
-    private final int rowSize;
-
-    /**
-     * abstracted 10*22 tetris grid. originally, tetris's grid size
-     * is 10*20. but I added 2 rows for block generation space.
-     */
-    private final int[][] gridCells;
-
     public TetrisGrid(int rowSize, int colSize) {
         this.rowSize = rowSize;
         this.colSize = colSize;
         this.gridCells = new int[rowSize][colSize];
     }
 
-    public void setGrid(int rowIndex, int colIndex, int blockId) {
+    public void setCell(int rowIndex, int colIndex, int blockId) {
         gridCells[rowIndex][colIndex] = blockId;
     }
 
-    public int getGrid(int rowIndex, int colIndex) {
+    public int getCell(int rowIndex, int colIndex) {
         return gridCells[rowIndex][colIndex];
     }
 
@@ -51,7 +39,7 @@ public class TetrisGrid {
      * @return return true when cell was empty(=0)
      */
     public boolean isEmptyCell(int rowIndex, int colIndex) {
-        return isInsideGrid(rowIndex, colIndex) && getGrid(rowIndex, colIndex) == 0;
+        return isInsideGrid(rowIndex, colIndex) && getCell(rowIndex, colIndex) == 0;
     }
 
     /**
@@ -61,18 +49,20 @@ public class TetrisGrid {
      * @return return true when row was full
      */
     public boolean isRowFull(int rowIndex) {
+        int i = 0;
+
         for (int colIndex = 0; colIndex < colSize; colIndex++) {
-            if (isEmptyCell(rowIndex, colIndex)) {
-                return false;
+            if (isEmptyCell(rowIndex, colIndex) == false) {
+                i++;
             }
         }
 
-        return true;
+        return i == this.rowSize;
     }
 
     public boolean isRowEmpty(int rowIndex) {
         for (int colIndex = 0; colIndex < colSize; colIndex++) {
-            if (getGrid(rowIndex, colIndex) != 0) {
+            if (getCell(rowIndex, colIndex) != 0) {
                 return false;
             }
         }
@@ -91,9 +81,8 @@ public class TetrisGrid {
         for (int rowIndex = rowSize - 1; rowIndex >= 0; rowIndex--) {
             if (isRowFull(rowIndex)) {
                 clearRow(rowIndex);
+                moveDownRow(rowIndex, 1);
                 cleared++;
-            } else {
-                moveDownRow(rowIndex, cleared);
             }
         }
 
@@ -107,7 +96,7 @@ public class TetrisGrid {
      */
     private void clearRow(int rowIndex) {
         for (int colIndex = 0; colIndex < colSize; colIndex++) {
-            setGrid(rowIndex, colIndex, 0);
+            setCell(rowIndex, colIndex, 0);
         }
     }
 
@@ -118,8 +107,19 @@ public class TetrisGrid {
      */
     private void moveDownRow(int rowIndex, int cleared) {
         for (int colIndex = 0; colIndex < colSize; colIndex++) {
-            setGrid(rowIndex + cleared, colIndex, getGrid(rowIndex, colIndex));
-            setGrid(rowIndex, colIndex, 0);
+            setCell(rowIndex + cleared, colIndex, getCell(rowIndex, colIndex));
+            setCell(rowIndex, colIndex, 0);
         }
     }
+
+    // column size of tetris board
+    private final int colSize;
+    // row size of tetris board
+    private final int rowSize;
+
+    /**
+     * abstracted 10*22 tetris grid. originally, tetris's grid size
+     * is 10*20. but I added 2 rows for block generation space.
+     */
+    private final int[][] gridCells;
 }
