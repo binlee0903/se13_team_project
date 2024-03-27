@@ -10,6 +10,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
 import org.se13.SE13Application;
 import org.se13.StackNavGraph;
+import org.se13.sqlite.config.ConfigRepositoryImpl;
 import org.se13.view.nav.Screen;
 
 import java.io.IOException;
@@ -21,18 +22,16 @@ public class SettingScreenController {
     @FXML
     private ChoiceBox<String> screenColorBlindChoiceBox;
     private String selectedScreenSize;
-    private StackNavGraph stackNavGraph;
     @FXML
     private void initialize() {
         // Add options in ChoiceBox for the choice among scene size
         screenSizeChoiceBox.setItems(FXCollections.observableArrayList("300x400", "600x800", "1920x1080"));
         screenSizeChoiceBox.setValue("300x400");
         // Add options in ChoiceBox for the choice among color mode
-        screenColorBlindChoiceBox.setItems(FXCollections.observableArrayList("NO", "Red-green", "Blue-yellow"));
-        screenColorBlindChoiceBox.setValue("NO");
+        screenColorBlindChoiceBox.setItems(FXCollections.observableArrayList("Nothing", "Red-green", "Blue-yellow"));
+        screenColorBlindChoiceBox.setValue("Nothing");
         // By selected scene size, the function will implement logic.
 
-        // implement color blind mode
     }
 
     @FXML
@@ -44,35 +43,15 @@ public class SettingScreenController {
     @FXML
     private void handleSaveButtonAction() {
         // Saving personal settings
-        String selectedSize = screenSizeChoiceBox .getValue();
+        // screen size setting
+        String selectedSize = screenSizeChoiceBox.getValue();
         String[] dimensions = selectedSize.split("x");
-        int width = Integer.parseInt(dimensions[0]);
-        int height = Integer.parseInt(dimensions[1]);
+        int selectedWidth = Integer.parseInt(dimensions[0]);
+        int selectedHeight = Integer.parseInt(dimensions[1]);
+        // box color setting
+        String selectedColorMode = screenColorBlindChoiceBox.getValue();
 
-        screenSizeChoiceBox.setValue(selectedSize);
+        ConfigRepositoryImpl configRepository = new ConfigRepositoryImpl();
 
-        // 설정 화면을 다시 로드하고 표시
-        SE13Application.navController.navigate(Screen.SETTING);
-    }
-
-    @FXML
-    private void handleColorBlindModeToggleAction() {
-        // implement personal color blind mode settings
-    }
-
-    public String getSelectedScreenSize() {
-        return selectedScreenSize;
-    }
-
-    public void setSelectedScreenSize(String selectedScreenSize) {
-        this.selectedScreenSize = selectedScreenSize;
-    }
-
-    public void setStackNavGraph(StackNavGraph stackNavGraph) {
-        this.stackNavGraph = stackNavGraph;
-    }
-
-    public StackNavGraph getStackNavGraph() {
-        return stackNavGraph;
     }
 }
