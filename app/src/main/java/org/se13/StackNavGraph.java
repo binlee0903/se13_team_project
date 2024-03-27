@@ -13,6 +13,8 @@ public class StackNavGraph implements NavGraph {
 
     private final Stage stage;
     private final Stack<Scene> backStack;
+    private int screenWidth = 300; // 초기 화면 너비 기본값
+    private int screenHeight = 400; // 초기 화면 높이 기본값
 
     public StackNavGraph(Stage stage) {
         this.stage = stage;
@@ -53,7 +55,7 @@ public class StackNavGraph implements NavGraph {
     }
 
     private Scene createScene(FXMLLoader loader) throws IOException {
-        return new Scene(loader.load(), 300,  400);
+        return new Scene(loader.load(), screenWidth,  screenHeight);
     }
 
     private FXMLLoader createLoader(Screen screen) {
@@ -64,4 +66,5 @@ public class StackNavGraph implements NavGraph {
         stage.setScene(scene);
         stage.show();
     }
+
 }
