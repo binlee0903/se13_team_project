@@ -1,34 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox fx:id="settingsContainer"
-      alignment="CENTER"
-      spacing="20.0"
-      stylesheets="@style.css"
-      xmlns="http://javafx.com/javafx/17.0.2-ea"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.se13.view.setting.SettingScreenController">
-    <Text styleClass="settingsTitle" text="SETTINGS"/>
+<VBox fx:id="settingsContainer" alignment="CENTER" spacing="20.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.se13.view.setting.SettingScreenController">
+    <Text styleClass="settingsTitle" text="SETTINGS" />
 
     <HBox alignment="CENTER" spacing="10">
-        <Label styleClass="settingsLabel" text="Scene Size:" textFill="WHITE"/>
-        <ChoiceBox fx:id="screenSizeChoiceBox" styleClass="choiceBox"/>
+        <Label styleClass="settingsLabel" text="Scene Size:" textFill="WHITE" />
+        <ChoiceBox fx:id="screenSizeChoiceBox" styleClass="choiceBox">
+            <items>
+                <FXCollections fx:factory="observableArrayList" />
+            </items>
+        </ChoiceBox>
+    </HBox>
+    <VBox>
+        <HBox alignment="CENTER" spacing="10">
+            <Label styleClass="colorBlind" text="Color Blind Mode" textFill="WHITE" />
+            <ChoiceBox fx:id="screenColorBlindChoiceBox" styleClass="choiceBox">
+                <items>
+                    <FXCollections fx:factory="observableArrayList" />
+                </items>
+            </ChoiceBox>
+        </HBox>
+    </VBox>
+     <Button alignment="TOP_CENTER" contentDisplay="TOP" styleClass="menuButton" text="Key setting" />
+    <HBox spacing="20">
+        <Button styleClass="menuButton" text="초기화" />
+        <Button onAction="#handleSaveButtonAction" styleClass="menuButton" text="저장" />
     </HBox>
 
-    <Button styleClass="menuButton" text="Key setting"/>
-
-    <ToggleButton fx:id="colorBlindModeToggle" selected="false" styleClass="menuButton" text="색맹모드 OFF"/>
-
     <HBox spacing="20">
-        <Button styleClass="menuButton" text="초기화"/>
-        <Button styleClass="menuButton" text="저장"/>
-    </HBox>
-
-    <HBox spacing="20">
-        <Button onAction="#handleBackButtonAction" styleClass="menuButton" text="←"/>
-        <Button styleClass="menuButton" text="스크린모드 설정"/>
+        <Button onAction="#handleBackButtonAction" styleClass="menuButton" text="←" />
+        <Button styleClass="menuButton" text="스크린모드 설정" />
     </HBox>
 </VBox>
