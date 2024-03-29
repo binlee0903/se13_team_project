@@ -20,8 +20,26 @@
     -fx-background-color: gold;
 }
 
+.keyButton {
+    -fx-background-color: yellow;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+    -fx-padding: 10px;
+    -fx-min-width: 75px;
+}
+
+.keyButton:hover {
+    -fx-background-color: gold;
+}
+
 .settingsTitle {
     -fx-font-size: 24px;
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
+
+.keySettingTitle {
+    -fx-font-size: 20px;
     -fx-fill: white;
     -fx-font-weight: bold;
 }
