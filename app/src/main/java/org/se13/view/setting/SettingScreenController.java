@@ -1,6 +1,7 @@
 package org.se13.view.setting;
 
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -53,5 +54,11 @@ public class SettingScreenController {
 
         ConfigRepositoryImpl configRepository = new ConfigRepositoryImpl();
 
+    }
+
+    public void keySaveButtonAction() {
+        // 버튼을 한 번 누르면 id를 가져와서, 어떤 키를 설정할지 결정함
+        // 설정하고 싶은 키를 한 번 누르면 그 키로 설정함
+        // 버튼을 한 번 더 누르면 설정이 완료됨
     }
 }
