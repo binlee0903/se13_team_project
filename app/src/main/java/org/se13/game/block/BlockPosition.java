@@ -10,6 +10,11 @@ public class BlockPosition {
         this.colIndex = colIndex;
     }
 
+    public BlockPosition(BlockPosition blockPosition) {
+        this.rowIndex = blockPosition.rowIndex;
+        this.colIndex = blockPosition.colIndex;
+    }
+
     public int getRowIndex() {
         return this.rowIndex;
     }
