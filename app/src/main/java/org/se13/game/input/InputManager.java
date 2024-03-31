@@ -1,7 +1,6 @@
 package org.se13.game.input;
 
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.util.LinkedList;
@@ -12,8 +11,11 @@ public class InputManager {
         keyCodeQueue = new LinkedList<>();
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
-            char c = key.getText().charAt(0);
-            keyCodeQueue.add(c);
+
+            if (key.getText().isEmpty() == false) {
+                char c = key.getText().charAt(0);
+                keyCodeQueue.add(c);
+            }
         });
     }
 
