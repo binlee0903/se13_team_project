@@ -5,12 +5,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
+<?import javafx.geometry.Insets?>
 <VBox alignment="CENTER" spacing="10.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.se13.view.tetris.TetrisScreenController">
     <Text styleClass="gameTitle" text="TETRIS" />
    <BorderPane prefHeight="200.0" prefWidth="200.0">
-      <center>
-         <Canvas fx:id="gameCanvas" height="200.0" width="100.0" BorderPane.alignment="CENTER" />
-      </center>
       <right>
          <VBox prefHeight="200.0" prefWidth="50.0" BorderPane.alignment="CENTER">
             <children>
@@ -21,8 +19,18 @@
                   </children>
                </HBox>
                <Label text="next" />
-               <Canvas fx:id="nextBlockCanvas" height="200.0" width="50.0" />
+                  <Canvas fx:id="nextBlockCanvas" height="200.0" width="50.0" />
             </children>
          </VBox>
-      </right></BorderPane>
+      </right>
+      <center>
+         <BorderPane fx:id="frame" prefHeight="210.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+               <Insets left="25.0" right="25.0" bottom="10.0"/>
+            </BorderPane.margin>
+            <center>
+               <Canvas fx:id="gameCanvas" height="210.0" width="100.0" BorderPane.alignment="CENTER" />
+            </center>
+         </BorderPane>
+      </center></BorderPane>
 </VBox>
