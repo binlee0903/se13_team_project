@@ -3,6 +3,7 @@ package org.se13;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.se13.view.lifecycle.Lifecycle;
 import org.se13.view.nav.Screen;
 
 import java.io.IOException;
@@ -36,8 +37,19 @@ public class StackNavGraph implements NavGraph {
         try {
             FXMLLoader loader = createLoader(screen);
             Scene scene = createScene(loader);
-            consumer.accept(loader.getController());
-            show(backStack.push(scene));
+            consumer
+                .andThen((controller) -> {
+                    if (controller instanceof Lifecycle) {
+                        ((Lifecycle) controller).onCreate();
+                    }
+                })
+                .andThen((controller) -> show(backStack.push(scene)))
+                .andThen((controller) -> {
+                    if (controller instanceof Lifecycle) {
+                        ((Lifecycle) controller).onStart();
+                    }
+                })
+                .accept(loader.getController());
         } catch (Exception e) {
             e.printStackTrace();
         }
