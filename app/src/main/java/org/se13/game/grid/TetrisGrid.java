@@ -49,20 +49,20 @@ public class TetrisGrid {
      * @return return true when row was full
      */
     public boolean isRowFull(int rowIndex) {
-        int i = 0;
+        int ret = 0;
 
-        for (int colIndex = 0; colIndex < colSize; colIndex++) {
-            if (isEmptyCell(rowIndex, colIndex) == false) {
-                i++;
+        for (int i = 0; i < colSize; i++) {
+            if (isEmptyCell(rowIndex, i) == false) {
+                ret++;
             }
         }
 
-        return i == this.rowSize;
+        return ret == this.colSize;
     }
 
     public boolean isRowEmpty(int rowIndex) {
-        for (int colIndex = 0; colIndex < colSize; colIndex++) {
-            if (getCell(rowIndex, colIndex) != 0) {
+        for (int i = 0; i < colSize; i++) {
+            if (getCell(rowIndex, i) != 0) {
                 return false;
             }
         }
@@ -78,10 +78,11 @@ public class TetrisGrid {
     public int clearFullRows() {
         int cleared = 0;
 
-        for (int rowIndex = rowSize - 1; rowIndex >= 0; rowIndex--) {
-            if (isRowFull(rowIndex)) {
-                clearRow(rowIndex);
-                moveDownRow(rowIndex, 1);
+        for (int i = rowSize - 1; i >= 0; i--) {
+            if (isRowFull(i)) {
+                clearRow(i);
+                moveDownRows(i);
+                i++;
                 cleared++;
             }
         }
@@ -95,8 +96,8 @@ public class TetrisGrid {
      * @param rowIndex row index
      */
     private void clearRow(int rowIndex) {
-        for (int colIndex = 0; colIndex < colSize; colIndex++) {
-            setCell(rowIndex, colIndex, 0);
+        for (int i = 0; i < colSize; i++) {
+            setCell(rowIndex, i, 0);
         }
     }
 
@@ -105,10 +106,12 @@ public class TetrisGrid {
      *
      * @param rowIndex row index
      */
-    private void moveDownRow(int rowIndex, int cleared) {
-        for (int colIndex = 0; colIndex < colSize; colIndex++) {
-            setCell(rowIndex + cleared, colIndex, getCell(rowIndex, colIndex));
-            setCell(rowIndex, colIndex, 0);
+    private void moveDownRows(int rowIndex) {
+        for (int i = rowIndex; i >= 1; i--) {
+            for (int j = 0; j < colSize; j++) {
+                setCell(i, j, getCell(i - 1, j));
+                setCell(i - 1, j, 0);
+            }
         }
     }
 
