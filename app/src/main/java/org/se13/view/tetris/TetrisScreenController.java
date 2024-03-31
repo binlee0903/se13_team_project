@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import org.se13.SE13Application;
 import org.se13.game.tetris.DefaultTetrisGame;
 import org.se13.game.tetris.ITetrisGame;
@@ -19,7 +20,8 @@ public class TetrisScreenController implements Initializable {
     }
 
     public void startTetris() {
-        this.tetrisGame = new DefaultTetrisGame(gameCanvas, score);
+        this.frame.setStyle("-fx-border-color: red;");
+        this.tetrisGame = new DefaultTetrisGame(gameCanvas, nextBlockCanvas,score);
         this.tetrisGame.startGame();
     }
 
@@ -29,5 +31,7 @@ public class TetrisScreenController implements Initializable {
     private Canvas gameCanvas;
     @FXML
     private Canvas nextBlockCanvas;
+    @FXML
+    public Pane frame;
     private ITetrisGame tetrisGame;
 }
