@@ -8,7 +8,7 @@ public class CurrentBlock {
 
     public CurrentBlock(Block block) {
         this.block = block;
-        this.position = block.startOffset;
+        this.position = new BlockPosition(block.startOffset);
         this.rotate = 0;
     }
 
@@ -33,12 +33,8 @@ public class CurrentBlock {
     }
 
     public void move(int rows, int columns) {
-        int newRowIndex = position.getRowPosition() + rows;
+        int newRowIndex = position.getRowIndex() + rows;
         int newColIndex = position.getColIndex() + columns;
-
-        if (newRowIndex > 9 || newRowIndex < 0 || newColIndex > 21 || newColIndex < 0) {
-            return;
-        }
 
         position.setRowIndex(newRowIndex);
         position.setColIndex(newColIndex);
