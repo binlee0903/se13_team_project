@@ -16,10 +16,12 @@ import java.util.Optional;
 import org.se13.SE13Application;
 import org.se13.sqlite.ranking.RankingRepository;
 import org.se13.sqlite.ranking.RankingRepositoryImpl;
+import org.se13.view.base.BaseController;
+import org.se13.view.lifecycle.Lifecycle;
 import org.se13.view.nav.Screen;
 
 
-public class RankingScreenController {
+public class RankingScreenController extends BaseController {
     private int score; // 사용자의 최종 점수
     @FXML
     private Button homeButton;

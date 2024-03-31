@@ -3,9 +3,10 @@ package org.se13.view.tetris;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import org.se13.SE13Application;
+import org.se13.view.base.BaseController;
 import org.se13.view.nav.Screen;
 
-public class TetrisScreenController {
+public class TetrisScreenController extends BaseController {
 
     @FXML
     private Button startButton;

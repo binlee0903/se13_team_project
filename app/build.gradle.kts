@@ -17,6 +17,10 @@ repositories {
     mavenCentral()
 }
 
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
 javafx {
     modules("javafx.controls", "javafx.fxml")
 }
