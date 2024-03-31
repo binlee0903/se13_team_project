@@ -1,8 +1,7 @@
 package org.se13.view.lifecycle;
 
 public interface Lifecycle {
+    void onCreate();
 
-    default void onCreate() {};
-
-    default void onStart() {};
+    void onStart();
 }

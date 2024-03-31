@@ -1,22 +1,13 @@
 package org.se13.view.setting;
 
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ToggleButton;
-import javafx.stage.Stage;
 import org.se13.SE13Application;
-import org.se13.StackNavGraph;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
-import org.se13.view.nav.Screen;
+import org.se13.view.base.BaseController;
 
-import java.io.IOException;
-
-public class SettingScreenController {
+public class SettingScreenController extends BaseController {
 
     @FXML
     private ChoiceBox<String> screenSizeChoiceBox;

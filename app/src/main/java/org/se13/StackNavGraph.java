@@ -25,30 +25,21 @@ public class StackNavGraph implements NavGraph {
     @Override
     public void navigate(Screen screen) {
         try {
-            Scene scene = createScene(screen);
-            show(backStack.push(scene));
+            navigate(screen, lifecycle -> {});
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public <T> void navigate(Screen screen, Consumer<T> consumer) {
+    public <T extends Lifecycle> void navigate(Screen screen, Consumer<T> consumer) {
         try {
             FXMLLoader loader = createLoader(screen);
             Scene scene = createScene(loader);
             consumer
-                .andThen((controller) -> {
-                    if (controller instanceof Lifecycle) {
-                        ((Lifecycle) controller).onCreate();
-                    }
-                })
+                .andThen(Lifecycle::onCreate)
                 .andThen((controller) -> show(backStack.push(scene)))
-                .andThen((controller) -> {
-                    if (controller instanceof Lifecycle) {
-                        ((Lifecycle) controller).onStart();
-                    }
-                })
+                .andThen(Lifecycle::onStart)
                 .accept(loader.getController());
         } catch (Exception e) {
             e.printStackTrace();
