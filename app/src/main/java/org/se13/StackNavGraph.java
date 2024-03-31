@@ -3,6 +3,7 @@ package org.se13;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.se13.view.lifecycle.Lifecycle;
 import org.se13.view.nav.Screen;
 
 import java.io.IOException;
@@ -13,6 +14,8 @@ public class StackNavGraph implements NavGraph {
 
     private final Stage stage;
     private final Stack<Scene> backStack;
+    private int screenWidth = 300; // 초기 화면 너비 기본값
+    private int screenHeight = 400; // 초기 화면 높이 기본값
 
     public StackNavGraph(Stage stage) {
         this.stage = stage;
@@ -22,20 +25,22 @@ public class StackNavGraph implements NavGraph {
     @Override
     public void navigate(Screen screen) {
         try {
-            Scene scene = createScene(screen);
-            show(backStack.push(scene));
+            navigate(screen, lifecycle -> {});
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public <T> void navigate(Screen screen, Consumer<T> consumer) {
+    public <T extends Lifecycle> void navigate(Screen screen, Consumer<T> consumer) {
         try {
             FXMLLoader loader = createLoader(screen);
             Scene scene = createScene(loader);
-            consumer.accept(loader.getController());
-            show(backStack.push(scene));
+            consumer
+                .andThen(Lifecycle::onCreate)
+                .andThen((controller) -> show(backStack.push(scene)))
+                .andThen(Lifecycle::onStart)
+                .accept(loader.getController());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -53,7 +58,7 @@ public class StackNavGraph implements NavGraph {
     }
 
     private Scene createScene(FXMLLoader loader) throws IOException {
-        return new Scene(loader.load(), 300,  400);
+        return new Scene(loader.load(), screenWidth,  screenHeight);
     }
 
     private FXMLLoader createLoader(Screen screen) {
@@ -64,4 +69,5 @@ public class StackNavGraph implements NavGraph {
         stage.setScene(scene);
         stage.show();
     }
+
 }

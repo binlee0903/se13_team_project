@@ -6,6 +6,8 @@ module org.se13 {
 
     opens org.se13 to javafx.fxml;
     exports org.se13;
+    exports org.se13.view.base;
+    exports org.se13.view.lifecycle;
     exports org.se13.view.ranking;
     opens org.se13.view.ranking to javafx.fxml;
     exports org.se13.view.setting;

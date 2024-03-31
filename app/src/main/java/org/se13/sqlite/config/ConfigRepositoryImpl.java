@@ -44,8 +44,8 @@ public class ConfigRepositoryImpl implements ConfigRepository {
     public void insertDefaultConfig(int id) {
         JSONObject json = new JSONObject();
         json.put("mode", "default");
-        json.put("gridWidth", 10);
-        json.put("gridHeight", 22);
+        json.put("gridWidth", 300);
+        json.put("gridHeight", 400);
         json.put("keyLeft", 75);
         json.put("keyRight", 77);
         json.put("keyDown", 80);
@@ -77,7 +77,7 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("keyRotateRight", keyRotateRight);
         json.put("keyPause", keyPause);
 
-        String sql = "UPDATE config SET settings = ? WHERE id = ?";
+        String sql = "UPDATE config SET settings = ? WHERE  id = ?";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, json.toString());

@@ -4,8 +4,6 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import org.se13.view.nav.Screen;
 
-import java.io.IOException;
-
 public class SE13Application extends Application {
     public static NavGraph navController;
 
