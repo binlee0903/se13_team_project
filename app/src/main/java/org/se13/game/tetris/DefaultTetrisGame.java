@@ -6,6 +6,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import org.se13.game.timer.BlockCollideTimer;
+import org.se13.game.timer.BlockFallingTimer;
 import org.se13.game.timer.Timer;
 import org.se13.game.block.Block;
 import org.se13.game.block.BlockPosition;
@@ -23,6 +24,13 @@ public class DefaultTetrisGame {
         GAMEOVER,
         RUNNING,
         PAUSED
+    }
+
+    enum BlockSpeed {
+        DEFAULT,
+        FASTER,
+        RAGE,
+        IMPOSSIBLE
     }
 
     public static DefaultTetrisGame getInstance(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel) {
@@ -68,6 +76,7 @@ public class DefaultTetrisGame {
         this.scoreLabel = scoreLabel;
 
         this.gameStatus = GameStatus.PAUSED;
+        this.blockSpeed = BlockSpeed.DEFAULT;
         this.score = 0;
         this.CANVAS_WIDTH = tetrisGameCanvas.getWidth();
         this.CANVAS_HEIGHT = tetrisGameCanvas.getHeight();
@@ -97,7 +106,7 @@ public class DefaultTetrisGame {
                     }
 
                     if (isGameStarted == false) {
-                        blockMovingTimer = new Timer(l);
+                        blockMovingTimer = new BlockFallingTimer(l);
                         collideCheckingTimer = new BlockCollideTimer(l);
                         isGameStarted = true;
                         drawNextBlock();
@@ -239,6 +248,19 @@ public class DefaultTetrisGame {
         }
     }
 
+    private void updateBlockSpeed() {
+        if (clearedLines > 10 && clearedLines <= 30 && blockSpeed == BlockSpeed.DEFAULT) {
+            blockSpeed = BlockSpeed.FASTER;
+            blockMovingTimer.fasterBlockFallingTime();
+        } else if (clearedLines > 30 && clearedLines <= 50) {
+            blockSpeed = BlockSpeed.RAGE;
+            blockMovingTimer.fasterBlockFallingTime();
+        } else if (clearedLines > 50) {
+            blockSpeed = BlockSpeed.IMPOSSIBLE;
+            blockMovingTimer.fasterBlockFallingTime();
+        }
+    }
+
     private void drawNextBlock() {
         nextBlockGraphicsContext.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -334,10 +356,13 @@ public class DefaultTetrisGame {
 
         if (isBlockPlaced == true) {
             int clearedRows = tetrisGameGrid.clearFullRows();
+            clearedLines += clearedRows;
 
             if (clearedRows > 0) {
                 score += 10 * clearedRows;
             }
+
+            updateBlockSpeed();
 
             currentBlock = nextBlock;
             nextBlock = nextBlock();
@@ -359,7 +384,7 @@ public class DefaultTetrisGame {
         blockMovingTimer.setCurrentTime(l);
         collideCheckingTimer.setCurrentTime(l);
 
-        if ((float) blockMovingTimer.getElapsedTime() / 1000000000 > 1.0f) {
+        if (blockMovingTimer.isBlockFallingTimeHasGone() == true) {
             moveBlockDown();
             blockMovingTimer.reset(l);
         }
@@ -399,10 +424,12 @@ public class DefaultTetrisGame {
     private final GraphicsContext gameGraphicsContext;
     private final GraphicsContext nextBlockGraphicsContext;
     private GameStatus gameStatus;
+    private BlockSpeed blockSpeed;
     private Label scoreLabel;
-    private Timer blockMovingTimer;
+    private BlockFallingTimer blockMovingTimer;
     private BlockCollideTimer collideCheckingTimer;
     private int score;
+    private int clearedLines = 0;
     private boolean isGameStarted;
     private boolean isBlockPlaced;
     private boolean isBlockCollided;
