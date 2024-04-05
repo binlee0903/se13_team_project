@@ -12,6 +12,18 @@ import org.json.JSONObject;
 
 
 public class ConfigRepositoryImpl implements ConfigRepository {
+    private ConfigRepositoryImpl() {
+        super();
+    }
+
+    public static ConfigRepositoryImpl getInstance() {
+        if (configRepositoryImpl == null) {
+            configRepositoryImpl = new ConfigRepositoryImpl();
+        }
+
+        return configRepositoryImpl;
+    }
+
     // DB connection
     private Connection connect() {
         String url = "jdbc:sqlite:./tetris.db";
@@ -136,4 +148,6 @@ public class ConfigRepositoryImpl implements ConfigRepository {
             System.out.println(e.getMessage());
         }
     }
+
+    private static ConfigRepositoryImpl configRepositoryImpl;
 }

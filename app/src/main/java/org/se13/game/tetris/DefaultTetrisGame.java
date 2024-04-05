@@ -88,7 +88,7 @@ public class DefaultTetrisGame {
         this.currentBlock = nextBlock();
         this.nextBlock = nextBlock();
 
-        this.configRepository = new ConfigRepositoryImpl();
+        this.configRepository = ConfigRepositoryImpl.getInstance();
         this.configRepository.createNewTableConfig();
         this.configRepository.insertDefaultConfig(0);
 
