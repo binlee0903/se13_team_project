@@ -8,6 +8,14 @@ plugins {
 group = "org.se13"
 version = "0.1-alpha"
 
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Javadoc>{
+    options.encoding = "UTF-8"
+}
+
 application {
     mainClass = "org.se13.SE13Application"
     mainModule = "org.se13"
