@@ -27,6 +27,10 @@ public class InputManager {
         return inputManager;
     }
 
+    public void reset() {
+        inputManager = null;
+    }
+
     public boolean peekInput() {
         return keyCodeQueue.peek() != null;
     }
