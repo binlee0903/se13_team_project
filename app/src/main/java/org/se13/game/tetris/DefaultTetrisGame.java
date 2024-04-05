@@ -69,7 +69,7 @@ public class DefaultTetrisGame {
     }
 
     private DefaultTetrisGame(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel) {
-        this.blockQueue = new BlockQueue(new Random().nextInt());
+        this.blockQueue = new BlockQueue(new Random().nextLong());
         this.tetrisGameGrid = new TetrisGrid(ROW_SIZE, COL_SIZE);
         this.gameGraphicsContext = tetrisGameCanvas.getGraphicsContext2D();
         this.nextBlockGraphicsContext = nextBlockCanvas.getGraphicsContext2D();
