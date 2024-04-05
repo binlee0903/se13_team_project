@@ -4,7 +4,8 @@ public enum Screen {
     START("StartScreen.fxml"),
     TETRIS("TetrisScreen.fxml"),
     SETTING("SettingScreen.fxml"),
-    RANKING("RankingScreen.fxml");
+    RANKING("RankingScreen.fxml"),
+    GAMEOVER("GameOverScreen.fxml");
 
     Screen(String fxml) {
         resource = fxml;
