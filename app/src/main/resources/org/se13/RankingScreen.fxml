@@ -14,8 +14,10 @@
             <TableColumn fx:id="positionColumn" prefWidth="50.0" text="순위"/>
             <TableColumn fx:id="nameColumn" prefWidth="75.0" text="이름"/>
             <TableColumn fx:id="scoreColumn" prefWidth="75.0" text="점수"/>
+            <TableColumn fx:id="isItemColumn" prefWidth="75.0" text="아이템"/>
+            <TableColumn fx:id="diffColumn" prefWidth="75.0" text="난이도"/>
         </columns>
     </TableView>
-    <Button fx:id="homeButton" onAction="#handleHomeButtonAction" styleClass="menuButton" text="HOME"/>
     <Button fx:id="tetrisButton" onAction="#handleTetrisButtonAction" styleClass="menuButton" text="TETRIS"/>
+    <Button fx:id="homeButton" onAction="#handleHomeButtonAction" styleClass="menuButton" text="HOME"/>
 </VBox>
