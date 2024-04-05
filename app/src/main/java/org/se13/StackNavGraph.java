@@ -23,7 +23,7 @@ public class StackNavGraph implements NavGraph {
     public StackNavGraph(Stage stage) {
         this.stage = stage;
         this.backStack = new Stack<>();
-        this.configRepository = new ConfigRepositoryImpl();
+        this.configRepository = ConfigRepositoryImpl.getInstance();
 
         Map<String, Object> configs = this.configRepository.getConfig(0);
         screenWidth = (Integer) configs.get("screenWidth");
