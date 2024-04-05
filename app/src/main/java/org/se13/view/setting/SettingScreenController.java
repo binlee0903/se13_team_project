@@ -43,7 +43,7 @@ public class SettingScreenController extends BaseController {
         // box color setting
         String selectedColorMode = screenColorBlindChoiceBox.getValue();
 
-        ConfigRepositoryImpl configRepository = new ConfigRepositoryImpl();
+        ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
 
     }
 
