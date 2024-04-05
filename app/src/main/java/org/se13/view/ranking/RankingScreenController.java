@@ -18,7 +18,6 @@ import org.se13.SE13Application;
 import org.se13.sqlite.ranking.RankingRepository;
 import org.se13.sqlite.ranking.RankingRepositoryImpl;
 import org.se13.view.base.BaseController;
-import org.se13.view.lifecycle.Lifecycle;
 import org.se13.view.nav.Screen;
 
 
@@ -90,7 +89,7 @@ public class RankingScreenController extends BaseController {
     private int getLastRankingScore() {
         RankingRepository rankingRepository = new RankingRepositoryImpl();
         // 랭킹 데이터 가져오기
-        List<Map<String, Object>> rankingData = rankingRepository.getRanking();
+        List<Map<String, Object>> rankingData = rankingRepository.getRankingList();
         if (rankingData == null || rankingData.isEmpty()) {
             return 0; // 랭킹 데이터가 없는 경우
         }
@@ -122,7 +121,7 @@ public class RankingScreenController extends BaseController {
             RankingRepository rankingRepository = new RankingRepositoryImpl();
             rankingRepository.insertRanking(nickname, score, isItem, diff);
             // 랭킹 데이터 로드
-            List<Map<String, Object>> rankingData = rankingRepository.getRanking();
+            List<Map<String, Object>> rankingData = rankingRepository.getRankingList();
             // id가 autoincrement로 설정되어 있으므로 마지막 id를 가져옴
             int lastId = rankingData.stream().mapToInt(e -> (int) e.get("id")).max().orElse(0);
             tableView.setRowFactory(tv -> new TableRow<Ranking>() {
@@ -143,7 +142,7 @@ public class RankingScreenController extends BaseController {
     public void loadRanking() {
         // 랭킹 데이터 로드
         RankingRepository rankingRepository = new RankingRepositoryImpl();
-        List<Map<String, Object>> rankingData = rankingRepository.getRanking();
+        List<Map<String, Object>> rankingData = rankingRepository.getRankingList();
 
         ObservableList<Ranking> rankings;
         if (rankingData != null && !rankingData.isEmpty()) {
