@@ -13,10 +13,20 @@ public class Timer {
         this.currentTime = l;
     }
 
+    public void pauseTimer() {
+        this.beforePausedTimeInterval = this.currentTime - this.startedTime;
+    }
+
+    public void resumeTimer(long l) {
+        this.startedTime = l - this.beforePausedTimeInterval;
+        this.currentTime = l;
+    }
+
     public void reset(long l) {
         this.startedTime = l;
     }
 
     protected long startedTime;
     protected long currentTime;
+    protected long beforePausedTimeInterval;
 }

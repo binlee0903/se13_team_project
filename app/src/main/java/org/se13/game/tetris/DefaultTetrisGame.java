@@ -18,14 +18,49 @@ import org.se13.sqlite.config.ConfigRepositoryImpl;
 
 import java.util.Random;
 
-public class DefaultTetrisGame implements ITetrisGame {
+public class DefaultTetrisGame {
     enum GameStatus {
         GAMEOVER,
         RUNNING,
         PAUSED
     }
 
-    public DefaultTetrisGame(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel) {
+    public static DefaultTetrisGame getInstance(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel) {
+        if (tetrisGame == null) {
+            tetrisGame = new DefaultTetrisGame(tetrisGameCanvas, nextBlockCanvas, scoreLabel);
+        }
+
+        return tetrisGame;
+    }
+
+    public void startGame() {
+        this.gameStatus = GameStatus.RUNNING;
+
+        animationTimer.start();
+    }
+
+    public void stopGame() {
+        this.gameStatus = GameStatus.GAMEOVER;
+    }
+
+    public void togglePauseState() {
+        if (this.gameStatus != GameStatus.PAUSED) {
+            this.gameStatus = GameStatus.PAUSED;
+            blockMovingTimer.pauseTimer();
+            collideCheckingTimer.pauseTimer();
+        } else {
+            this.gameStatus = GameStatus.RUNNING;
+            blockMovingTimer.resumeTimer(currentTime);
+            collideCheckingTimer.resumeTimer(currentTime);
+            animationTimer.start();
+        }
+    }
+
+    public int getScore() {
+        return this.score;
+    }
+
+    private DefaultTetrisGame(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel) {
         this.blockQueue = new BlockQueue(new Random().nextInt());
         this.tetrisGameGrid = new TetrisGrid(ROW_SIZE, COL_SIZE);
         this.gameGraphicsContext = tetrisGameCanvas.getGraphicsContext2D();
@@ -54,6 +89,8 @@ public class DefaultTetrisGame implements ITetrisGame {
         this.animationTimer = new AnimationTimer() {
             @Override
             public void handle(long l) {
+                currentTime = l;
+
                 if (gameStatus == GameStatus.RUNNING) {
                     if (inputManager.peekInput()) {
                         processUserInput(inputManager.getInput());
@@ -77,28 +114,6 @@ public class DefaultTetrisGame implements ITetrisGame {
                 }
             }
         };
-    }
-
-    @Override
-    public void startGame() {
-        this.gameStatus = GameStatus.RUNNING;
-
-        animationTimer.start();
-    }
-
-    @Override
-    public void stopGame() {
-        this.gameStatus = GameStatus.GAMEOVER;
-    }
-
-    @Override
-    public void pauseGame() {
-        this.gameStatus = GameStatus.PAUSED;
-    }
-
-    @Override
-    public int getScore() {
-        return this.score;
     }
 
     private CurrentBlock nextBlock() {
@@ -221,10 +236,6 @@ public class DefaultTetrisGame implements ITetrisGame {
             rotateBlockCW();
         } else if (keyCode == this.inputConfig.CCW_SPIN) {
             rotateBlockCCW();
-        } else if (keyCode == this.inputConfig.PAUSE) {
-
-        } else if (keyCode == this.inputConfig.EXIT) {
-            stopGame();
         }
     }
 
@@ -368,12 +379,15 @@ public class DefaultTetrisGame implements ITetrisGame {
         }
     }
 
+    private static DefaultTetrisGame tetrisGame;
+
     private final int ROW_SIZE = 22;
     private final int COL_SIZE = 10;
     private final int TEXT_INTERVAL = 10;
     private final double CANVAS_WIDTH;
     private final double CANVAS_HEIGHT;
     private final char DEFAULT_BLOCK_TEXT = 'O';
+    private long currentTime;
     private AnimationTimer animationTimer;
     private ConfigRepositoryImpl configRepository;
     private InputManager inputManager;
