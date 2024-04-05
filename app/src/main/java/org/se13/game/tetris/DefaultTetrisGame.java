@@ -5,9 +5,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
+import org.se13.SE13Application;
 import org.se13.game.timer.BlockCollideTimer;
 import org.se13.game.timer.BlockFallingTimer;
-import org.se13.game.timer.Timer;
 import org.se13.game.block.Block;
 import org.se13.game.block.BlockPosition;
 import org.se13.game.block.CurrentBlock;
@@ -16,6 +16,8 @@ import org.se13.game.grid.TetrisGrid;
 import org.se13.game.input.InputManager;
 import org.se13.game.rule.BlockQueue;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
+import org.se13.sqlite.ranking.RankingRepositoryImpl;
+import org.se13.view.nav.Screen;
 
 import java.util.Random;
 
@@ -49,6 +51,8 @@ public class DefaultTetrisGame {
 
     public void stopGame() {
         this.gameStatus = GameStatus.GAMEOVER;
+        this.inputManager.reset();
+        SE13Application.navController.navigate(Screen.GAMEOVER);
     }
 
     public void togglePauseState() {
@@ -64,8 +68,20 @@ public class DefaultTetrisGame {
         }
     }
 
+    public void resetGame() {
+        tetrisGame = null;
+    }
+
     public int getScore() {
         return this.score;
+    }
+
+    public String getDifficulty() {
+        return "normal";
+    }
+
+    public boolean isItemMode() {
+        return false;
     }
 
     private DefaultTetrisGame(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel) {
@@ -89,9 +105,10 @@ public class DefaultTetrisGame {
         this.nextBlock = nextBlock();
 
         this.configRepository = ConfigRepositoryImpl.getInstance();
+        this.rankingRepository = new RankingRepositoryImpl();
 
         this.inputManager = InputManager.getInstance(scoreLabel.getScene());
-        this.inputConfig = new InputConfig(this.configRepository);
+        this.inputConfig = new InputConfig();
 
         this.animationTimer = new AnimationTimer() {
             @Override
@@ -231,7 +248,7 @@ public class DefaultTetrisGame {
     }
 
     private void processUserInput(char keyCode) {
-        if (keyCode == this.inputConfig.UP) {
+        if (keyCode == this.inputConfig.DROP) {
             immediateBlockPlace();
         } else if (keyCode == this.inputConfig.DOWN) {
             moveBlockDown();
@@ -368,7 +385,7 @@ public class DefaultTetrisGame {
             isBlockPlaced = false;
 
             if (isGameOver() == true) {
-                gameStatus = GameStatus.GAMEOVER;
+                stopGame();
             }
         }
     }
@@ -413,6 +430,7 @@ public class DefaultTetrisGame {
     private long currentTime;
     private AnimationTimer animationTimer;
     private ConfigRepositoryImpl configRepository;
+    private RankingRepositoryImpl rankingRepository;
     private InputManager inputManager;
     private InputConfig inputConfig;
     private TetrisGrid tetrisGameGrid;
