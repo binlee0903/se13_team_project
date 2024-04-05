@@ -44,8 +44,8 @@ public class ConfigRepositoryImpl implements ConfigRepository {
     public void insertDefaultConfig(int id) {
         JSONObject json = new JSONObject();
         json.put("mode", "default");
-        json.put("gridWidth", 300);
-        json.put("gridHeight", 400);
+        json.put("screenWidth", 300);
+        json.put("screenHeight", 400);
         json.put("keyLeft", 'a');
         json.put("keyRight", 'd');
         json.put("keyDown", 's');
