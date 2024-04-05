@@ -46,12 +46,12 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("mode", "default");
         json.put("gridWidth", 300);
         json.put("gridHeight", 400);
-        json.put("keyLeft", 75);
-        json.put("keyRight", 77);
-        json.put("keyDown", 80);
+        json.put("keyLeft", 'a');
+        json.put("keyRight", 'd');
+        json.put("keyDown", 's');
         json.put("keyRotateLeft", 120);
-        json.put("keyRotateRight", 121);
-        json.put("keyPause", 32);
+        json.put("keyRotateRight", 'e');
+        json.put("keyPause", 'p');
 
         String sql = "INSERT INTO config (id, settings) VALUES(?,?)";
         try (Connection conn = this.connect();
