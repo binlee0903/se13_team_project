@@ -3,10 +3,12 @@ package org.se13;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.se13.sqlite.config.ConfigRepositoryImpl;
 import org.se13.view.lifecycle.Lifecycle;
 import org.se13.view.nav.Screen;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Stack;
 import java.util.function.Consumer;
 
@@ -14,12 +16,18 @@ public class StackNavGraph implements NavGraph {
 
     private final Stage stage;
     private final Stack<Scene> backStack;
-    private int screenWidth = 300; // 초기 화면 너비 기본값
-    private int screenHeight = 400; // 초기 화면 높이 기본값
+    private final ConfigRepositoryImpl configRepository;
+    private int screenWidth; // 초기 화면 너비 기본값
+    private int screenHeight; // 초기 화면 높이 기본값
 
     public StackNavGraph(Stage stage) {
         this.stage = stage;
         this.backStack = new Stack<>();
+        this.configRepository = ConfigRepositoryImpl.getInstance();
+
+        Map<String, Object> configs = this.configRepository.getConfig(0);
+        screenWidth = (Integer) configs.get("screenWidth");
+        screenHeight = (Integer) configs.get("screenHeight");
     }
 
     @Override

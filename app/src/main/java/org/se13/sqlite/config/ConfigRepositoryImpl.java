@@ -12,6 +12,21 @@ import org.json.JSONObject;
 
 
 public class ConfigRepositoryImpl implements ConfigRepository {
+    private ConfigRepositoryImpl() {
+        super();
+
+        this.createNewTableConfig();
+        this.insertDefaultConfig(0);
+    }
+
+    public static ConfigRepositoryImpl getInstance() {
+        if (configRepositoryImpl == null) {
+            configRepositoryImpl = new ConfigRepositoryImpl();
+        }
+
+        return configRepositoryImpl;
+    }
+
     // DB connection
     private Connection connect() {
         String url = "jdbc:sqlite:./tetris.db";
@@ -44,8 +59,8 @@ public class ConfigRepositoryImpl implements ConfigRepository {
     public void insertDefaultConfig(int id) {
         JSONObject json = new JSONObject();
         json.put("mode", "default");
-        json.put("gridWidth", 300);
-        json.put("gridHeight", 400);
+        json.put("screenWidth", 300);
+        json.put("screenHeight", 400);
         json.put("keyLeft", 'a');
         json.put("keyRight", 'd');
         json.put("keyDown", 's');
@@ -70,8 +85,8 @@ public class ConfigRepositoryImpl implements ConfigRepository {
     public void updateConfig(int id, String mode, int gridWidth, int gridHeight, int keyLeft, int keyRight, int keyDown, int keyRotateLeft, int keyRotateRight, int keyPause, int keyDrop, int keyExit) {
         JSONObject json = new JSONObject();
         json.put("mode", mode);
-        json.put("gridWidth", gridWidth);
-        json.put("gridHeight", gridHeight);
+        json.put("screenWidth", gridWidth);
+        json.put("screenHeight", gridHeight);
         json.put("keyLeft", keyLeft);
         json.put("keyRight", keyRight);
         json.put("keyDown", keyDown);
@@ -106,8 +121,8 @@ public class ConfigRepositoryImpl implements ConfigRepository {
 
                 Map<String, Object> result = new HashMap<>();
                 result.put("mode", json.getString("mode"));
-                result.put("gridWidth", json.getInt("gridWidth"));
-                result.put("gridHeight", json.getInt("gridHeight"));
+                result.put("screenWidth", json.getInt("screenWidth"));
+                result.put("screenHeight", json.getInt("screenHeight"));
                 result.put("keyLeft", json.getInt("keyLeft"));
                 result.put("keyRight", json.getInt("keyRight"));
                 result.put("keyDown", json.getInt("keyDown"));
@@ -136,4 +151,6 @@ public class ConfigRepositoryImpl implements ConfigRepository {
             System.out.println(e.getMessage());
         }
     }
+
+    private static ConfigRepositoryImpl configRepositoryImpl;
 }
