@@ -52,6 +52,8 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("keyRotateLeft", 120);
         json.put("keyRotateRight", 'e');
         json.put("keyPause", 'p');
+        json.put("keyDrop", 'w');
+        json.put("keyExit", 'q');
 
         String sql = "INSERT INTO config (id, settings) VALUES(?,?)";
         try (Connection conn = this.connect();
@@ -65,7 +67,7 @@ public class ConfigRepositoryImpl implements ConfigRepository {
     }
 
     @Override
-    public void updateConfig(int id, String mode, int gridWidth, int gridHeight, int keyLeft, int keyRight, int keyDown, int keyRotateLeft, int keyRotateRight, int keyPause) {
+    public void updateConfig(int id, String mode, int gridWidth, int gridHeight, int keyLeft, int keyRight, int keyDown, int keyRotateLeft, int keyRotateRight, int keyPause, int keyDrop, int keyExit) {
         JSONObject json = new JSONObject();
         json.put("mode", mode);
         json.put("gridWidth", gridWidth);
@@ -76,8 +78,10 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("keyRotateLeft", keyRotateLeft);
         json.put("keyRotateRight", keyRotateRight);
         json.put("keyPause", keyPause);
+        json.put("keyDrop", keyDrop);
+        json.put("keyExit", keyExit);
 
-        String sql = "UPDATE config SET settings = ? WHERE  id = ?";
+        String sql = "UPDATE config SET settings = ? WHERE id = ?";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, json.toString());
@@ -110,6 +114,8 @@ public class ConfigRepositoryImpl implements ConfigRepository {
                 result.put("keyRotateLeft", json.getInt("keyRotateLeft"));
                 result.put("keyRotateRight", json.getInt("keyRotateRight"));
                 result.put("keyPause", json.getInt("keyPause"));
+                result.put("keyDrop", json.getInt("keyDrop"));
+                result.put("keyExit", json.getInt("keyExit"));
 
                 return result;
             }
