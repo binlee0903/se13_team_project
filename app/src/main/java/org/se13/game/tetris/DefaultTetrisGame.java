@@ -302,11 +302,11 @@ public class DefaultTetrisGame {
             }
 
             scoreWeight += 10;
-        } else if (clearedLines > 30 && clearedLines <= 50) {
+        } else if (clearedLines > 30 && clearedLines <= 60 && blockSpeed == BlockSpeed.FASTER) {
             blockSpeed = BlockSpeed.RAGE;
             blockMovingTimer.fasterBlockFallingTime();
             scoreWeight += 20;
-        } else if (clearedLines > 50) {
+        } else if (clearedLines > 60 && blockSpeed == BlockSpeed.RAGE) {
             blockSpeed = BlockSpeed.IMPOSSIBLE;
             blockMovingTimer.fasterBlockFallingTime();
             scoreWeight += 30;
