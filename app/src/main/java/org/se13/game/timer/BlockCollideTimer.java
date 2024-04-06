@@ -16,6 +16,7 @@ public final class BlockCollideTimer extends Timer {
 
     @Override
     public void reset(long l) {
+        super.reset(l);
         this.firstBlockCollideTime = 0;
         this.isBlockCollide = false;
     }
