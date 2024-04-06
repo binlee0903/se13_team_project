@@ -3,6 +3,7 @@ package org.se13;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.se13.sqlite.config.ConfigRepositoryImpl;
 import org.se13.view.lifecycle.Lifecycle;
 import org.se13.view.nav.Screen;
 
@@ -16,6 +17,7 @@ public class StackNavGraph implements NavGraph {
     private final Stack<Scene> backStack;
     private int screenWidth = 300; // 초기 화면 너비 기본값
     private int screenHeight = 400; // 초기 화면 높이 기본값
+    private ConfigRepositoryImpl configRepository;
 
     public StackNavGraph(Stage stage) {
         this.stage = stage;
@@ -58,6 +60,7 @@ public class StackNavGraph implements NavGraph {
     }
 
     private Scene createScene(FXMLLoader loader) throws IOException {
+        configRepository.getConfig(100);
         return new Scene(loader.load(), screenWidth,  screenHeight);
     }
 

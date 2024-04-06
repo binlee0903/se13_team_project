@@ -2,6 +2,7 @@ package org.se13.view.setting;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import org.se13.SE13Application;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
@@ -9,6 +10,12 @@ import org.se13.view.base.BaseController;
 
 public class SettingScreenController extends BaseController {
 
+    public Button moveLeftButton;
+    public Button moveRightButton;
+    public Button moveDownButton;
+    public Button rotateLeftButton;
+    public Button rotateRightButton;
+    public Button pauseButton;
     @FXML
     private ChoiceBox<String> screenSizeChoiceBox;
     @FXML
@@ -22,6 +29,10 @@ public class SettingScreenController extends BaseController {
         // Add options in ChoiceBox for the choice among color mode
         screenColorBlindChoiceBox.setItems(FXCollections.observableArrayList("Nothing", "Red-green", "Blue-yellow"));
         screenColorBlindChoiceBox.setValue("Nothing");
+        // Add options in buttons for the choice in the keyboard
+        moveLeftButton.setText("Left: A");
+        moveRightButton.setText("Right: D");
+
         // By selected scene size, the function will implement logic.
 
     }
