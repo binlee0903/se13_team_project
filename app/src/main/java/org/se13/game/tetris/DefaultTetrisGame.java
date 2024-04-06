@@ -94,6 +94,7 @@ public class DefaultTetrisGame {
         this.gameStatus = GameStatus.PAUSED;
         this.blockSpeed = BlockSpeed.DEFAULT;
         this.score = 0;
+        this.scoreWeight = 10;
         this.CANVAS_WIDTH = tetrisGameCanvas.getWidth();
         this.CANVAS_HEIGHT = tetrisGameCanvas.getHeight();
 
@@ -165,6 +166,8 @@ public class DefaultTetrisGame {
         deleteCurrentBlockFromGrid();
         currentBlock.rotateCW();
 
+        score++;
+
         if (blockFits() == false) {
             currentBlock.rotateCCW();
         }
@@ -200,11 +203,11 @@ public class DefaultTetrisGame {
     private void moveBlockDown() {
         deleteCurrentBlockFromGrid();
         currentBlock.move(1, 0);
-        this.score++;
+        this.score += scoreWeight / 10;
 
         if (blockFits() == false) {
             isBlockCollided = true;
-            this.score--;
+            this.score -= scoreWeight / 10;
             currentBlock.move(-1, 0);
         } else {
             isBlockCollided = false;
@@ -267,12 +270,15 @@ public class DefaultTetrisGame {
         if (clearedLines > 10 && clearedLines <= 30 && blockSpeed == BlockSpeed.DEFAULT) {
             blockSpeed = BlockSpeed.FASTER;
             blockMovingTimer.fasterBlockFallingTime();
+            scoreWeight += 10;
         } else if (clearedLines > 30 && clearedLines <= 50) {
             blockSpeed = BlockSpeed.RAGE;
             blockMovingTimer.fasterBlockFallingTime();
+            scoreWeight += 20;
         } else if (clearedLines > 50) {
             blockSpeed = BlockSpeed.IMPOSSIBLE;
             blockMovingTimer.fasterBlockFallingTime();
+            scoreWeight += 30;
         }
     }
 
@@ -374,7 +380,7 @@ public class DefaultTetrisGame {
             clearedLines += clearedRows;
 
             if (clearedRows > 0) {
-                score += 10 * clearedRows;
+                score += scoreWeight * clearedRows;
             }
 
             updateBlockSpeed();
@@ -445,6 +451,7 @@ public class DefaultTetrisGame {
     private BlockFallingTimer blockMovingTimer;
     private BlockCollideTimer collideCheckingTimer;
     private int score;
+    private int scoreWeight;
     private int clearedLines = 0;
     private boolean isGameStarted;
     private boolean isBlockPlaced;
