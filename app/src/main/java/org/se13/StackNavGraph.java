@@ -66,7 +66,7 @@ public class StackNavGraph implements NavGraph {
     }
 
     private Scene createScene(FXMLLoader loader) throws IOException {
-        configRepository.getConfig(100);
+        configRepository.getConfig(0);
         return new Scene(loader.load(), screenWidth,  screenHeight);
     }
 
