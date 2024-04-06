@@ -29,6 +29,10 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
 javafx {
     modules("javafx.controls", "javafx.fxml")
 }
@@ -42,4 +46,7 @@ dependencies {
 
     implementation("org.xerial:sqlite-jdbc:3.44.1.0")
     implementation("org.json:json:20240303")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation("org.assertj:assertj-core:3.23.1")
 }
