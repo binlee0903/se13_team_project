@@ -10,7 +10,7 @@ public class BlockFallingTimer extends Timer {
     }
 
     public boolean isBlockFallingTimeHasGone() {
-        return (float)getElapsedTime() / 1000000000.0f > blockFallingTimeManipulator;
+        return (float)getElapsedTime() / 1000000000.0f >= blockFallingTimeManipulator;
     }
 
     private final float BLOCK_FALLING_TIME_SUBTRACTOR = -0.1f;

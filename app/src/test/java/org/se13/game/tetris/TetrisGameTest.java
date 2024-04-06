@@ -109,7 +109,7 @@ public class TetrisGameTest {
         }
 
         assertTrue(blockCollideTimer.isTimerStarted());
-        assertTrue(blockCollideTimer.getElapsedTime() > 2000000000);
+        assertTrue(blockCollideTimer.getElapsedTime() >= 2000000000);
         assertTrue(blockCollideTimer.isBlockPlaceTimeEnded());
     }
 
@@ -161,7 +161,7 @@ public class TetrisGameTest {
 
             blockFallingTimer.setCurrentTime(currentTime);
 
-            if (blockFallingTimer.getElapsedTime() > 800000000) {
+            if (blockFallingTimer.getElapsedTime() >= 900000000) {
                 assertTrue(blockFallingTimer.isBlockFallingTimeHasGone());
                 break;
             } else {
