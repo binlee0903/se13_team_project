@@ -385,38 +385,8 @@ public class DefaultTetrisGame {
             colIndex = nextBlockPositions[i].getColIndex();
             rowIndex = nextBlockPositions[i].getRowIndex() + 1; // 더 잘보이게 하기 위해 행 인덱스에 1을 더해줌
 
-            switch (nextBlock.getId()) {
-                case 1: // I Block
-                    nextBlockGraphicsContext.setFill(Block.IBlock.blockColor.getBlockColor());
-                    nextBlockGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-                    break;
-                case 2: // J Block
-                    nextBlockGraphicsContext.setFill(Block.JBlock.blockColor.getBlockColor());
-                    nextBlockGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-                    break;
-                case 3: // L Block
-                    nextBlockGraphicsContext.setFill(Block.LBlock.blockColor.getBlockColor());
-                    nextBlockGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-                    break;
-                case 4: // O Block
-                    nextBlockGraphicsContext.setFill(Block.OBlock.blockColor.getBlockColor());
-                    nextBlockGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-                    break;
-                case 5: // S Block
-                    nextBlockGraphicsContext.setFill(Block.SBlock.blockColor.getBlockColor());
-                    nextBlockGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-                    break;
-                case 6: // T Block
-                    nextBlockGraphicsContext.setFill(Block.TBlock.blockColor.getBlockColor());
-                    nextBlockGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-                    break;
-                case 7:
-                    nextBlockGraphicsContext.setFill(Block.ZBlock.blockColor.getBlockColor());
-                    nextBlockGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-                    break;
-                default:
-                    nextBlockGraphicsContext.fillText(String.valueOf(' '), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-            }
+            nextBlockGraphicsContext.setFill(nextBlock.getColor().getBlockColor());
+            nextBlockGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
         }
     }
 
