@@ -8,30 +8,42 @@ import org.se13.SE13Application;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
 import org.se13.view.base.BaseController;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 public class SettingScreenController extends BaseController {
 
     public Button moveLeftButton;
     public Button moveRightButton;
     public Button moveDownButton;
-    public Button rotateLeftButton;
-    public Button rotateRightButton;
+    public Button quitButton;
+    public Button rotateButton;
     public Button pauseButton;
     @FXML
     private ChoiceBox<String> screenSizeChoiceBox;
     @FXML
     private ChoiceBox<String> screenColorBlindChoiceBox;
     private String selectedScreenSize;
+
     @FXML
     private void initialize() {
+        ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
+        Map<String, Object> configs = configRepository.getConfig(0);
+
         // Add options in ChoiceBox for the choice among scene size
+        int screenWidth = (Integer) configs.get("screenWidth");
+        int screenHeight = (Integer) configs.get("screenHeight");
+        selectedScreenSize = screenWidth + "x" + screenHeight;
         screenSizeChoiceBox.setItems(FXCollections.observableArrayList("300x400", "600x800", "1920x1080"));
-        screenSizeChoiceBox.setValue("300x400");
+        screenSizeChoiceBox.setValue(selectedScreenSize);
         // Add options in ChoiceBox for the choice among color mode
-        screenColorBlindChoiceBox.setItems(FXCollections.observableArrayList("Nothing", "Red-green", "Blue-yellow"));
-        screenColorBlindChoiceBox.setValue("Nothing");
+        String colorMode = (String) configs.get("mode");
+        screenColorBlindChoiceBox.setItems(FXCollections.observableArrayList("default", "Red-green", "Blue-yellow"));
+        screenColorBlindChoiceBox.setValue(colorMode);
         // Add options in buttons for the choice in the keyboard
-        moveLeftButton.setText("Left: A");
-        moveRightButton.setText("Right: D");
+
+        moveLeftButton.setText("Left: " + configs.get("keyLeft"));
+        moveRightButton.setText("Right: " + configs.get("keyRight"));
 
         // By selected scene size, the function will implement logic.
 
