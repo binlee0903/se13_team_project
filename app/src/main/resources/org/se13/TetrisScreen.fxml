@@ -11,10 +11,10 @@
    <BorderPane prefHeight="200.0" prefWidth="200.0">
       <right>
          <VBox prefHeight="200.0" prefWidth="50.0" BorderPane.alignment="CENTER">
-            <HBox prefHeight="100.0" prefWidth="200.0">
+            <VBox prefHeight="100.0" prefWidth="200.0">
                <Label prefHeight="18.0" prefWidth="53.0" text="Score"/>
                <Label fx:id="score" text="Label"/>
-            </HBox>
+            </VBox>
             <Label text="next"/>
             <Canvas fx:id="nextBlockCanvas" height="200.0" width="50.0"/>
          </VBox>
