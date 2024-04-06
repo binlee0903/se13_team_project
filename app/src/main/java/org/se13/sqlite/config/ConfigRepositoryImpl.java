@@ -12,6 +12,21 @@ import org.json.JSONObject;
 
 
 public class ConfigRepositoryImpl implements ConfigRepository {
+    private ConfigRepositoryImpl() {
+        super();
+
+        this.createNewTableConfig();
+        this.insertDefaultConfig(0);
+    }
+
+    public static ConfigRepositoryImpl getInstance() {
+        if (configRepositoryImpl == null) {
+            configRepositoryImpl = new ConfigRepositoryImpl();
+        }
+
+        return configRepositoryImpl;
+    }
+
     // DB connection
     private Connection connect() {
         String url = "jdbc:sqlite:./tetris.db";
@@ -44,14 +59,16 @@ public class ConfigRepositoryImpl implements ConfigRepository {
     public void insertDefaultConfig(int id) {
         JSONObject json = new JSONObject();
         json.put("mode", "default");
-        json.put("gridWidth", 300);
-        json.put("gridHeight", 400);
-        json.put("keyLeft", 75);
-        json.put("keyRight", 77);
-        json.put("keyDown", 80);
+        json.put("screenWidth", 300);
+        json.put("screenHeight", 400);
+        json.put("keyLeft", 'a');
+        json.put("keyRight", 'd');
+        json.put("keyDown", 's');
         json.put("keyRotateLeft", 120);
-        json.put("keyRotateRight", 121);
-        json.put("keyPause", 32);
+        json.put("keyRotateRight", 'e');
+        json.put("keyPause", 'p');
+        json.put("keyDrop", 'w');
+        json.put("keyExit", 'q');
 
         String sql = "INSERT INTO config (id, settings) VALUES(?,?)";
         try (Connection conn = this.connect();
@@ -65,19 +82,21 @@ public class ConfigRepositoryImpl implements ConfigRepository {
     }
 
     @Override
-    public void updateConfig(int id, String mode, int gridWidth, int gridHeight, int keyLeft, int keyRight, int keyDown, int keyRotateLeft, int keyRotateRight, int keyPause) {
+    public void updateConfig(int id, String mode, int gridWidth, int gridHeight, int keyLeft, int keyRight, int keyDown, int keyRotateLeft, int keyRotateRight, int keyPause, int keyDrop, int keyExit) {
         JSONObject json = new JSONObject();
         json.put("mode", mode);
-        json.put("gridWidth", gridWidth);
-        json.put("gridHeight", gridHeight);
+        json.put("screenWidth", gridWidth);
+        json.put("screenHeight", gridHeight);
         json.put("keyLeft", keyLeft);
         json.put("keyRight", keyRight);
         json.put("keyDown", keyDown);
         json.put("keyRotateLeft", keyRotateLeft);
         json.put("keyRotateRight", keyRotateRight);
         json.put("keyPause", keyPause);
+        json.put("keyDrop", keyDrop);
+        json.put("keyExit", keyExit);
 
-        String sql = "UPDATE config SET settings = ? WHERE  id = ?";
+        String sql = "UPDATE config SET settings = ? WHERE id = ?";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, json.toString());
@@ -102,14 +121,16 @@ public class ConfigRepositoryImpl implements ConfigRepository {
 
                 Map<String, Object> result = new HashMap<>();
                 result.put("mode", json.getString("mode"));
-                result.put("gridWidth", json.getInt("gridWidth"));
-                result.put("gridHeight", json.getInt("gridHeight"));
+                result.put("screenWidth", json.getInt("screenWidth"));
+                result.put("screenHeight", json.getInt("screenHeight"));
                 result.put("keyLeft", json.getInt("keyLeft"));
                 result.put("keyRight", json.getInt("keyRight"));
                 result.put("keyDown", json.getInt("keyDown"));
                 result.put("keyRotateLeft", json.getInt("keyRotateLeft"));
                 result.put("keyRotateRight", json.getInt("keyRotateRight"));
                 result.put("keyPause", json.getInt("keyPause"));
+                result.put("keyDrop", json.getInt("keyDrop"));
+                result.put("keyExit", json.getInt("keyExit"));
 
                 return result;
             }
@@ -130,4 +151,6 @@ public class ConfigRepositoryImpl implements ConfigRepository {
             System.out.println(e.getMessage());
         }
     }
+
+    private static ConfigRepositoryImpl configRepositoryImpl;
 }

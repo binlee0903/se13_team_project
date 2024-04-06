@@ -28,7 +28,9 @@ public class RankingRepositoryImpl implements RankingRepository {
         String sql = "CREATE TABLE IF NOT EXISTS ranking ("
                 + "	id integer PRIMARY KEY AUTOINCREMENT,"
                 + "	name text NOT NULL,"
-                + " score INTEGER NOT NULL"
+                + " score INTEGER NOT NULL,"
+                + " isItem BOOLEAN NOT NULL,"
+                + " diff TEXT NOT NULL"
                 + ");";
 
         try (Connection conn = this.connect();
@@ -40,12 +42,14 @@ public class RankingRepositoryImpl implements RankingRepository {
     }
 
     @Override
-    public void insertRanking(String name, int score) {
-        String sql = "INSERT INTO ranking (name, score) VALUES(?,?)";
+    public void insertRanking(String name, int score, boolean isItem, String diff) {
+        String sql = "INSERT INTO ranking (name, score, isItem, diff) VALUES(?,?,?,?)";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, name);
             pstmt.setInt(2, score);
+            pstmt.setBoolean(3, isItem);
+            pstmt.setString(4, diff);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -53,7 +57,7 @@ public class RankingRepositoryImpl implements RankingRepository {
     }
 
     @Override
-    public List<Map<String, Object>> getRanking() {
+    public List<Map<String, Object>> getRankingList() {
         String sql = "SELECT * FROM ranking ORDER BY score DESC LIMIT 10";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -62,8 +66,11 @@ public class RankingRepositoryImpl implements RankingRepository {
             List<Map<String, Object>> results = new ArrayList<>();
             while (rs.next()) {
                 Map<String, Object> result = new HashMap<>();
+                result.put("id", rs.getInt("id"));
                 result.put("name", rs.getString("name"));
                 result.put("score", rs.getInt("score"));
+                result.put("isItem", rs.getBoolean("isItem"));
+                result.put("diff", rs.getString("diff"));
                 results.add(result);
             }
             return results;
@@ -82,18 +89,5 @@ public class RankingRepositoryImpl implements RankingRepository {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-    }
-
-    // 테스트 코드
-    public static void main(String[] args) {
-        RankingRepository rankingRepository = new RankingRepositoryImpl();
-        rankingRepository.createNewTableRanking();
-        rankingRepository.insertRanking("test4", 400);
-        rankingRepository.insertRanking("test5", 500);
-        rankingRepository.insertRanking("test6", 600);
-        rankingRepository.insertRanking("test7", 700);
-        rankingRepository.insertRanking("test8", 800);
-        rankingRepository.insertRanking("test9", 900);
-        rankingRepository.insertRanking("test10", 1000);
     }
 }

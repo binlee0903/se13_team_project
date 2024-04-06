@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface RankingRepository {
     void createNewTableRanking();
-    void insertRanking(String name, int score);
-    List<Map<String, Object>> getRanking();
+    void insertRanking(String name, int score, boolean isItem, String diff);
+    List<Map<String, Object>> getRankingList();
     void clearRanking();
 }
