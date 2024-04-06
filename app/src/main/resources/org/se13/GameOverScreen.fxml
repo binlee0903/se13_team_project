@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane fx:controller="org.se13.view.tetris.GameOverScreenController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="300.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <top>
+       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" styleClass="settingsTitle" BorderPane.alignment="CENTER">
+           <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Game Over!" />
+       </VBox>
+   </top>
+   <center>
+       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+           <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Your Score is " />
+           <Text fx:id="score" fill="YELLOW" strokeType="OUTSIDE" strokeWidth="0.0" text="example" />
+       </HBox>
+   </center>
+   <bottom>
+       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+           <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Insert Score to ScoreBoard, Insert your user name : " />
+           <TextField fx:id="name" onAction="#onEnter" maxHeight="30.0" maxWidth="50.0" prefHeight="30.0" prefWidth="50.0" />
+       </HBox>
+   </bottom>
+</BorderPane>

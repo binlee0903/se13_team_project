@@ -57,7 +57,7 @@ public class RankingRepositoryImpl implements RankingRepository {
     }
 
     @Override
-    public List<Map<String, Object>> getRanking() {
+    public List<Map<String, Object>> getRankingList() {
         String sql = "SELECT * FROM ranking ORDER BY score DESC LIMIT 10";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
