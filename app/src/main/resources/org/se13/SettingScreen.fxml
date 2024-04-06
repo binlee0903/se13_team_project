@@ -32,8 +32,8 @@
             <Button fx:id="moveDownButton" onAction="#keySaveButtonAction" styleClass="keyButton" text="Down" />
         </HBox>
         <HBox spacing="10">
-            <Button fx:id="rotateLeftButton" onAction="#keySaveButtonAction" styleClass="keyButton" text="RotateL" />
-            <Button fx:id="rotateRightButton" onAction="#keySaveButtonAction" styleClass="keyButton" text="RotateR" />
+            <Button fx:id="quitButton" onAction="#keySaveButtonAction" styleClass="keyButton" text="강제 종료" />
+            <Button fx:id="rotateButton" onAction="#keySaveButtonAction" styleClass="keyButton" text="Rotate" />
             <Button fx:id="pauseButton" onAction="#keySaveButtonAction" styleClass="keyButton" text="Pause" />
         </HBox>
     </VBox>
