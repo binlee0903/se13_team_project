@@ -35,36 +35,118 @@ public class DefaultTetrisGame {
         IMPOSSIBLE
     }
 
-    public static DefaultTetrisGame getInstance(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel) {
+    private DefaultTetrisGame(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel, boolean isTestMode) {
+        this.blockQueue = new BlockQueue(new Random().nextLong());
+        this.tetrisGameGrid = new TetrisGrid(ROW_SIZE, COL_SIZE);
+
+        this.gameStatus = GameStatus.PAUSED;
+        this.blockSpeed = BlockSpeed.DEFAULT;
+        this.score = 0;
+        this.scoreWeight = 10;
+
+        this.isGameStarted = false;
+        this.isTestMode = isTestMode;
+        this.isBlockPlaced = false;
+        this.isBlockCollided = false;
+
+        this.currentBlock = nextBlock();
+        this.nextBlock = nextBlock();
+
+        this.inputConfig = new InputConfig();
+
+        if (isTestMode == false) {
+            this.gameGraphicsContext = tetrisGameCanvas.getGraphicsContext2D();
+            this.nextBlockGraphicsContext = nextBlockCanvas.getGraphicsContext2D();
+            this.scoreLabel = scoreLabel;
+            this.CANVAS_WIDTH = tetrisGameCanvas.getWidth();
+            this.CANVAS_HEIGHT = tetrisGameCanvas.getHeight();
+            this.inputManager = InputManager.getInstance(scoreLabel.getScene());
+        } else {
+            this.isBlockPlaced = true;
+            this.gameGraphicsContext = null;
+            this.nextBlockGraphicsContext = null;
+            this.CANVAS_WIDTH = 200;
+            this.CANVAS_HEIGHT = 400;
+        }
+
+        this.animationTimer = new AnimationTimer() {
+            @Override
+            public void handle(long l) {
+                pulse(l);
+            }
+        };
+    }
+
+    public static DefaultTetrisGame getInstance(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel, boolean isTestMode) {
         if (tetrisGame == null) {
-            tetrisGame = new DefaultTetrisGame(tetrisGameCanvas, nextBlockCanvas, scoreLabel);
+            tetrisGame = new DefaultTetrisGame(tetrisGameCanvas, nextBlockCanvas, scoreLabel, isTestMode);
         }
 
         return tetrisGame;
     }
 
+    public void pulse(long l) {
+        currentTime = l;
+
+        if (gameStatus == GameStatus.RUNNING) {
+            if (inputManager.peekInput()) {
+                processUserInput(inputManager.getInput());
+            }
+
+            if (isGameStarted == false) {
+                blockMovingTimer = new BlockFallingTimer(l);
+                collideCheckingTimer = new BlockCollideTimer(l);
+                isGameStarted = true;
+                drawNextBlock();
+            }
+
+            tick(l);
+            prepare();
+            render();
+            update();
+        } else if (gameStatus == GameStatus.PAUSED) {
+            animationTimer.stop();
+        } else {
+            animationTimer.stop();
+        }
+    }
+
     public void startGame() {
         this.gameStatus = GameStatus.RUNNING;
 
-        animationTimer.start();
+        if (this.isTestMode == false) {
+            animationTimer.start();
+        }
     }
 
     public void stopGame() {
         this.gameStatus = GameStatus.GAMEOVER;
-        this.inputManager.reset();
-        SE13Application.navController.navigate(Screen.GAMEOVER);
+
+        if (this.isTestMode == false) {
+            this.inputManager.reset();
+            SE13Application.navController.navigate(Screen.GAMEOVER);
+        }
     }
 
     public void togglePauseState() {
         if (this.gameStatus != GameStatus.PAUSED) {
             this.gameStatus = GameStatus.PAUSED;
-            blockMovingTimer.pauseTimer();
-            collideCheckingTimer.pauseTimer();
+
+            if (this.isTestMode == false) {
+                blockMovingTimer.pauseTimer();
+                collideCheckingTimer.pauseTimer();
+            }
         } else {
             this.gameStatus = GameStatus.RUNNING;
-            blockMovingTimer.resumeTimer(currentTime);
-            collideCheckingTimer.resumeTimer(currentTime);
-            animationTimer.start();
+
+            if (this.isTestMode == false) {
+                blockMovingTimer.resumeTimer(currentTime);
+                collideCheckingTimer.resumeTimer(currentTime);
+            }
+
+            if (isTestMode == false) {
+                animationTimer.start();
+            }
         }
     }
 
@@ -84,68 +166,15 @@ public class DefaultTetrisGame {
         return false;
     }
 
-    private DefaultTetrisGame(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel) {
-        this.blockQueue = new BlockQueue(new Random().nextLong());
-        this.tetrisGameGrid = new TetrisGrid(ROW_SIZE, COL_SIZE);
-        this.gameGraphicsContext = tetrisGameCanvas.getGraphicsContext2D();
-        this.nextBlockGraphicsContext = nextBlockCanvas.getGraphicsContext2D();
-        this.scoreLabel = scoreLabel;
-
-        this.gameStatus = GameStatus.PAUSED;
-        this.blockSpeed = BlockSpeed.DEFAULT;
-        this.score = 0;
-        this.scoreWeight = 10;
-        this.CANVAS_WIDTH = tetrisGameCanvas.getWidth();
-        this.CANVAS_HEIGHT = tetrisGameCanvas.getHeight();
-
-        this.isGameStarted = false;
-        this.isBlockPlaced = false;
-        this.isBlockCollided = false;
-
-        this.currentBlock = nextBlock();
-        this.nextBlock = nextBlock();
-
-        this.configRepository = ConfigRepositoryImpl.getInstance();
-        this.rankingRepository = new RankingRepositoryImpl();
-
-        this.inputManager = InputManager.getInstance(scoreLabel.getScene());
-        this.inputConfig = new InputConfig();
-
-        this.animationTimer = new AnimationTimer() {
-            @Override
-            public void handle(long l) {
-                currentTime = l;
-
-                if (gameStatus == GameStatus.RUNNING) {
-                    if (inputManager.peekInput()) {
-                        processUserInput(inputManager.getInput());
-                    }
-
-                    if (isGameStarted == false) {
-                        blockMovingTimer = new BlockFallingTimer(l);
-                        collideCheckingTimer = new BlockCollideTimer(l);
-                        isGameStarted = true;
-                        drawNextBlock();
-                    }
-
-                    tick(l);
-                    prepare();
-                    render();
-                    update();
-                } else if (gameStatus == GameStatus.PAUSED) {
-                    animationTimer.stop();
-                } else {
-                    animationTimer.stop();
-                }
-            }
-        };
+    public BlockSpeed getBlockSpeed() {
+        return this.blockSpeed;
     }
 
-    private CurrentBlock nextBlock() {
-        return new CurrentBlock(blockQueue.nextBlock());
-    }
+    public CurrentBlock getCurrentBlock() { return this.currentBlock; }
 
-    private boolean blockFits() {
+    public TetrisGrid getTetrisGrid() { return this.tetrisGameGrid; }
+
+    boolean blockFits() {
         for (BlockPosition p : currentBlock.shape()) {
             int blockRowIndex = p.getRowIndex() + currentBlock.getPosition().getRowIndex();
             int blockColIndex = p.getColIndex() + currentBlock.getPosition().getColIndex();
@@ -162,27 +191,19 @@ public class DefaultTetrisGame {
         return true;
     }
 
-    private void rotateBlockCW() {
+    void rotateBlockCW() {
         deleteCurrentBlockFromGrid();
         currentBlock.rotateCW();
 
         score++;
 
         if (blockFits() == false) {
+            score--;
             currentBlock.rotateCCW();
         }
     }
 
-    private void rotateBlockCCW() {
-        deleteCurrentBlockFromGrid();
-        currentBlock.rotateCCW();
-
-        if (blockFits() == false) {
-            currentBlock.rotateCW();
-        }
-    }
-
-    private void moveBlockLeft() {
+    void moveBlockLeft() {
         deleteCurrentBlockFromGrid();
         currentBlock.move(0, -1);
 
@@ -191,7 +212,7 @@ public class DefaultTetrisGame {
         }
     }
 
-    private void moveBlockRight() {
+    void moveBlockRight() {
         deleteCurrentBlockFromGrid();
         currentBlock.move(0, 1);
 
@@ -200,7 +221,7 @@ public class DefaultTetrisGame {
         }
     }
 
-    private void moveBlockDown() {
+    void moveBlockDown() {
         deleteCurrentBlockFromGrid();
         currentBlock.move(1, 0);
         this.score += scoreWeight / 10;
@@ -214,7 +235,7 @@ public class DefaultTetrisGame {
         }
     }
 
-    private void immediateBlockPlace() {
+    void immediateBlockPlace() {
         deleteCurrentBlockFromGrid();
 
         for (int i = currentBlock.getPosition().getRowIndex(); i < ROW_SIZE; i++) {
@@ -226,7 +247,7 @@ public class DefaultTetrisGame {
         }
     }
 
-    private boolean isGameOver() {
+    boolean isGameOver() {
         if (tetrisGameGrid.isRowEmpty(0) == true) {
             return false;
         } else {
@@ -234,7 +255,15 @@ public class DefaultTetrisGame {
         }
     }
 
-    private void drawBlockIntoGrid() {
+    boolean isGamePaused() {
+        return this.gameStatus == GameStatus.PAUSED;
+    }
+
+    void setCurrentBlock(CurrentBlock currentBlock) {
+        this.currentBlock = currentBlock;
+    }
+
+    void drawBlockIntoGrid() {
         BlockPosition currentBlockPosition = currentBlock.getPosition();
 
         for (BlockPosition p : currentBlock.shape()) {
@@ -242,7 +271,7 @@ public class DefaultTetrisGame {
         }
     }
 
-    private void deleteCurrentBlockFromGrid() {
+    void deleteCurrentBlockFromGrid() {
         BlockPosition currentBlockPosition = currentBlock.getPosition();
 
         for (BlockPosition p : currentBlock.shape()) {
@@ -250,7 +279,7 @@ public class DefaultTetrisGame {
         }
     }
 
-    private void processUserInput(char keyCode) {
+    void processUserInput(char keyCode) {
         if (keyCode == this.inputConfig.DROP) {
             immediateBlockPlace();
         } else if (keyCode == this.inputConfig.DOWN) {
@@ -261,15 +290,17 @@ public class DefaultTetrisGame {
             moveBlockRight();
         } else if (keyCode == this.inputConfig.CW_SPIN) {
             rotateBlockCW();
-        } else if (keyCode == this.inputConfig.CCW_SPIN) {
-            rotateBlockCCW();
         }
     }
 
-    private void updateBlockSpeed() {
+    void updateBlockSpeed() {
         if (clearedLines > 10 && clearedLines <= 30 && blockSpeed == BlockSpeed.DEFAULT) {
             blockSpeed = BlockSpeed.FASTER;
-            blockMovingTimer.fasterBlockFallingTime();
+
+            if (this.isTestMode == false) {
+                blockMovingTimer.fasterBlockFallingTime();
+            }
+
             scoreWeight += 10;
         } else if (clearedLines > 30 && clearedLines <= 50) {
             blockSpeed = BlockSpeed.RAGE;
@@ -280,6 +311,66 @@ public class DefaultTetrisGame {
             blockMovingTimer.fasterBlockFallingTime();
             scoreWeight += 30;
         }
+    }
+
+    void tick(long l) {
+        blockMovingTimer.setCurrentTime(l);
+        collideCheckingTimer.setCurrentTime(l);
+
+        if (blockMovingTimer.isBlockFallingTimeHasGone() == true) {
+            moveBlockDown();
+            blockMovingTimer.reset(l);
+        }
+
+        if (isBlockCollided == true) {
+            if (collideCheckingTimer.isBlockPlaceTimeEnded() == true) {
+                isBlockPlaced = true;
+                isBlockCollided = false;
+                collideCheckingTimer.reset(l);
+            }
+
+            if (collideCheckingTimer.isTimerStarted() == false) {
+                collideCheckingTimer.setFirstBlockCollideTime(l);
+            }
+        } else {
+            collideCheckingTimer.reset(l);
+        }
+    }
+
+    void update() {
+        drawBlockIntoGrid();
+
+        if (this.isTestMode == false) {
+            scoreLabel.setText(String.valueOf(score));
+        }
+
+        if (isBlockPlaced == true) {
+            int clearedRows = tetrisGameGrid.clearFullRows();
+            clearedLines += clearedRows;
+
+            if (clearedRows > 0) {
+                score += scoreWeight * clearedRows;
+            }
+
+            updateBlockSpeed();
+
+            currentBlock = nextBlock;
+            nextBlock = nextBlock();
+
+            if (this.isTestMode == false) {
+                drawNextBlock();
+            }
+
+            isBlockPlaced = false;
+
+            if (isGameOver() == true) {
+                stopGame();
+            }
+        }
+    }
+
+    private CurrentBlock nextBlock() {
+        return new CurrentBlock(blockQueue.nextBlock());
     }
 
     private void drawNextBlock() {
@@ -370,59 +461,9 @@ public class DefaultTetrisGame {
         }
     }
 
-    private void update() {
-        drawBlockIntoGrid();
-
-        scoreLabel.setText(String.valueOf(score));
-
-        if (isBlockPlaced == true) {
-            int clearedRows = tetrisGameGrid.clearFullRows();
-            clearedLines += clearedRows;
-
-            if (clearedRows > 0) {
-                score += scoreWeight * clearedRows;
-            }
-
-            updateBlockSpeed();
-
-            currentBlock = nextBlock;
-            nextBlock = nextBlock();
-            drawNextBlock();
-            isBlockPlaced = false;
-
-            if (isGameOver() == true) {
-                stopGame();
-            }
-        }
-    }
-
     private void prepare() {
         gameGraphicsContext.setFill(new Color(0, 0, 0, 1.0));
         gameGraphicsContext.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    }
-
-    private void tick(long l) {
-        blockMovingTimer.setCurrentTime(l);
-        collideCheckingTimer.setCurrentTime(l);
-
-        if (blockMovingTimer.isBlockFallingTimeHasGone() == true) {
-            moveBlockDown();
-            blockMovingTimer.reset(l);
-        }
-
-        if (isBlockCollided == true) {
-            if (collideCheckingTimer.isBlockPlaceTimeEnded() == true) {
-                isBlockPlaced = true;
-                isBlockCollided = false;
-                collideCheckingTimer.reset(l);
-            }
-
-            if (collideCheckingTimer.isTimerStarted() == false) {
-                collideCheckingTimer.setFirstBlockCollideTime(l);
-            }
-        } else {
-            collideCheckingTimer.reset(l);
-        }
     }
 
     private static DefaultTetrisGame tetrisGame;
@@ -435,8 +476,6 @@ public class DefaultTetrisGame {
     private final char DEFAULT_BLOCK_TEXT = 'O';
     private long currentTime;
     private AnimationTimer animationTimer;
-    private ConfigRepositoryImpl configRepository;
-    private RankingRepositoryImpl rankingRepository;
     private InputManager inputManager;
     private InputConfig inputConfig;
     private TetrisGrid tetrisGameGrid;
@@ -454,6 +493,7 @@ public class DefaultTetrisGame {
     private int scoreWeight;
     private int clearedLines = 0;
     private boolean isGameStarted;
+    private boolean isTestMode;
     private boolean isBlockPlaced;
     private boolean isBlockCollided;
 }
