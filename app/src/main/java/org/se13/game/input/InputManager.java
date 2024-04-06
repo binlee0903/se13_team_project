@@ -10,13 +10,14 @@ public class InputManager {
     private InputManager(Scene scene) {
         keyCodeQueue = new LinkedList<>();
 
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
-
-            if (key.getText().isEmpty() == false) {
-                char c = key.getText().charAt(0);
-                keyCodeQueue.add(c);
-            }
-        });
+        if (scene != null) {
+            scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
+                if (key.getText().isEmpty() == false) {
+                    char c = key.getText().charAt(0);
+                    keyCodeQueue.add(c);
+                }
+            });
+        }
     }
 
     public static InputManager getInstance(Scene scene) {
