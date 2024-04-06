@@ -13,6 +13,6 @@ public class BlockFallingTimer extends Timer {
         return (float)getElapsedTime() / 1000000000.0f > blockFallingTimeManipulator;
     }
 
-    private final float BLOCK_FALLING_TIME_SUBTRACTOR = -0.2f;
+    private final float BLOCK_FALLING_TIME_SUBTRACTOR = -0.1f;
     private float blockFallingTimeManipulator = 1.0f;
 }
