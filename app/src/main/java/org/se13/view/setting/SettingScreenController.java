@@ -42,8 +42,6 @@ public class SettingScreenController extends BaseController {
         screenColorBlindChoiceBox.setValue(colorMode);
         // Add options in buttons for the choice in the keyboard
 
-        moveLeftButton.setText("Left: " + configs.get("keyLeft"));
-        moveRightButton.setText("Right: " + configs.get("keyRight"));
 
         // By selected scene size, the function will implement logic.
 
