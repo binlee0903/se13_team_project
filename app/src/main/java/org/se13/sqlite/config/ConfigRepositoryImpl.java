@@ -61,8 +61,8 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("mode", "default");
         json.put("screenWidth", 300);
         json.put("screenHeight", 400);
-        json.put("keyLeft", 'a');
-        json.put("keyRight", 'd');
+        json.put("keyLeft", 97);
+        json.put("keyRight", 100);
         json.put("keyDown", 's');
         json.put("keyRotateLeft", 120);
         json.put("keyRotateRight", 'e');
