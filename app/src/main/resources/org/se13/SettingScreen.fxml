@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.collections.*?>
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
@@ -27,22 +26,23 @@
     <VBox alignment="CENTER" spacing="10">
         <Text styleClass="keySettingTitle" text="Key settings" />
         <HBox spacing="10">
-            <Button fx:id="moveLeftButton" onAction="#keySaveButtonAction" styleClass="keyButton" text="Left" />
-            <Button fx:id="moveRightButton" onAction="#keySaveButtonAction" styleClass="keyButton" text="Right" />
-            <Button fx:id="moveDownButton" onAction="#keySaveButtonAction" styleClass="keyButton" text="Down" />
+            <Button fx:id="moveLeftButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
+            <Button fx:id="moveDownButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
+            <Button fx:id="moveRightButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
         </HBox>
         <HBox spacing="10">
-            <Button fx:id="quitButton" onAction="#keySaveButtonAction" styleClass="keyButton" text="강제 종료" />
-            <Button fx:id="rotateButton" onAction="#keySaveButtonAction" styleClass="keyButton" text="Rotate" />
-            <Button fx:id="pauseButton" onAction="#keySaveButtonAction" styleClass="keyButton" text="Pause" />
+            <Button fx:id="exitButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
+            <Button fx:id="moveDropButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
+            <Button fx:id="rotateButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
+            <Button fx:id="pauseButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
         </HBox>
     </VBox>
     <HBox alignment="CENTER" spacing="20">
-        <Button styleClass="menuButton" text="초기화" />
+        <Button onAction="#handleSettingClearButtonAction" styleClass="menuButton" text="초기화" />
         <Button onAction="#handleSaveButtonAction" styleClass="menuButton" text="저장" />
     </HBox>
     <HBox alignment="CENTER" spacing="20">
         <Button onAction="#handleBackButtonAction" styleClass="menuButton" text="←" />
-        <Button styleClass="menuButton" text="스코어 초기화" />
+        <Button onAction="#handleRankingClearButtonAction" styleClass="menuButton" text="스코어 초기화" />
     </HBox>
 </VBox>

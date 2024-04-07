@@ -73,17 +73,21 @@ public class RankingScreenController extends BaseController {
         }
     }
 
-    @Override
-    public void onStart() {
-        // Do nothing
-    }
-
-
     // 현재 점수를 설정하기 위한 메서드
     public void setArguments(int score, boolean isItem, String diff) {
         this.score = score;
         this.isItem = isItem;
         this.diff = diff;
+    }
+    // test를 위한 getter
+    public int getScore() {
+        return score;
+    }
+    public boolean getIsItem() {
+        return isItem;
+    }
+    public String getDiff() {
+        return diff;
     }
 
     private int getLastRankingScore() {
@@ -153,7 +157,6 @@ public class RankingScreenController extends BaseController {
         }
         tableView.setItems(rankings);
     }
-
 
     private ObservableList<Ranking> convertToRankingsList(List<Map<String, Object>> rawData) {
         ObservableList<Ranking> rankings = FXCollections.observableArrayList();
