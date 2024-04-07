@@ -1,5 +1,6 @@
 package org.se13.game.block;
 
+import javafx.scene.paint.Color;
 import org.se13.game.item.FeverItem;
 import org.se13.game.item.TetrisItem;
 
@@ -28,7 +29,7 @@ public class CurrentBlock {
         return this.position;
     }
 
-    public BlockColor getColor() { return block.blockColor; }
+    public Color getColor() { return block.blockColor; }
 
     public void rotateCW() {
         rotate = (rotate + 1) % 4;

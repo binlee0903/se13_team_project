@@ -13,10 +13,7 @@ public class BlockColor {
         this.blueYellowColorBlindColor = blueYellowColorBlindColor;
     }
 
-    public Color getBlockColor() {
-        ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
-        Map<String, Object> configs = configRepository.getConfig(0);
-        String colorMode = (String) configs.get("mode");
+    public Color getBlockColor(String colorMode) {
         if (Objects.equals(colorMode, "Red-green")) {
             return redGreenColorBlindColor;
         } else if (Objects.equals(colorMode, "Blue-yellow")) {

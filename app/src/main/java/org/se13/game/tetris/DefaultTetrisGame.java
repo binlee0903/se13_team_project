@@ -11,10 +11,12 @@ import org.se13.game.config.InputConfig;
 import org.se13.game.grid.TetrisGrid;
 import org.se13.game.input.InputManager;
 import org.se13.game.rule.BlockQueue;
+import org.se13.sqlite.config.ConfigRepositoryImpl;
 import org.se13.game.timer.BlockCollideTimer;
 import org.se13.game.timer.BlockFallingTimer;
 import org.se13.view.nav.Screen;
 
+import java.util.Map;
 import java.util.Random;
 
 public class DefaultTetrisGame {
@@ -394,43 +396,46 @@ public class DefaultTetrisGame {
             colIndex = nextBlockPositions[i].getColIndex();
             rowIndex = nextBlockPositions[i].getRowIndex() + 1; // 더 잘보이게 하기 위해 행 인덱스에 1을 더해줌
 
-            nextBlockGraphicsContext.setFill(nextBlock.getColor().getBlockColor());
+            nextBlockGraphicsContext.setFill(nextBlock.getColor());
             nextBlockGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
         }
     }
 
     private void render() {
         gameGraphicsContext.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
+        Map<String, Object> configs = configRepository.getConfig(0);
+        String colorMode = (String) configs.get("mode");
 
         for (int i = 0; i < ROW_SIZE; i++) {
             for (int j = 0; j < COL_SIZE; j++) {
                 switch (tetrisGameGrid.getCell(i, j)) {
                     case IBLOCK_ID: // I Block
-                        gameGraphicsContext.setFill(Block.IBlock.blockColor.getBlockColor());
+                        gameGraphicsContext.setFill(Block.IBlock.blockColor);
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
                     case JBLOCK_ID: // J Block
-                        gameGraphicsContext.setFill(Block.JBlock.blockColor.getBlockColor());
+                        gameGraphicsContext.setFill(Block.JBlock.blockColor);
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
                     case LBLOCK_ID: // L Block
-                        gameGraphicsContext.setFill(Block.LBlock.blockColor.getBlockColor());
+                        gameGraphicsContext.setFill(Block.LBlock.blockColor);
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
                     case OBLOCK_ID: // O Block
-                        gameGraphicsContext.setFill(Block.OBlock.blockColor.getBlockColor());
+                        gameGraphicsContext.setFill(Block.OBlock.blockColor);
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
                     case SBLOCK_ID: // S Block
-                        gameGraphicsContext.setFill(Block.SBlock.blockColor.getBlockColor());
+                        gameGraphicsContext.setFill(Block.SBlock.blockColor);
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
                     case TBLOCK_ID: // T Block
-                        gameGraphicsContext.setFill(Block.TBlock.blockColor.getBlockColor());
+                        gameGraphicsContext.setFill(Block.TBlock.blockColor);
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
                     case ZBLOCK_ID:
-                        gameGraphicsContext.setFill(Block.ZBlock.blockColor.getBlockColor());
+                        gameGraphicsContext.setFill(Block.ZBlock.blockColor);
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
                     case FEVER_ITEM_ID:
