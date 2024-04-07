@@ -47,7 +47,7 @@ public class CurrentBlock {
         position = block.startOffset;
     }
 
-    public int getId() { return block.blockId; }
+    public CellID getId() { return block.cellId; }
     public int getRotateState() {
         return rotate;
     }

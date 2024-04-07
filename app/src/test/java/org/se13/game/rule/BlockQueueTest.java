@@ -1,5 +1,6 @@
 package org.se13.game.rule;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.se13.game.block.Block;
 
@@ -11,7 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 class BlockQueueTest {
 
     @Test
-    void 같은_시드일_경우에는_같은_값을_리턴합니다() {
+    @DisplayName("같은_시드일_경우에는_같은_값을_리턴합니다")
+    void seedTest() {
         long seed = System.currentTimeMillis();
         BlockQueue queue1 = new BlockQueue(seed);
         BlockQueue queue2 = new BlockQueue(seed);
@@ -20,7 +22,8 @@ class BlockQueueTest {
     }
 
     @Test
-    void 가중치에_따라_블럭_확률이_조정됩니다() {
+    @DisplayName("가중치에_따라_블럭_확률이_조정됩니다")
+    void randomTest() {
         int normal = BlockWeight.Normal;
 
         // case 1: IBlock 가중치만 10이고 다른 블록의 가중치를 0으로 설정할 때 IBlock만 등장해야 합니다.

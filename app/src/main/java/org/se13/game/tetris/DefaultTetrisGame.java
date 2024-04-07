@@ -6,6 +6,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import org.se13.SE13Application;
+import org.se13.game.block.CellID;
 import org.se13.game.timer.BlockCollideTimer;
 import org.se13.game.timer.BlockFallingTimer;
 import org.se13.game.block.Block;
@@ -275,7 +276,7 @@ public class DefaultTetrisGame {
         BlockPosition currentBlockPosition = currentBlock.getPosition();
 
         for (BlockPosition p : currentBlock.shape()) {
-            tetrisGameGrid.setCell(p.getRowIndex() + currentBlockPosition.getRowIndex(), p.getColIndex() + currentBlockPosition.getColIndex(), 0);
+            tetrisGameGrid.setCell(p.getRowIndex() + currentBlockPosition.getRowIndex(), p.getColIndex() + currentBlockPosition.getColIndex(), CellID.EMPTY);
         }
     }
 
@@ -396,31 +397,31 @@ public class DefaultTetrisGame {
         for (int i = 0; i < ROW_SIZE; i++) {
             for (int j = 0; j < COL_SIZE; j++) {
                 switch (tetrisGameGrid.getCell(i, j)) {
-                    case 1: // I Block
+                    case IBLOCK_ID: // I Block
                         gameGraphicsContext.setFill(Block.IBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
-                    case 2: // J Block
+                    case JBLOCK_ID: // J Block
                         gameGraphicsContext.setFill(Block.JBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
-                    case 3: // L Block
+                    case LBLOCK_ID: // L Block
                         gameGraphicsContext.setFill(Block.LBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
-                    case 4: // O Block
+                    case OBLOCK_ID: // O Block
                         gameGraphicsContext.setFill(Block.OBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
-                    case 5: // S Block
+                    case SBLOCK_ID: // S Block
                         gameGraphicsContext.setFill(Block.SBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
-                    case 6: // T Block
+                    case TBLOCK_ID: // T Block
                         gameGraphicsContext.setFill(Block.TBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
-                    case 7:
+                    case ZBLOCK_ID:
                         gameGraphicsContext.setFill(Block.ZBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;

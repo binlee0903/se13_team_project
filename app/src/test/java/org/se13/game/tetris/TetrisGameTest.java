@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.se13.SE13Application;
 import org.se13.game.block.Block;
+import org.se13.game.block.CellID;
 import org.se13.game.block.CurrentBlock;
 import org.se13.game.grid.TetrisGrid;
 import org.se13.game.timer.BlockCollideTimer;
@@ -65,13 +66,13 @@ public class TetrisGameTest {
 
         assertEquals(0, grid.getCell(8, 8));
 
-        grid.setCell(8, 8, 1);
+        grid.setCell(8, 8, CellID.IBLOCK_ID);
         assertEquals(1, grid.getCell(8, 8));
 
         assertFalse(grid.isEmptyCell(8,8));
 
         for (int i = 0; i < 10; i++) {
-            grid.setCell(4, i, 1);
+            grid.setCell(4, i, CellID.IBLOCK_ID);
         }
 
         assertTrue(grid.isRowFull(4));
@@ -233,15 +234,15 @@ public class TetrisGameTest {
         resetedTetrisGame.deleteCurrentBlockFromGrid();
 
         for (int i = 0; i < 9; i++) {
-            tetrisGrid.setCell(0, i, 1);
-            tetrisGrid.setCell(1, i, 1);
+            tetrisGrid.setCell(0, i, CellID.IBLOCK_ID);
+            tetrisGrid.setCell(1, i, CellID.IBLOCK_ID);
         }
 
         assertTrue(resetedTetrisGame.isGameOver());
 
         for (int i = 0; i < 9; i++) {
-            tetrisGrid.setCell(0, i, 0);
-            tetrisGrid.setCell(1, i, 0);
+            tetrisGrid.setCell(0, i, CellID.EMPTY);
+            tetrisGrid.setCell(1, i, CellID.EMPTY);
         }
 
         resetedTetrisGame.startGame();
@@ -251,17 +252,17 @@ public class TetrisGameTest {
         resetedTetrisGame.togglePauseState();
 
         for (int i = 0; i < 10; i++) {
-            tetrisGrid.setCell(10, i, 1);
-            tetrisGrid.setCell(11, i, 1);
-            tetrisGrid.setCell(12, i, 1);
-            tetrisGrid.setCell(13, i, 1);
-            tetrisGrid.setCell(14, i, 1);
-            tetrisGrid.setCell(15, i, 1);
-            tetrisGrid.setCell(16, i, 1);
-            tetrisGrid.setCell(17, i, 1);
-            tetrisGrid.setCell(18, i, 1);
-            tetrisGrid.setCell(19, i, 1);
-            tetrisGrid.setCell(20, i, 1);
+            tetrisGrid.setCell(10, i, CellID.IBLOCK_ID);
+            tetrisGrid.setCell(11, i, CellID.IBLOCK_ID);
+            tetrisGrid.setCell(12, i, CellID.IBLOCK_ID);
+            tetrisGrid.setCell(13, i, CellID.IBLOCK_ID);
+            tetrisGrid.setCell(14, i, CellID.IBLOCK_ID);
+            tetrisGrid.setCell(15, i, CellID.IBLOCK_ID);
+            tetrisGrid.setCell(16, i, CellID.IBLOCK_ID);
+            tetrisGrid.setCell(17, i, CellID.IBLOCK_ID);
+            tetrisGrid.setCell(18, i, CellID.IBLOCK_ID);
+            tetrisGrid.setCell(19, i, CellID.IBLOCK_ID);
+            tetrisGrid.setCell(20, i, CellID.IBLOCK_ID);
         }
 
 
