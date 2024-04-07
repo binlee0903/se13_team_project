@@ -1,5 +1,12 @@
 package org.se13.game.grid;
 
+import org.se13.game.block.CellID;
+import org.se13.game.item.CellClearedListener;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * abstracted tetris grid. It contains 'Cells' to display 'Blocks'
  *
@@ -9,14 +16,15 @@ public class TetrisGrid {
     public TetrisGrid(int rowSize, int colSize) {
         this.rowSize = rowSize;
         this.colSize = colSize;
-        this.gridCells = new int[rowSize][colSize];
+        this.gridCells = getEmptyGrid(rowSize, colSize);
+        this.listeners = new ArrayList<>();
     }
 
-    public void setCell(int rowIndex, int colIndex, int blockId) {
-        gridCells[rowIndex][colIndex] = blockId;
+    public void setCell(int rowIndex, int colIndex, CellID cellId) {
+        gridCells[rowIndex][colIndex] = cellId;
     }
 
-    public int getCell(int rowIndex, int colIndex) {
+    public CellID getCell(int rowIndex, int colIndex) {
         return gridCells[rowIndex][colIndex];
     }
 
@@ -39,7 +47,7 @@ public class TetrisGrid {
      * @return return true when cell was empty(=0)
      */
     public boolean isEmptyCell(int rowIndex, int colIndex) {
-        return isInsideGrid(rowIndex, colIndex) && getCell(rowIndex, colIndex) == 0;
+        return isInsideGrid(rowIndex, colIndex) && getCell(rowIndex, colIndex) == CellID.EMPTY;
     }
 
     /**
@@ -62,7 +70,7 @@ public class TetrisGrid {
 
     public boolean isRowEmpty(int rowIndex) {
         for (int i = 0; i < colSize; i++) {
-            if (getCell(rowIndex, i) != 0) {
+            if (getCell(rowIndex, i) != CellID.EMPTY) {
                 return false;
             }
         }
@@ -90,6 +98,19 @@ public class TetrisGrid {
         return cleared;
     }
 
+    public void registerItemListener(CellClearedListener listener) {
+        this.listeners.add(listener);
+    }
+
+    private CellID[][] getEmptyGrid(int rowSize, int colSize) {
+        CellID[][] grid = new CellID[rowSize][colSize];
+        for (int i = 0; i < rowSize; i++) {
+            Arrays.fill(grid[i], CellID.EMPTY);
+        }
+
+        return grid;
+    }
+
     /**
      * clear given index's row
      *
@@ -97,7 +118,9 @@ public class TetrisGrid {
      */
     private void clearRow(int rowIndex) {
         for (int i = 0; i < colSize; i++) {
-            setCell(rowIndex, i, 0);
+            final CellID cell = getCell(rowIndex, i);
+            listeners.forEach((listener) -> listener.clear(cell));
+            setCell(rowIndex, i, CellID.EMPTY);
         }
     }
 
@@ -110,7 +133,7 @@ public class TetrisGrid {
         for (int i = rowIndex; i >= 1; i--) {
             for (int j = 0; j < colSize; j++) {
                 setCell(i, j, getCell(i - 1, j));
-                setCell(i - 1, j, 0);
+                setCell(i - 1, j, CellID.EMPTY);
             }
         }
     }
@@ -124,5 +147,6 @@ public class TetrisGrid {
      * abstracted 10*22 tetris grid. originally, tetris's grid size
      * is 10*20. but I added 2 rows for block generation space.
      */
-    private final int[][] gridCells;
+    private final CellID[][] gridCells;
+    private final List<CellClearedListener> listeners;
 }
