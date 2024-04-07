@@ -32,7 +32,6 @@ public class SettingScreenController extends BaseController {
     private void initialize() {
         ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
         Map<String, Object> configs = configRepository.getConfig(0);
-        System.out.println(configs);
 
         // Add options in ChoiceBox for the choice among scene size
         int screenWidth = (Integer) configs.get("screenWidth");
@@ -123,7 +122,6 @@ public class SettingScreenController extends BaseController {
                     String keyName = keyCode.getName(); // 사용자에게 익숙한 키 이름 가져오기
                     keyName = keyName.toLowerCase();
                     buttonToConfigure.setText(keyName);
-                    System.out.println(keyName);
 
                     // 설정 완료 후 이벤트 리스너 제거
                     buttonToConfigure.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, this);
