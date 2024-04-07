@@ -9,7 +9,7 @@
 }
 
 .menuButton {
-    -fx-background-color: yellow;
+    -fx-background-color: #FFA500;
     -fx-font-weight: bold;
     -fx-text-fill: black;
     -fx-padding: 10px;
@@ -21,7 +21,7 @@
 }
 
 .keyButton {
-    -fx-background-color: yellow;
+    -fx-background-color: #FFA500;
     -fx-font-weight: bold;
     -fx-text-fill: black;
     -fx-padding: 10px;
