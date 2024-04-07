@@ -12,4 +12,6 @@ public interface NavGraph {
     <T extends Lifecycle> void navigate(Screen screen, Consumer<T> consumer);
 
     void popBackStack();
+
+    void setScreenSize(int[] size);
 }

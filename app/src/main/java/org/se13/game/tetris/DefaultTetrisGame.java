@@ -7,13 +7,12 @@ import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import org.se13.SE13Application;
 import org.se13.game.block.*;
-import org.se13.game.item.FeverItem;
-import org.se13.game.timer.BlockCollideTimer;
-import org.se13.game.timer.BlockFallingTimer;
 import org.se13.game.config.InputConfig;
 import org.se13.game.grid.TetrisGrid;
 import org.se13.game.input.InputManager;
 import org.se13.game.rule.BlockQueue;
+import org.se13.game.timer.BlockCollideTimer;
+import org.se13.game.timer.BlockFallingTimer;
 import org.se13.view.nav.Screen;
 
 import java.util.Random;
