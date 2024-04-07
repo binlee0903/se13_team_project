@@ -12,6 +12,7 @@ import org.se13.SE13Application;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
 import org.se13.sqlite.ranking.RankingRepositoryImpl;
 import org.se13.view.base.BaseController;
+
 import java.util.Map;
 
 public class SettingScreenController extends BaseController {
@@ -159,6 +160,9 @@ public class SettingScreenController extends BaseController {
                 selectedHeight, selectedMoveLeft, selectedMoveRight,
                 selectedMoveDown, 120, selectedRotate,
                 selectedPause, selectedDrop, selectedExit);
+
+        int[] size = { selectedWidth, selectedHeight };
+        SE13Application.navController.setScreenSize(size);
     }
 
     public void handleSettingClearButtonAction() {
