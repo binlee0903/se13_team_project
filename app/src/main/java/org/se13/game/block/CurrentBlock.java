@@ -67,11 +67,7 @@ public class CurrentBlock {
             cells[i] = new Cell(shape[i], getId());
         }
 
-        if (item != null) {
-            return bindItem(cells, item);
-        }
-
-        return cells;
+        return bindItem(cells, item);
     }
 
     private Cell[] bindItem(Cell[] original, TetrisItem item) {
