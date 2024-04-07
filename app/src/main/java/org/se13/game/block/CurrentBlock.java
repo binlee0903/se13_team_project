@@ -20,6 +20,8 @@ public class CurrentBlock {
         return this.position;
     }
 
+    public BlockColor getColor() { return block.blockColor; }
+
     public void rotateCW() {
         rotate = (rotate + 1) % 4;
     }

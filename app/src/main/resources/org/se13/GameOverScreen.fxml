@@ -18,8 +18,7 @@
    </center>
    <bottom>
        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-           <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Insert Score to ScoreBoard, Insert your user name : " />
-           <TextField fx:id="name" onAction="#onEnter" maxHeight="30.0" maxWidth="50.0" prefHeight="30.0" prefWidth="50.0" />
+           <Button fx:id="rankingButton" text="SCORE" styleClass="menuButton" onAction="#handleRankingButtonAction"/>
        </HBox>
    </bottom>
 </BorderPane>

@@ -16,6 +16,7 @@ public final class BlockCollideTimer extends Timer {
 
     @Override
     public void reset(long l) {
+        super.reset(l);
         this.firstBlockCollideTime = 0;
         this.isBlockCollide = false;
     }
@@ -29,7 +30,7 @@ public final class BlockCollideTimer extends Timer {
     }
 
     public boolean isBlockPlaceTimeEnded() {
-        if ((float) (super.currentTime - this.firstBlockCollideTime) / 1000000000 > 2.0f) {
+        if ((float) (super.currentTime - this.firstBlockCollideTime) / 1000000000.0f >= 2.0f) {
             return true;
         } else {
             return false;
