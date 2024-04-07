@@ -10,6 +10,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.se13.SE13Application;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
+import org.se13.sqlite.ranking.RankingRepositoryImpl;
 import org.se13.view.base.BaseController;
 import java.util.Map;
 
@@ -169,6 +170,8 @@ public class SettingScreenController extends BaseController {
     }
 
     public void handleRankingClearButtonAction() {
-
+        RankingRepositoryImpl rankingRepository = new RankingRepositoryImpl();
+        rankingRepository.clearRanking();
+        rankingRepository.createNewTableRanking();
     }
 }
