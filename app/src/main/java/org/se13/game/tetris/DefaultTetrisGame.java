@@ -6,17 +6,14 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import org.se13.SE13Application;
+import org.se13.game.block.*;
+import org.se13.game.item.FeverItem;
 import org.se13.game.timer.BlockCollideTimer;
 import org.se13.game.timer.BlockFallingTimer;
-import org.se13.game.block.Block;
-import org.se13.game.block.BlockPosition;
-import org.se13.game.block.CurrentBlock;
 import org.se13.game.config.InputConfig;
 import org.se13.game.grid.TetrisGrid;
 import org.se13.game.input.InputManager;
 import org.se13.game.rule.BlockQueue;
-import org.se13.sqlite.config.ConfigRepositoryImpl;
-import org.se13.sqlite.ranking.RankingRepositoryImpl;
 import org.se13.view.nav.Screen;
 
 import java.util.Random;
@@ -36,7 +33,8 @@ public class DefaultTetrisGame {
     }
 
     private DefaultTetrisGame(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel, boolean isTestMode) {
-        this.blockQueue = new BlockQueue(new Random().nextLong());
+        this.random = new Random();
+        this.blockQueue = new BlockQueue(random);
         this.tetrisGameGrid = new TetrisGrid(ROW_SIZE, COL_SIZE);
 
         this.gameStatus = GameStatus.PAUSED;
@@ -68,6 +66,13 @@ public class DefaultTetrisGame {
             this.CANVAS_WIDTH = 200;
             this.CANVAS_HEIGHT = 400;
         }
+
+        this.tetrisGameGrid.registerItemListener((cellID) -> {
+            if (cellID == CellID.FEVER_ITEM_ID) {
+                isFeverMode = true;
+                scoreWeight += FEVER_SCORE_WEIGHT;
+            }
+        });
 
         this.animationTimer = new AnimationTimer() {
             @Override
@@ -266,8 +271,12 @@ public class DefaultTetrisGame {
     void drawBlockIntoGrid() {
         BlockPosition currentBlockPosition = currentBlock.getPosition();
 
-        for (BlockPosition p : currentBlock.shape()) {
-            tetrisGameGrid.setCell(p.getRowIndex() + currentBlockPosition.getRowIndex(), p.getColIndex() + currentBlockPosition.getColIndex(), currentBlock.getId());
+        for (Cell cell : currentBlock.cells()) {
+            tetrisGameGrid.setCell(
+                cell.position().getRowIndex() + currentBlockPosition.getRowIndex(),
+                cell.position().getColIndex() + currentBlockPosition.getColIndex(),
+                cell.cellID()
+            );
         }
     }
 
@@ -275,7 +284,7 @@ public class DefaultTetrisGame {
         BlockPosition currentBlockPosition = currentBlock.getPosition();
 
         for (BlockPosition p : currentBlock.shape()) {
-            tetrisGameGrid.setCell(p.getRowIndex() + currentBlockPosition.getRowIndex(), p.getColIndex() + currentBlockPosition.getColIndex(), 0);
+            tetrisGameGrid.setCell(p.getRowIndex() + currentBlockPosition.getRowIndex(), p.getColIndex() + currentBlockPosition.getColIndex(), CellID.EMPTY);
         }
     }
 
@@ -370,7 +379,8 @@ public class DefaultTetrisGame {
     }
 
     private CurrentBlock nextBlock() {
-        return new CurrentBlock(blockQueue.nextBlock());
+        Block next = blockQueue.nextBlock();
+        return new CurrentBlock(next);
     }
 
     private void drawNextBlock() {
@@ -396,35 +406,38 @@ public class DefaultTetrisGame {
         for (int i = 0; i < ROW_SIZE; i++) {
             for (int j = 0; j < COL_SIZE; j++) {
                 switch (tetrisGameGrid.getCell(i, j)) {
-                    case 1: // I Block
+                    case IBLOCK_ID: // I Block
                         gameGraphicsContext.setFill(Block.IBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
-                    case 2: // J Block
+                    case JBLOCK_ID: // J Block
                         gameGraphicsContext.setFill(Block.JBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
-                    case 3: // L Block
+                    case LBLOCK_ID: // L Block
                         gameGraphicsContext.setFill(Block.LBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
-                    case 4: // O Block
+                    case OBLOCK_ID: // O Block
                         gameGraphicsContext.setFill(Block.OBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
-                    case 5: // S Block
+                    case SBLOCK_ID: // S Block
                         gameGraphicsContext.setFill(Block.SBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
-                    case 6: // T Block
+                    case TBLOCK_ID: // T Block
                         gameGraphicsContext.setFill(Block.TBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
-                    case 7:
+                    case ZBLOCK_ID:
                         gameGraphicsContext.setFill(Block.ZBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
-                    default:
+                    case FEVER_ITEM_ID:
+                        gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
+                        gameGraphicsContext.fillText("F", j * TEXT_INTERVAL, i * TEXT_INTERVAL);
+                    case EMPTY:
                         gameGraphicsContext.fillText(String.valueOf(' '), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                 }
             }
@@ -444,6 +457,7 @@ public class DefaultTetrisGame {
     private final double CANVAS_WIDTH;
     private final double CANVAS_HEIGHT;
     private final char DEFAULT_BLOCK_TEXT = 'O';
+    private final int FEVER_SCORE_WEIGHT = 10;
     private long currentTime;
     private AnimationTimer animationTimer;
     private InputManager inputManager;
@@ -466,4 +480,6 @@ public class DefaultTetrisGame {
     private boolean isTestMode;
     private boolean isBlockPlaced;
     private boolean isBlockCollided;
+    private Random random;
+    private boolean isFeverMode;
 }
