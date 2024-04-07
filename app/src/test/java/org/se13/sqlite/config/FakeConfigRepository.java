@@ -28,4 +28,9 @@ public class FakeConfigRepository implements ConfigRepository {
     public void clearConfig(int id) {
 
     }
+
+    @Override
+    public int[] getScreenSize() {
+        return new int[]{300, 400};
+    }
 }
