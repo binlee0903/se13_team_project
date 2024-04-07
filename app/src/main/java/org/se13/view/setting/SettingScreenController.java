@@ -156,12 +156,16 @@ public class SettingScreenController extends BaseController {
         int selectedExit = getAsciiCodeFromButtonText(exitButton);
 
         ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
-        configRepository.updateConfig(0, selectedColorMode, selectedWidth, selectedHeight, selectedMoveLeft, selectedMoveRight, selectedMoveDown, 120, selectedRotate, selectedPause, selectedDrop, selectedExit);
-        System.out.println(selectedDrop);
+        configRepository.updateConfig(0, selectedColorMode, selectedWidth,
+                selectedHeight, selectedMoveLeft, selectedMoveRight,
+                selectedMoveDown, 120, selectedRotate,
+                selectedPause, selectedDrop, selectedExit);
     }
 
     public void handleSettingClearButtonAction() {
-
+        ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
+        configRepository.clearConfig(0);
+        configRepository.insertDefaultConfig(0);
     }
 
     public void handleRankingClearButtonAction() {
