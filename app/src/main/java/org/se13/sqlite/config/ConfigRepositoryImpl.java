@@ -1,14 +1,10 @@
 package org.se13.sqlite.config;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import org.json.JSONObject;
+
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-import org.json.JSONObject;
 
 
 public class ConfigRepositoryImpl implements ConfigRepository {
@@ -150,6 +146,15 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    @Override
+    public int[] getScreenSize() {
+        Map<String, Object> config = getConfig(0);
+        int screenWidth = (Integer) config.get("screenWidth");
+        int screenHeight = (Integer) config.get("screenHeight");
+
+        return new int[]{screenWidth, screenHeight};
     }
 
     private static ConfigRepositoryImpl configRepositoryImpl;

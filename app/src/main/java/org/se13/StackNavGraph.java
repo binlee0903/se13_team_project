@@ -3,12 +3,11 @@ package org.se13;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.se13.sqlite.config.ConfigRepositoryImpl;
+import org.se13.sqlite.config.ConfigRepository;
 import org.se13.view.lifecycle.Lifecycle;
 import org.se13.view.nav.Screen;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Stack;
 import java.util.function.Consumer;
 
@@ -16,18 +15,14 @@ public class StackNavGraph implements NavGraph {
 
     private final Stage stage;
     private final Stack<Scene> backStack;
-    private final ConfigRepositoryImpl configRepository;
-    private int screenWidth; // 초기 화면 너비 기본값
-    private int screenHeight; // 초기 화면 높이 기본값
+    private final ConfigRepository configRepository;
 
-    public StackNavGraph(Stage stage) {
+    public StackNavGraph(Stage stage, ConfigRepository repository) {
         this.stage = stage;
         this.backStack = new Stack<>();
-        this.configRepository = ConfigRepositoryImpl.getInstance();
+        this.configRepository = repository;
 
-        Map<String, Object> configs = this.configRepository.getConfig(0);
-        screenWidth = (Integer) configs.get("screenWidth");
-        screenHeight = (Integer) configs.get("screenHeight");
+        setScreenSize(configRepository.getScreenSize());
     }
 
     @Override
@@ -60,14 +55,17 @@ public class StackNavGraph implements NavGraph {
         show(backStack.lastElement());
     }
 
-    private Scene createScene(Screen screen) throws IOException {
-        FXMLLoader loader = createLoader(screen);
-        return createScene(loader);
+    @Override
+    public void setScreenSize(int[] size) {
+        int screenWidth = size[0];
+        int screenHeight = size[1];
+
+        stage.setWidth(screenWidth);
+        stage.setHeight(screenHeight);
     }
 
     private Scene createScene(FXMLLoader loader) throws IOException {
-        configRepository.getConfig(0);
-        return new Scene(loader.load(), screenWidth,  screenHeight);
+        return new Scene(loader.load());
     }
 
     private FXMLLoader createLoader(Screen screen) {
@@ -78,5 +76,4 @@ public class StackNavGraph implements NavGraph {
         stage.setScene(scene);
         stage.show();
     }
-
 }
