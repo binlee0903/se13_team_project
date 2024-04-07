@@ -33,9 +33,9 @@ public enum Block {
         {{2, 0}, {1, 0}, {1, 1}, {1, 2}},
         {{0, 0}, {0, 1}, {1, 1}, {2, 1}},
     }, new int[]{0, 3}, CellID.LBLOCK_ID, new BlockColor(
-            Color.rgb(255, 0, 0),
-            Color.rgb(255, 192, 203),
-            Color.rgb(0, 255, 0))),
+            Color.rgb(0, 255, 0),
+            Color.rgb(0, 128, 128),
+            Color.rgb(128, 0, 128))),
 
     OBlock(new int[][][]{
         {{0, 0}, {0, 1}, {1, 1}, {1, 0}},
@@ -83,11 +83,16 @@ public enum Block {
         cellId = id;
         cells = new BlockPosition[row][];
         startOffset = new BlockPosition(offset[0], offset[1]);
+
         ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
         Map<String, Object> configs = configRepository.getConfig(0);
         String colorMode = (String) configs.get("mode");
         if (Objects.equals(colorMode, "Red-green")) {
-            this.blockColor = blockColor;
+            this.blockColor = blockColor.getBlockColor(colorMode);
+        } else if (Objects.equals(colorMode, "Blue-yellow")) {
+            this.blockColor = blockColor.getBlockColor(colorMode);
+        } else {
+            this.blockColor = blockColor.getBlockColor(colorMode);
         }
 
         for (int r = 0; r < row; r++) {
@@ -103,7 +108,7 @@ public enum Block {
     public final CellID cellId;
     public final BlockPosition[][] cells;
     public final BlockPosition startOffset;
-    public BlockColor blockColor;
+    public Color blockColor;
 
     public BlockPosition[] shape(int rotate) {
         return cells[rotate % cells.length];
