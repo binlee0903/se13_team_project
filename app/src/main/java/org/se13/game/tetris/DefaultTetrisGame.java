@@ -6,12 +6,11 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import org.se13.SE13Application;
-import org.se13.game.block.CellID;
+import org.se13.game.block.*;
+import org.se13.game.item.FeverItem;
+import org.se13.game.item.TetrisItem;
 import org.se13.game.timer.BlockCollideTimer;
 import org.se13.game.timer.BlockFallingTimer;
-import org.se13.game.block.Block;
-import org.se13.game.block.BlockPosition;
-import org.se13.game.block.CurrentBlock;
 import org.se13.game.config.InputConfig;
 import org.se13.game.grid.TetrisGrid;
 import org.se13.game.input.InputManager;
@@ -37,7 +36,8 @@ public class DefaultTetrisGame {
     }
 
     private DefaultTetrisGame(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel, boolean isTestMode) {
-        this.blockQueue = new BlockQueue(new Random().nextLong());
+        this.random = new Random();
+        this.blockQueue = new BlockQueue(random);
         this.tetrisGameGrid = new TetrisGrid(ROW_SIZE, COL_SIZE);
 
         this.gameStatus = GameStatus.PAUSED;
@@ -267,8 +267,12 @@ public class DefaultTetrisGame {
     void drawBlockIntoGrid() {
         BlockPosition currentBlockPosition = currentBlock.getPosition();
 
-        for (BlockPosition p : currentBlock.shape()) {
-            tetrisGameGrid.setCell(p.getRowIndex() + currentBlockPosition.getRowIndex(), p.getColIndex() + currentBlockPosition.getColIndex(), currentBlock.getId());
+        for (Cell cell : currentBlock.cells()) {
+            tetrisGameGrid.setCell(
+                cell.position().getRowIndex() + currentBlockPosition.getRowIndex(),
+                cell.position().getColIndex() + currentBlockPosition.getColIndex(),
+                cell.cellID()
+            );
         }
     }
 
@@ -371,7 +375,8 @@ public class DefaultTetrisGame {
     }
 
     private CurrentBlock nextBlock() {
-        return new CurrentBlock(blockQueue.nextBlock());
+        Block next = blockQueue.nextBlock();
+        return new CurrentBlock(next, new FeverItem(random, next));
     }
 
     private void drawNextBlock() {
@@ -425,7 +430,10 @@ public class DefaultTetrisGame {
                         gameGraphicsContext.setFill(Block.ZBlock.blockColor.getBlockColor());
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
-                    default:
+                    case FEVER_ITEM_ID:
+                        gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
+                        gameGraphicsContext.fillText("F", j * TEXT_INTERVAL, i * TEXT_INTERVAL);
+                    case EMPTY:
                         gameGraphicsContext.fillText(String.valueOf(' '), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                 }
             }
@@ -467,4 +475,5 @@ public class DefaultTetrisGame {
     private boolean isTestMode;
     private boolean isBlockPlaced;
     private boolean isBlockCollided;
+    private Random random;
 }

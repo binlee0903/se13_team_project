@@ -11,4 +11,5 @@ public enum CellID {
     ZBLOCK_ID,
 
     // 게임 아이템을 위한 아이디
+    FEVER_ITEM_ID,
 }

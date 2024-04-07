@@ -10,16 +10,16 @@ public class BlockQueue {
     private GameLevel level;
     private BlockWeight weight;
 
-    public BlockQueue(long seed) {
-        this(seed, GameLevel.NORMAL);
+    public BlockQueue(Random random) {
+        this(random, GameLevel.NORMAL);
     }
 
-    public BlockQueue(long seed, GameLevel level) {
-        this(seed, level, BlockWeight.DefaultWeight);
+    public BlockQueue(Random random, GameLevel level) {
+        this(random, level, BlockWeight.DefaultWeight);
     }
 
-    public BlockQueue(long seed, GameLevel level, BlockWeight weight) {
-        this.random = new Random(seed);
+    public BlockQueue(Random random, GameLevel level, BlockWeight weight) {
+        this.random = random;
         this.level = level;
         this.weight = weight;
         this.blocks = blocks();

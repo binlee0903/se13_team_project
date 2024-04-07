@@ -64,10 +64,10 @@ public class TetrisGameTest {
         assertFalse(grid.isInsideGrid(-1, 0));
         assertTrue(grid.isInsideGrid(0, 1));
 
-        assertEquals(0, grid.getCell(8, 8));
+        assertEquals(CellID.EMPTY, grid.getCell(8, 8));
 
         grid.setCell(8, 8, CellID.IBLOCK_ID);
-        assertEquals(1, grid.getCell(8, 8));
+        assertEquals(CellID.IBLOCK_ID, grid.getCell(8, 8));
 
         assertFalse(grid.isEmptyCell(8,8));
 
@@ -205,31 +205,31 @@ public class TetrisGameTest {
         resetedTetrisGame.drawBlockIntoGrid();
 
         TetrisGrid tetrisGrid = resetedTetrisGame.getTetrisGrid();
-        assertEquals(1, tetrisGrid.getCell(3, 5));
-        assertEquals(1, tetrisGrid.getCell(4, 5));
-        assertEquals(1, tetrisGrid.getCell(5, 5));
-        assertEquals(1, tetrisGrid.getCell(6, 5));
+        assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(3, 5));
+        assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(4, 5));
+        assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(5, 5));
+        assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(6, 5));
         resetedTetrisGame.deleteCurrentBlockFromGrid();
 
         resetedTetrisGame.processUserInput('a');
         resetedTetrisGame.drawBlockIntoGrid();
-        assertEquals(1, tetrisGrid.getCell(3, 4));
-        assertEquals(1, tetrisGrid.getCell(4, 4));
-        assertEquals(1, tetrisGrid.getCell(5, 4));
-        assertEquals(1, tetrisGrid.getCell(6, 4));
+        assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(3, 4));
+        assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(4, 4));
+        assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(5, 4));
+        assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(6, 4));
 
         resetedTetrisGame.deleteCurrentBlockFromGrid();
-        assertEquals(0, tetrisGrid.getCell(3, 4));
-        assertEquals(0, tetrisGrid.getCell(4, 4));
-        assertEquals(0, tetrisGrid.getCell(5, 4));
-        assertEquals(0, tetrisGrid.getCell(6, 4));
+        assertEquals(CellID.EMPTY, tetrisGrid.getCell(3, 4));
+        assertEquals(CellID.EMPTY, tetrisGrid.getCell(4, 4));
+        assertEquals(CellID.EMPTY, tetrisGrid.getCell(5, 4));
+        assertEquals(CellID.EMPTY, tetrisGrid.getCell(6, 4));
 
         resetedTetrisGame.immediateBlockPlace();
         resetedTetrisGame.drawBlockIntoGrid();
-        assertEquals(1, tetrisGrid.getCell(18, 4));
-        assertEquals(1, tetrisGrid.getCell(19, 4));
-        assertEquals(1, tetrisGrid.getCell(20, 4));
-        assertEquals(1, tetrisGrid.getCell(21, 4));
+        assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(18, 4));
+        assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(19, 4));
+        assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(20, 4));
+        assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(21, 4));
 
         resetedTetrisGame.deleteCurrentBlockFromGrid();
 
