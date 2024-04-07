@@ -1,8 +1,11 @@
 package org.se13.game.grid;
 
 import org.se13.game.block.CellID;
+import org.se13.game.item.CellClearedListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * abstracted tetris grid. It contains 'Cells' to display 'Blocks'
@@ -14,6 +17,7 @@ public class TetrisGrid {
         this.rowSize = rowSize;
         this.colSize = colSize;
         this.gridCells = getEmptyGrid(rowSize, colSize);
+        this.listeners = new ArrayList<>();
     }
 
     public void setCell(int rowIndex, int colIndex, CellID cellId) {
@@ -94,6 +98,10 @@ public class TetrisGrid {
         return cleared;
     }
 
+    public void registerItemListener(CellClearedListener listener) {
+        this.listeners.add(listener);
+    }
+
     private CellID[][] getEmptyGrid(int rowSize, int colSize) {
         CellID[][] grid = new CellID[rowSize][colSize];
         for (int i = 0; i < rowSize; i++) {
@@ -110,6 +118,8 @@ public class TetrisGrid {
      */
     private void clearRow(int rowIndex) {
         for (int i = 0; i < colSize; i++) {
+            final CellID cell = getCell(rowIndex, i);
+            listeners.forEach((listener) -> listener.clear(cell));
             setCell(rowIndex, i, CellID.EMPTY);
         }
     }
@@ -138,4 +148,5 @@ public class TetrisGrid {
      * is 10*20. but I added 2 rows for block generation space.
      */
     private final CellID[][] gridCells;
+    private final List<CellClearedListener> listeners;
 }

@@ -8,15 +8,12 @@ import javafx.scene.paint.Color;
 import org.se13.SE13Application;
 import org.se13.game.block.*;
 import org.se13.game.item.FeverItem;
-import org.se13.game.item.TetrisItem;
 import org.se13.game.timer.BlockCollideTimer;
 import org.se13.game.timer.BlockFallingTimer;
 import org.se13.game.config.InputConfig;
 import org.se13.game.grid.TetrisGrid;
 import org.se13.game.input.InputManager;
 import org.se13.game.rule.BlockQueue;
-import org.se13.sqlite.config.ConfigRepositoryImpl;
-import org.se13.sqlite.ranking.RankingRepositoryImpl;
 import org.se13.view.nav.Screen;
 
 import java.util.Random;
@@ -69,6 +66,13 @@ public class DefaultTetrisGame {
             this.CANVAS_WIDTH = 200;
             this.CANVAS_HEIGHT = 400;
         }
+
+        this.tetrisGameGrid.registerItemListener((cellID) -> {
+            if (cellID == CellID.FEVER_ITEM_ID) {
+                isFeverMode = true;
+                scoreWeight += FEVER_SCORE_WEIGHT;
+            }
+        });
 
         this.animationTimer = new AnimationTimer() {
             @Override
@@ -376,7 +380,7 @@ public class DefaultTetrisGame {
 
     private CurrentBlock nextBlock() {
         Block next = blockQueue.nextBlock();
-        return new CurrentBlock(next, new FeverItem(random, next));
+        return new CurrentBlock(next);
     }
 
     private void drawNextBlock() {
@@ -453,6 +457,7 @@ public class DefaultTetrisGame {
     private final double CANVAS_WIDTH;
     private final double CANVAS_HEIGHT;
     private final char DEFAULT_BLOCK_TEXT = 'O';
+    private final int FEVER_SCORE_WEIGHT = 10;
     private long currentTime;
     private AnimationTimer animationTimer;
     private InputManager inputManager;
@@ -476,4 +481,5 @@ public class DefaultTetrisGame {
     private boolean isBlockPlaced;
     private boolean isBlockCollided;
     private Random random;
+    private boolean isFeverMode;
 }
