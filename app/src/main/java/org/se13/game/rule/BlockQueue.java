@@ -54,6 +54,7 @@ public class BlockQueue {
         blocks.put(Block.SBlock, BlockWeight.Normal);
         blocks.put(Block.TBlock, BlockWeight.Normal);
         blocks.put(Block.ZBlock, BlockWeight.Normal);
+//        blocks.put(Block.WeightItemBlock, BlockWeight.Normal);
 
         return blocks;
     }
