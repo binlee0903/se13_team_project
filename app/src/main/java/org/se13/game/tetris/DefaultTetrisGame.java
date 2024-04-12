@@ -176,9 +176,13 @@ public class DefaultTetrisGame {
         return this.blockSpeed;
     }
 
-    public CurrentBlock getCurrentBlock() { return this.currentBlock; }
+    public CurrentBlock getCurrentBlock() {
+        return this.currentBlock;
+    }
 
-    public TetrisGrid getTetrisGrid() { return this.tetrisGameGrid; }
+    public TetrisGrid getTetrisGrid() {
+        return this.tetrisGameGrid;
+    }
 
     boolean blockFits() {
         for (BlockPosition p : currentBlock.shape()) {
@@ -274,9 +278,9 @@ public class DefaultTetrisGame {
 
         for (Cell cell : currentBlock.cells()) {
             tetrisGameGrid.setCell(
-                cell.position().getRowIndex() + currentBlockPosition.getRowIndex(),
-                cell.position().getColIndex() + currentBlockPosition.getColIndex(),
-                cell.cellID()
+                    cell.position().getRowIndex() + currentBlockPosition.getRowIndex(),
+                    cell.position().getColIndex() + currentBlockPosition.getColIndex(),
+                    cell.cellID()
             );
         }
     }
@@ -354,6 +358,12 @@ public class DefaultTetrisGame {
             scoreLabel.setText(String.valueOf(score));
         }
 
+        // WeightBlock이 떨어졌을 때, 해당 열을 지워줌
+        if (isBlockPlaced == true && currentBlock.getId() == Block.WeightItemBlock.cellId) {
+            int clearedColIndex = currentBlock.getPosition().getColIndex();
+            tetrisGameGrid.clearWeightCol(clearedColIndex);
+        }
+
         if (isBlockPlaced == true) {
             int clearedRows = tetrisGameGrid.clearFullRows();
             clearedLines += clearedRows;
@@ -397,7 +407,11 @@ public class DefaultTetrisGame {
             rowIndex = nextBlockPositions[i].getRowIndex() + 1; // 더 잘보이게 하기 위해 행 인덱스에 1을 더해줌
 
             nextBlockGraphicsContext.setFill(nextBlock.getColor());
-            nextBlockGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
+            if (nextBlock.getId() == Block.WeightItemBlock.cellId) {
+                nextBlockGraphicsContext.fillText(String.valueOf(WEIGHT_ITEM_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
+            } else {
+                nextBlockGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
+            }
         }
     }
 
@@ -441,6 +455,11 @@ public class DefaultTetrisGame {
                     case FEVER_ITEM_ID:
                         gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
                         gameGraphicsContext.fillText("F", j * TEXT_INTERVAL, i * TEXT_INTERVAL);
+                        break;
+                    case WEIGHT_ITEM_ID:
+                        gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
+                        gameGraphicsContext.fillText(String.valueOf(WEIGHT_ITEM_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
+                        break;
                     case EMPTY:
                         gameGraphicsContext.fillText(String.valueOf(' '), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                 }
@@ -461,6 +480,7 @@ public class DefaultTetrisGame {
     private final double CANVAS_WIDTH;
     private final double CANVAS_HEIGHT;
     private final char DEFAULT_BLOCK_TEXT = 'O';
+    private final char WEIGHT_ITEM_BLOCK_TEXT = 'W';
     private final int FEVER_SCORE_WEIGHT = 10;
     private long currentTime;
     private AnimationTimer animationTimer;
