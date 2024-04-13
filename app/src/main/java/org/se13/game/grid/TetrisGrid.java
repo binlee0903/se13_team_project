@@ -98,6 +98,16 @@ public class TetrisGrid {
         return cleared;
     }
 
+    /**
+     * clears full rows
+     *
+     */
+    public void clearWeightCol(int colIndex) {
+        for (int i = colIndex; i < colIndex + 4; i++) {
+            clearCol(i);
+        }
+    }
+
     public void registerItemListener(CellClearedListener listener) {
         this.listeners.add(listener);
     }
@@ -136,6 +146,20 @@ public class TetrisGrid {
                 setCell(i - 1, j, CellID.EMPTY);
             }
         }
+    }
+
+    /**
+     * clear given index's row
+     *
+     * @param colIndex row index
+     */
+    private void clearCol(int colIndex) {
+        for (int i = 0; i < rowSize; i++) {
+            final CellID cell = getCell(i, colIndex);
+            listeners.forEach((listener) -> listener.clear(cell));
+            setCell(i, colIndex, CellID.EMPTY);
+        }
+        setCell(rowSize - 1, colIndex, CellID.WEIGHT_ITEM_ID);
     }
 
     // column size of tetris board
