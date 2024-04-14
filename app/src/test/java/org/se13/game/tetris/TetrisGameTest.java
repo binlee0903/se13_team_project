@@ -7,6 +7,8 @@ import org.se13.game.block.Block;
 import org.se13.game.block.CellID;
 import org.se13.game.block.CurrentBlock;
 import org.se13.game.grid.TetrisGrid;
+import org.se13.game.rule.GameLevel;
+import org.se13.game.rule.GameMode;
 import org.se13.game.timer.BlockCollideTimer;
 import org.se13.game.timer.BlockFallingTimer;
 import org.se13.game.timer.Timer;
@@ -155,14 +157,14 @@ public class TetrisGameTest {
 
         long currentTime;
 
-        blockFallingTimer.fasterBlockFallingTime();
+        blockFallingTimer.fasterBlockFallingTime(GameLevel.EASY); // TODO: 난이도별 테스트 추가
 
         while (true) {
             currentTime = System.nanoTime();
 
             blockFallingTimer.setCurrentTime(currentTime);
 
-            if (blockFallingTimer.getElapsedTime() >= 900000000) {
+            if (blockFallingTimer.getElapsedTime() >= 1100000000) {
                 assertTrue(blockFallingTimer.isBlockFallingTimeHasGone());
                 break;
             } else {
@@ -174,18 +176,18 @@ public class TetrisGameTest {
     @Test
     @DisplayName("전반적인 테트리스 게임 테스트")
     void tetrisGameTest() {
-        DefaultTetrisGame defaultTetrisGame = DefaultTetrisGame.getInstance(null, null, null, true);
+        DefaultTetrisGame defaultTetrisGame = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.DEFAULT, true);
 
         defaultTetrisGame.startGame();
         defaultTetrisGame.stopGame();
         assertFalse(defaultTetrisGame.isGameOver());
         defaultTetrisGame.resetGame();
 
-        DefaultTetrisGame resetedTetrisGame = DefaultTetrisGame.getInstance(null, null, null, true);
+        DefaultTetrisGame resetedTetrisGame = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.DEFAULT, true);
 
         assertNotSame(defaultTetrisGame, resetedTetrisGame);
         assertEquals(0, resetedTetrisGame.getScore());
-        assertEquals("normal", resetedTetrisGame.getDifficulty());
+        assertEquals("Normal", resetedTetrisGame.getDifficulty());
         assertFalse(resetedTetrisGame.isItemMode());
 
         CurrentBlock currentBlock = resetedTetrisGame.getCurrentBlock();

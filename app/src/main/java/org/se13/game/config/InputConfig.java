@@ -19,12 +19,12 @@ public class InputConfig {
         EXIT = (char) ((Integer)configs.get("keyExit")).intValue();
     }
 
-    public char DROP;
-    public char DOWN;
-    public char LEFT;
-    public char RIGHT;
-    public char CW_SPIN;
-    public char CCW_SPIN;
-    public char PAUSE;
-    public char EXIT;
+    public static char DROP;
+    public static char DOWN;
+    public static char LEFT;
+    public static char RIGHT;
+    public static char CW_SPIN;
+    public static char CCW_SPIN;
+    public static char PAUSE;
+    public static char EXIT;
 }

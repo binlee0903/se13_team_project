@@ -5,10 +5,10 @@ import org.se13.game.block.Block;
 import java.util.*;
 
 public class BlockQueue {
-    private Map<Block, Integer> blocks;
-    private final Random random;
-    private GameLevel level;
-    private BlockWeight weight;
+    protected Map<Block, Integer> blocks;
+    protected final Random random;
+    protected GameLevel level;
+    protected BlockWeight weight;
 
     public BlockQueue(Random random) {
         this(random, GameLevel.NORMAL);
@@ -54,7 +54,6 @@ public class BlockQueue {
         blocks.put(Block.SBlock, BlockWeight.Normal);
         blocks.put(Block.TBlock, BlockWeight.Normal);
         blocks.put(Block.ZBlock, BlockWeight.Normal);
-//        blocks.put(Block.WeightItemBlock, BlockWeight.Normal);
 
         return blocks;
     }
