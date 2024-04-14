@@ -5,28 +5,30 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import org.se13.game.config.InputConfig;
 import org.se13.game.tetris.DefaultTetrisGame;
+import org.se13.sqlite.config.ConfigRepositoryImpl;
 import org.se13.view.base.BaseController;
+import org.se13.view.difficulty.LevelSelectScreenController;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Map;
 
 public class TetrisScreenController extends BaseController {
     @Override
     public void onCreate() {
-        this.tetrisGame = DefaultTetrisGame.getInstance(gameCanvas, nextBlockCanvas, score, false);
+        this.tetrisGame = DefaultTetrisGame.getInstance(gameCanvas, nextBlockCanvas, score, LevelSelectScreenController.gameLevel, LevelSelectScreenController.gameMode, false);
         this.frame.setStyle("-fx-border-color: red;");
 
         Scene scene = gameCanvas.getScene();
 
         scene.setOnKeyPressed((keyEvent -> {
-            if (keyEvent.getText().isEmpty() != true) {
-                switch (keyEvent.getText()) {
-                    case "p":
-                        this.tetrisGame.togglePauseState();
-                        break;
-
-                    case "q":
-                        System.exit(0);
-                        break;
-
+            if (keyEvent.getText().isEmpty() == false) {
+                if (keyEvent.getText().charAt(0) == InputConfig.PAUSE) {
+                    this.tetrisGame.togglePauseState();
+                } else if (keyEvent.getText().charAt(0) == InputConfig.EXIT) {
+                    System.exit(0);
                 }
             }
         }));
@@ -47,4 +49,6 @@ public class TetrisScreenController extends BaseController {
     private Canvas gameCanvas;
 
     private DefaultTetrisGame tetrisGame;
+
+    private ConfigRepositoryImpl configRepository;
 }
