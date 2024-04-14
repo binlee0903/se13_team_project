@@ -99,8 +99,6 @@ public class DefaultTetrisGame {
     }
 
     public void pulse(long l) {
-        currentTime = l;
-
         if (gameStatus == GameStatus.RUNNING) {
             if (inputManager.peekInput()) {
                 processUserInput(inputManager.getInput());
@@ -153,11 +151,9 @@ public class DefaultTetrisGame {
             this.gameStatus = GameStatus.RUNNING;
 
             if (this.isTestMode == false) {
-                blockMovingTimer.resumeTimer(currentTime);
-                collideCheckingTimer.resumeTimer(currentTime);
-            }
+                blockMovingTimer.resumeTimer(System.nanoTime());
+                collideCheckingTimer.resumeTimer(System.nanoTime());
 
-            if (isTestMode == false) {
                 animationTimer.start();
             }
         }
@@ -492,7 +488,6 @@ public class DefaultTetrisGame {
     private final char DEFAULT_BLOCK_TEXT = 'O';
     private final char WEIGHT_ITEM_BLOCK_TEXT = 'W';
     private final int FEVER_SCORE_WEIGHT = 10;
-    private long currentTime;
     private AnimationTimer animationTimer;
     private InputManager inputManager;
     private InputConfig inputConfig;
