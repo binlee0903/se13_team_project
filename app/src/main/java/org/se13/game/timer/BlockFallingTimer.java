@@ -30,6 +30,6 @@ public class BlockFallingTimer extends Timer {
         return getElapsedTime() >= blockFallingTimeManipulator;
     }
 
-    private final long BLOCK_FALLING_TIME_SUBTRACTOR = -100000000;
+    private final long BLOCK_FALLING_TIME_SUBTRACTOR = -500000000;
     private long blockFallingTimeManipulator = 2000000000;
 }
