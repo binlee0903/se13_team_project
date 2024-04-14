@@ -168,11 +168,21 @@ public class DefaultTetrisGame {
     }
 
     public String getDifficulty() {
-        return "normal";
+        switch (this.gameDifficulty) {
+            case EASY:
+                return "Easy";
+            case NORMAL:
+                return "Normal";
+            case HARD:
+                return "Hard";
+            default:
+                assert(false);
+                return null;
+        }
     }
 
     public boolean isItemMode() {
-        return false;
+        return gameMode == GameMode.ITEM;
     }
 
     public BlockSpeed getBlockSpeed() {
