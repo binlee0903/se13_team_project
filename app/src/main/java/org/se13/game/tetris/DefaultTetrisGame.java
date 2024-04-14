@@ -11,6 +11,9 @@ import org.se13.game.config.InputConfig;
 import org.se13.game.grid.TetrisGrid;
 import org.se13.game.input.InputManager;
 import org.se13.game.rule.BlockQueue;
+import org.se13.game.rule.GameLevel;
+import org.se13.game.rule.GameMode;
+import org.se13.game.rule.ItemBlockQueue;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
 import org.se13.game.timer.BlockCollideTimer;
 import org.se13.game.timer.BlockFallingTimer;
@@ -33,15 +36,19 @@ public class DefaultTetrisGame {
         IMPOSSIBLE
     }
 
-    private DefaultTetrisGame(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel, boolean isTestMode) {
+    protected DefaultTetrisGame(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel, GameLevel gameLevel, GameMode gameMode, boolean isTestMode) {
         this.random = new Random();
-        this.blockQueue = new BlockQueue(random);
+        this.blockQueue = new BlockQueue(random, gameLevel);
+        this.itemBlockQueue = new ItemBlockQueue(random);
         this.tetrisGameGrid = new TetrisGrid(ROW_SIZE, COL_SIZE);
 
         this.gameStatus = GameStatus.PAUSED;
         this.blockSpeed = BlockSpeed.DEFAULT;
+        this.gameDifficulty = gameLevel;
+        this.gameMode = gameMode;
         this.score = 0;
         this.scoreWeight = 10;
+        this.clearedLines = 0;
 
         this.isGameStarted = false;
         this.isTestMode = isTestMode;
@@ -83,9 +90,9 @@ public class DefaultTetrisGame {
         };
     }
 
-    public static DefaultTetrisGame getInstance(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel, boolean isTestMode) {
+    public static DefaultTetrisGame getInstance(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel, GameLevel gameDifficulty, GameMode gameMode,boolean isTestMode) {
         if (tetrisGame == null) {
-            tetrisGame = new DefaultTetrisGame(tetrisGameCanvas, nextBlockCanvas, scoreLabel, isTestMode);
+            tetrisGame = new DefaultTetrisGame(tetrisGameCanvas, nextBlockCanvas, scoreLabel, gameDifficulty, gameMode, isTestMode);
         }
 
         return tetrisGame;
@@ -312,17 +319,17 @@ public class DefaultTetrisGame {
             blockSpeed = BlockSpeed.FASTER;
 
             if (this.isTestMode == false) {
-                blockMovingTimer.fasterBlockFallingTime();
+                blockMovingTimer.fasterBlockFallingTime(this.gameDifficulty);
             }
 
             scoreWeight += 10;
         } else if (clearedLines > 30 && clearedLines <= 60 && blockSpeed == BlockSpeed.FASTER) {
             blockSpeed = BlockSpeed.RAGE;
-            blockMovingTimer.fasterBlockFallingTime();
+            blockMovingTimer.fasterBlockFallingTime(this.gameDifficulty);
             scoreWeight += 20;
         } else if (clearedLines > 60 && blockSpeed == BlockSpeed.RAGE) {
             blockSpeed = BlockSpeed.IMPOSSIBLE;
-            blockMovingTimer.fasterBlockFallingTime();
+            blockMovingTimer.fasterBlockFallingTime(this.gameDifficulty);
             scoreWeight += 30;
         }
     }
@@ -390,8 +397,11 @@ public class DefaultTetrisGame {
     }
 
     private CurrentBlock nextBlock() {
-        Block next = blockQueue.nextBlock();
-        return new CurrentBlock(next);
+        if (gameMode == GameMode.ITEM && clearedLines % 10 == 0 && clearedLines != 0) {
+            return new CurrentBlock(itemBlockQueue.nextBlock());
+        } else {
+            return new CurrentBlock(blockQueue.nextBlock());
+        }
     }
 
     private void drawNextBlock() {
@@ -488,11 +498,14 @@ public class DefaultTetrisGame {
     private InputConfig inputConfig;
     private TetrisGrid tetrisGameGrid;
     private final BlockQueue blockQueue;
+    private final ItemBlockQueue itemBlockQueue;
     private CurrentBlock currentBlock;
     private CurrentBlock nextBlock;
     private final GraphicsContext gameGraphicsContext;
     private final GraphicsContext nextBlockGraphicsContext;
     private GameStatus gameStatus;
+    private GameLevel gameDifficulty;
+    private GameMode gameMode;
     private BlockSpeed blockSpeed;
     private Label scoreLabel;
     private BlockFallingTimer blockMovingTimer;
