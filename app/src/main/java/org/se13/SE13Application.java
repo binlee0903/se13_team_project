@@ -14,6 +14,7 @@ public class SE13Application extends Application {
 
     @Override
     public void start(Stage stage) {
+        stage.setResizable(false);
         navController = new StackNavGraph(stage, ConfigRepositoryImpl.getInstance());
         navController.navigate(Screen.START);
     }
