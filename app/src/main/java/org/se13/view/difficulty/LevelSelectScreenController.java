@@ -28,14 +28,14 @@ public class LevelSelectScreenController extends BaseController {
     private void handleNormalButtonAction() {
         gameLevel = GameLevel.NORMAL;
         gameMode = setGameMode(modeChoiceBox.getValue());
-        SE13Application.navController.navigate(Screen.SETTING);
+        SE13Application.navController.navigate(Screen.TETRIS);
     }
 
     @FXML
     private void handleHardButtonAction() {
         gameLevel = GameLevel.HARD;
         gameMode = setGameMode(modeChoiceBox.getValue());
-        SE13Application.navController.navigate(Screen.RANKING);
+        SE13Application.navController.navigate(Screen.TETRIS);
     }
 
     private GameMode setGameMode(String gameMode) {
