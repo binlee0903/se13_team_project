@@ -19,7 +19,7 @@ public class StartScreenController extends BaseController {
 
     @FXML
     private void handleTetrisButtonAction() {
-        SE13Application.navController.navigate(Screen.TETRIS);
+        SE13Application.navController.navigate(Screen.LEVEL_SELECT);
     }
 
     @FXML
