@@ -3,6 +3,7 @@ module org.se13 {
     requires javafx.fxml;
     requires java.sql;
     requires org.json;
+    requires org.slf4j;
 
     opens org.se13 to javafx.fxml;
     exports org.se13;
