@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.se13"
-version = "0.1-alpha"
+version = "0.1"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -35,6 +35,14 @@ tasks.withType<Test> {
 
 javafx {
     modules("javafx.controls", "javafx.fxml")
+}
+
+jlink {
+    options = listOf("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages")
+    launcher {
+        name = "tetris"
+    }
+    forceMerge("sqlite")
 }
 
 dependencies {
