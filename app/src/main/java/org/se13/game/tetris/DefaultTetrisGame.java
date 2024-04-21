@@ -10,10 +10,12 @@ import org.se13.game.block.*;
 import org.se13.game.config.InputConfig;
 import org.se13.game.grid.TetrisGrid;
 import org.se13.game.input.InputManager;
+import org.se13.game.item.FeverItem;
 import org.se13.game.rule.BlockQueue;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.game.rule.ItemBlockQueue;
+import org.se13.game.timer.FeverModeTimer;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
 import org.se13.game.timer.BlockCollideTimer;
 import org.se13.game.timer.BlockFallingTimer;
@@ -75,10 +77,14 @@ public class DefaultTetrisGame {
             this.CANVAS_HEIGHT = 400;
         }
 
+        feverModeTimer = new FeverModeTimer(
+            () -> scoreWeight += FEVER_SCORE_WEIGHT,
+            () -> scoreWeight -= FEVER_SCORE_WEIGHT
+        );
+
         this.tetrisGameGrid.registerItemListener((cellID) -> {
             if (cellID == CellID.FEVER_ITEM_ID) {
-                isFeverMode = true;
-                scoreWeight += FEVER_SCORE_WEIGHT;
+                feverModeTimer.execute();
             }
         });
 
@@ -109,6 +115,10 @@ public class DefaultTetrisGame {
                 collideCheckingTimer = new BlockCollideTimer(l);
                 isGameStarted = true;
                 drawNextBlock();
+            }
+
+            if (feverModeTimer.isActive() && !isFeverMode()) {
+                feverModeTimer.release();
             }
 
             tick(l);
@@ -144,6 +154,7 @@ public class DefaultTetrisGame {
             this.gameStatus = GameStatus.PAUSED;
 
             if (this.isTestMode == false) {
+                feverModeTimer.setPause();
                 blockMovingTimer.pauseTimer();
                 collideCheckingTimer.pauseTimer();
             }
@@ -151,6 +162,7 @@ public class DefaultTetrisGame {
             this.gameStatus = GameStatus.RUNNING;
 
             if (this.isTestMode == false) {
+                feverModeTimer.setResume();
                 blockMovingTimer.resumeTimer(System.nanoTime());
                 collideCheckingTimer.resumeTimer(System.nanoTime());
 
@@ -278,6 +290,10 @@ public class DefaultTetrisGame {
         }
     }
 
+    boolean isFeverMode() {
+        return feverModeTimer.isFeverMode();
+    }
+
     boolean isGamePaused() {
         return this.gameStatus == GameStatus.PAUSED;
     }
@@ -402,7 +418,14 @@ public class DefaultTetrisGame {
         }
     }
 
+    boolean isDebug = false;
+
     private CurrentBlock nextBlock() {
+        if (!isDebug) {
+            isDebug = true;
+            return new CurrentBlock(Block.LBlock, new FeverItem(random, Block.LBlock));
+        }
+
         if (gameMode == GameMode.ITEM && clearedLines % 10 == 0 && clearedLines != 0) {
             return new CurrentBlock(itemBlockQueue.nextBlock());
         } else {
@@ -515,6 +538,7 @@ public class DefaultTetrisGame {
     private Label scoreLabel;
     private BlockFallingTimer blockMovingTimer;
     private BlockCollideTimer collideCheckingTimer;
+    private FeverModeTimer feverModeTimer;;
     private int score;
     private int scoreWeight;
     private int clearedLines = 0;
@@ -523,5 +547,4 @@ public class DefaultTetrisGame {
     private boolean isBlockPlaced;
     private boolean isBlockCollided;
     private Random random;
-    private boolean isFeverMode;
 }
