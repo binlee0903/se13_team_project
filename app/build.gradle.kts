@@ -42,6 +42,9 @@ jlink {
     launcher {
         name = "tetris"
     }
+    jpackage {
+        imageOptions = listOf("--icon", "src/main/resources/favicon.ico")
+    }
     forceMerge("sqlite")
 }
 
