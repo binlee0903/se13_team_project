@@ -1,11 +1,13 @@
 package org.se13;
 
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.se13.sqlite.config.ConfigRepository;
 import org.se13.view.lifecycle.Lifecycle;
-import org.se13.view.nav.Screen;
+import org.se13.view.nav.AppScreen;
 
 import java.io.IOException;
 import java.util.Stack;
@@ -26,7 +28,7 @@ public class StackNavGraph implements NavGraph {
     }
 
     @Override
-    public void navigate(Screen screen) {
+    public void navigate(AppScreen screen) {
         try {
             navigate(screen, lifecycle -> {});
         } catch (Exception e) {
@@ -35,7 +37,7 @@ public class StackNavGraph implements NavGraph {
     }
 
     @Override
-    public <T extends Lifecycle> void navigate(Screen screen, Consumer<T> consumer) {
+    public <T extends Lifecycle> void navigate(AppScreen screen, Consumer<T> consumer) {
         try {
             FXMLLoader loader = createLoader(screen);
             Scene scene = createScene(loader);
@@ -62,13 +64,20 @@ public class StackNavGraph implements NavGraph {
 
         stage.setWidth(screenWidth);
         stage.setHeight(screenHeight);
+
+        Rectangle2D screenBounds = Screen.getPrimary().getBounds();  // getVisualBounds() 대신 getBounds() 사용
+        double centerX = (screenBounds.getWidth() - screenWidth) / 2;
+        double centerY = screenBounds.getHeight() / 4 - screenHeight / 2 + 100;
+
+        stage.setX(centerX);
+        stage.setY(centerY);
     }
 
     private Scene createScene(FXMLLoader loader) throws IOException {
         return new Scene(loader.load());
     }
 
-    private FXMLLoader createLoader(Screen screen) {
+    private FXMLLoader createLoader(AppScreen screen) {
         return new FXMLLoader(getClass().getResource(screen.resource));
     }
 

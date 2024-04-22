@@ -1,6 +1,6 @@
 package org.se13.view.nav;
 
-public enum Screen {
+public enum AppScreen {
     START("StartScreen.fxml"),
     LEVEL_SELECT("LevelSelectScreen.fxml"),
     TETRIS("TetrisScreen.fxml"),
@@ -8,7 +8,7 @@ public enum Screen {
     RANKING("RankingScreen.fxml"),
     GAMEOVER("GameOverScreen.fxml");
 
-    Screen(String fxml) {
+    AppScreen(String fxml) {
         resource = fxml;
     }
 
