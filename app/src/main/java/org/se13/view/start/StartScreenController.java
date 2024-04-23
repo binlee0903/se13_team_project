@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import org.se13.SE13Application;
 import org.se13.view.base.BaseController;
-import org.se13.view.nav.Screen;
+import org.se13.view.nav.AppScreen;
 
 public class StartScreenController extends BaseController {
 
@@ -19,19 +19,19 @@ public class StartScreenController extends BaseController {
 
     @FXML
     private void handleTetrisButtonAction() {
-        SE13Application.navController.navigate(Screen.LEVEL_SELECT);
+        SE13Application.navController.navigate(AppScreen.LEVEL_SELECT);
     }
 
     @FXML
     private void handleSettingsButtonAction() {
         // Turn into a setting screen
-        SE13Application.navController.navigate(Screen.SETTING);
+        SE13Application.navController.navigate(AppScreen.SETTING);
     }
 
     @FXML
     private void handleScoreButtonAction() {
         // Turn into a scoreboard screen
-        SE13Application.navController.navigate(Screen.RANKING);
+        SE13Application.navController.navigate(AppScreen.RANKING);
     }
 
     @FXML

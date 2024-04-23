@@ -8,7 +8,7 @@ import org.se13.game.tetris.DefaultTetrisGame;
 import org.se13.sqlite.ranking.RankingRepositoryImpl;
 import org.se13.view.ranking.RankingScreenController;
 import org.se13.view.base.BaseController;
-import org.se13.view.nav.Screen;
+import org.se13.view.nav.AppScreen;
 
 public class GameOverScreenController extends BaseController {
     @Override
@@ -22,7 +22,7 @@ public class GameOverScreenController extends BaseController {
     }
 
     public void handleRankingButtonAction() {
-        SE13Application.navController.navigate(Screen.RANKING, (RankingScreenController controller) -> {
+        SE13Application.navController.navigate(AppScreen.RANKING, (RankingScreenController controller) -> {
             controller.setArguments(defaultTetrisGame.getScore(), defaultTetrisGame.isItemMode(), defaultTetrisGame.getDifficulty());
         });
         defaultTetrisGame.resetGame();

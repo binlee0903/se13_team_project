@@ -8,7 +8,7 @@ import org.se13.SE13Application;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.view.base.BaseController;
-import org.se13.view.nav.Screen;
+import org.se13.view.nav.AppScreen;
 
 public class LevelSelectScreenController extends BaseController {
     @FXML
@@ -21,21 +21,21 @@ public class LevelSelectScreenController extends BaseController {
     private void handleEasyButtonAction() {
         gameLevel = GameLevel.EASY;
         gameMode = setGameMode(modeChoiceBox.getValue());
-        SE13Application.navController.navigate(Screen.TETRIS);
+        SE13Application.navController.navigate(AppScreen.TETRIS);
     }
 
     @FXML
     private void handleNormalButtonAction() {
         gameLevel = GameLevel.NORMAL;
         gameMode = setGameMode(modeChoiceBox.getValue());
-        SE13Application.navController.navigate(Screen.TETRIS);
+        SE13Application.navController.navigate(AppScreen.TETRIS);
     }
 
     @FXML
     private void handleHardButtonAction() {
         gameLevel = GameLevel.HARD;
         gameMode = setGameMode(modeChoiceBox.getValue());
-        SE13Application.navController.navigate(Screen.TETRIS);
+        SE13Application.navController.navigate(AppScreen.TETRIS);
     }
 
     private GameMode setGameMode(String gameMode) {

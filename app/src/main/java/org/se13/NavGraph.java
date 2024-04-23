@@ -1,15 +1,15 @@
 package org.se13;
 
 import org.se13.view.lifecycle.Lifecycle;
-import org.se13.view.nav.Screen;
+import org.se13.view.nav.AppScreen;
 
 import java.util.function.Consumer;
 
 public interface NavGraph {
 
-    void navigate(Screen screen);
+    void navigate(AppScreen screen);
 
-    <T extends Lifecycle> void navigate(Screen screen, Consumer<T> consumer);
+    <T extends Lifecycle> void navigate(AppScreen screen, Consumer<T> consumer);
 
     void popBackStack();
 

@@ -19,7 +19,7 @@ import org.se13.game.timer.FeverModeTimer;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
 import org.se13.game.timer.BlockCollideTimer;
 import org.se13.game.timer.BlockFallingTimer;
-import org.se13.view.nav.Screen;
+import org.se13.view.nav.AppScreen;
 
 import java.util.Map;
 import java.util.Random;
@@ -145,7 +145,7 @@ public class DefaultTetrisGame {
 
         if (this.isTestMode == false) {
             this.inputManager.reset();
-            SE13Application.navController.navigate(Screen.GAMEOVER);
+            SE13Application.navController.navigate(AppScreen.GAMEOVER);
         }
     }
 

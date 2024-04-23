@@ -18,7 +18,7 @@ import org.se13.SE13Application;
 import org.se13.sqlite.ranking.RankingRepository;
 import org.se13.sqlite.ranking.RankingRepositoryImpl;
 import org.se13.view.base.BaseController;
-import org.se13.view.nav.Screen;
+import org.se13.view.nav.AppScreen;
 
 
 public class RankingScreenController extends BaseController {
@@ -46,13 +46,13 @@ public class RankingScreenController extends BaseController {
     @FXML
     private void handleHomeButtonAction() {
         // Turn into a start screen
-        SE13Application.navController.navigate(Screen.START);
+        SE13Application.navController.navigate(AppScreen.START);
     }
 
     @FXML
     private void handleTetrisButtonAction() {
         // Turn into a tetris screen
-        SE13Application.navController.navigate(Screen.TETRIS);
+        SE13Application.navController.navigate(AppScreen.TETRIS);
     }
 
     @Override
