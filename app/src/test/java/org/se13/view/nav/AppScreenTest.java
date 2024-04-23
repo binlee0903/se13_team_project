@@ -5,14 +5,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ScreenTest {
+class AppScreenTest {
 
     @Test
     @DisplayName("Screen 열거형은 .fxml 파일만 지원합니다.")
     void resourceTest() {
-        Screen[] screens = Screen.values();
+        AppScreen[] screens = AppScreen.values();
 
-        for (Screen screen : screens) {
+        for (AppScreen screen : screens) {
             assertTrue(screen.resource.endsWith(".fxml"));
         }
     }
