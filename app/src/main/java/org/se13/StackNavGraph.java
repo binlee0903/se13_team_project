@@ -65,12 +65,18 @@ public class StackNavGraph implements NavGraph {
         stage.setWidth(screenWidth);
         stage.setHeight(screenHeight);
 
-        Rectangle2D screenBounds = Screen.getPrimary().getBounds();  // getVisualBounds() 대신 getBounds() 사용
-        double centerX = (screenBounds.getWidth() - screenWidth) / 2;
-        double centerY = screenBounds.getHeight() / 4 - screenHeight / 2 + 100;
+        if (screenWidth!=1920) { // 전체 화면 모드가 아닐 때
+            Rectangle2D screenBounds = Screen.getPrimary().getBounds();  // getVisualBounds() 대신 getBounds() 사용
+            double centerX = (screenBounds.getWidth() - screenWidth) / 2;
+            double centerY = screenBounds.getHeight() / 2 - screenHeight / 2;
 
-        stage.setX(centerX);
-        stage.setY(centerY);
+            stage.setX(centerX);
+            stage.setY(centerY);
+        }
+        else {
+            stage.setX(0);
+            stage.setY(0);
+        }
     }
 
     private Scene createScene(FXMLLoader loader) throws IOException {
