@@ -4,7 +4,7 @@ import java.util.Map;
 
 public interface ConfigRepository {
     void insertDefaultConfig(int id);
-    void updateConfig(int id, String mode, int gridWidth, int gridHeight, int keyLeft, int keyRight, int keyDown, int keyRotateLeft, int keyRotateRight, int keyPause, int keyDrop, int keyExit);
+    void updateConfig(int id, String mode, int gridWidth, int gridHeight, String keyLeft, String keyRight, String keyDown, String keyRotateLeft, String keyRotateRight, String keyPause, String keyDrop, String keyExit);
     Map<String, Object> getConfig(int id);
     void clearConfig(int id);
 
