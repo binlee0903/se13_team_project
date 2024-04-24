@@ -1,6 +1,7 @@
 package org.se13.game.input;
 
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.util.LinkedList;
@@ -12,10 +13,7 @@ public class InputManager {
 
         if (scene != null) {
             scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
-                if (key.getText().isEmpty() == false) {
-                    char c = key.getText().charAt(0);
-                    keyCodeQueue.add(c);
-                }
+                keyCodeQueue.add(key.getCode().getName().toLowerCase());
             });
         }
     }
@@ -36,10 +34,10 @@ public class InputManager {
         return keyCodeQueue.peek() != null;
     }
 
-    public char getInput() {
+    public String getInput() {
         return keyCodeQueue.poll();
     }
 
     private static InputManager inputManager;
-    private Queue<Character> keyCodeQueue;
+    private Queue<String> keyCodeQueue;
 }
