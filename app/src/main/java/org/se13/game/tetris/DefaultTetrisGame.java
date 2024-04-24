@@ -4,6 +4,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import org.se13.SE13Application;
 import org.se13.game.block.*;
@@ -332,16 +333,16 @@ public class DefaultTetrisGame {
         }
     }
 
-    void processUserInput(char keyCode) {
-        if (keyCode == this.inputConfig.DROP) {
+    void processUserInput(String keyCode) {
+        if (keyCode.compareToIgnoreCase(this.inputConfig.DROP) == 0) {
             immediateBlockPlace();
-        } else if (keyCode == this.inputConfig.DOWN) {
+        } else if (keyCode.compareToIgnoreCase(this.inputConfig.DOWN) == 0) {
             moveBlockDown();
-        } else if (keyCode == this.inputConfig.LEFT) {
+        } else if (keyCode.compareToIgnoreCase(this.inputConfig.LEFT) == 0) {
             moveBlockLeft();
-        } else if (keyCode == this.inputConfig.RIGHT) {
+        } else if (keyCode.compareToIgnoreCase(this.inputConfig.RIGHT) == 0) {
             moveBlockRight();
-        } else if (keyCode == this.inputConfig.CW_SPIN) {
+        } else if (keyCode.compareToIgnoreCase(this.inputConfig.CW_SPIN) == 0) {
             rotateBlockCW();
         }
     }
