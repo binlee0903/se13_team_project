@@ -8,11 +8,11 @@ public class BlockFallingTimer extends Timer {
     }
 
     public void fasterBlockFallingTime(GameLevel difficulty) {
+
         switch (difficulty) {
             case EASY:
                 blockFallingTimeManipulator += (long) (BLOCK_FALLING_TIME_SUBTRACTOR * 0.8);
                 break;
-
             case NORMAL:
                 blockFallingTimeManipulator += BLOCK_FALLING_TIME_SUBTRACTOR;
                 break;
@@ -21,8 +21,6 @@ public class BlockFallingTimer extends Timer {
                 break;
             default:
         }
-
-        blockFallingTimeManipulator += BLOCK_FALLING_TIME_SUBTRACTOR;
     }
 
     public void restoreBlockFallingTime() {
@@ -33,6 +31,6 @@ public class BlockFallingTimer extends Timer {
         return getElapsedTime() >= blockFallingTimeManipulator;
     }
 
-    private final long BLOCK_FALLING_TIME_SUBTRACTOR = -500000000;
+    private final long BLOCK_FALLING_TIME_SUBTRACTOR = -700000000;
     private long blockFallingTimeManipulator = 3000000000L;
 }
