@@ -13,7 +13,6 @@ public class BlockFallingTimer extends Timer {
             case EASY:
                 blockFallingTimeManipulator += (long) (BLOCK_FALLING_TIME_SUBTRACTOR * 0.8);
                 break;
-
             case NORMAL:
                 blockFallingTimeManipulator += BLOCK_FALLING_TIME_SUBTRACTOR;
                 break;
@@ -22,14 +21,12 @@ public class BlockFallingTimer extends Timer {
                 break;
             default:
         }
-
-        blockFallingTimeManipulator += BLOCK_FALLING_TIME_SUBTRACTOR;
     }
 
     public boolean isBlockFallingTimeHasGone() {
         return getElapsedTime() >= blockFallingTimeManipulator;
     }
 
-    private final long BLOCK_FALLING_TIME_SUBTRACTOR = -500000000;
-    private long blockFallingTimeManipulator = 2000000000;
+    private final long BLOCK_FALLING_TIME_SUBTRACTOR = -700000000;
+    private long blockFallingTimeManipulator = 3000000000L;
 }
