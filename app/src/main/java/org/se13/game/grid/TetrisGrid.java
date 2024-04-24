@@ -159,7 +159,7 @@ public class TetrisGrid {
             listeners.forEach((listener) -> listener.clear(cell));
             setCell(i, colIndex, CellID.EMPTY);
         }
-        setCell(rowSize - 1, colIndex, CellID.WEIGHT_ITEM_ID);
+        setCell(rowSize - 1, colIndex, CellID.WEIGHT_BLOCK_ID);
     }
 
     // column size of tetris board
