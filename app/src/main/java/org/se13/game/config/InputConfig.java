@@ -12,7 +12,7 @@ public class InputConfig {
         DOWN = (String)configs.get("keyDown");
         LEFT = (String)configs.get("keyLeft");
         RIGHT = (String)configs.get("keyRight");
-        CW_SPIN = (String)configs.get("keyRotateRight");
+        CW_SPIN = (String)configs.get("keyRotate");
         PAUSE = (String)configs.get("keyPause");
         EXIT = (String)configs.get("keyExit");
     }

@@ -61,7 +61,7 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("keyRight", "d");
         json.put("keyDown", "s");
         json.put("keyRotateLeft", 120);
-        json.put("keyRotateRight", "e");
+        json.put("keyRotate", "e");
         json.put("keyPause", "p");
         json.put("keyDrop", "w");
         json.put("keyExit", "q");
@@ -87,7 +87,7 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("keyRight", keyRight);
         json.put("keyDown", keyDown);
         json.put("keyRotateLeft", keyRotateLeft);
-        json.put("keyRotateRight", keyRotateRight);
+        json.put("keyRotate", keyRotateRight);
         json.put("keyPause", keyPause);
         json.put("keyDrop", keyDrop);
         json.put("keyExit", keyExit);
@@ -123,7 +123,7 @@ public class ConfigRepositoryImpl implements ConfigRepository {
                 result.put("keyRight", json.get("keyRight"));
                 result.put("keyDown", json.get("keyDown"));
                 result.put("keyRotateLeft", json.get("keyRotateLeft"));
-                result.put("keyRotateRight", json.get("keyRotateRight"));
+                result.put("keyRotate", json.get("keyRotate"));
                 result.put("keyPause", json.get("keyPause"));
                 result.put("keyDrop", json.get("keyDrop"));
                 result.put("keyExit", json.get("keyExit"));

@@ -70,7 +70,7 @@ public class SettingScreenController extends BaseController {
         keySettings.put("keyDrop", keyDrop);
         moveDropButton.setText("keyDrop: " + keyDrop);
 
-        String keyMoveRotate = (String)configs.get("keyRotateRight");
+        String keyMoveRotate = (String)configs.get("keyRotate");
         keySettings.put("keyRotate", keyMoveRotate);
         rotateButton.setText("keyRotate: " + keyMoveRotate);
 
