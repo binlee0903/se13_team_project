@@ -20,6 +20,10 @@
     -fx-background-color: gold;
 }
 
+.menuButton:focused {
+    -fx-background-color: white;
+}
+
 .keyButton {
     -fx-background-color: #FFA500;
     -fx-font-weight: bold;
@@ -30,6 +34,10 @@
 
 .keyButton:hover {
     -fx-background-color: gold;
+}
+
+.keyButton:focused {
+    -fx-background-color: white;
 }
 
 .settingsTitle {
