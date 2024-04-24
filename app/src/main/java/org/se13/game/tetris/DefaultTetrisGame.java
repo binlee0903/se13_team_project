@@ -96,6 +96,8 @@ public class DefaultTetrisGame {
                     blockMovingTimer.restoreBlockFallingTime();
                     clearedLines = 0;
                     break;
+                case LINE_CLEAR_ITEM_ID:
+
             }
         });
 
@@ -511,6 +513,9 @@ public class DefaultTetrisGame {
                     case RESET_ITEM_ID:
                         gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
                         gameGraphicsContext.fillText(String.valueOf(RESET_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
+                    case LINE_CLEAR_ITEM_ID:
+                        gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
+                        gameGraphicsContext.fillText("L", j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                     case EMPTY:
                         gameGraphicsContext.fillText(String.valueOf(' '), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                 }

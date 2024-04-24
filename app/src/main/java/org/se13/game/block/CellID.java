@@ -15,4 +15,5 @@ public enum CellID {
     WEIGHT_ITEM_ID,
     WEIGHT_BLOCK_ID,
     RESET_ITEM_ID,
+    LINE_CLEAR_ITEM_ID,
 }
