@@ -12,7 +12,7 @@ public class FakeConfigRepository implements ConfigRepository {
     }
 
     @Override
-    public void updateConfig(int id, String mode, int gridWidth, int gridHeight, int keyLeft, int keyRight, int keyDown, int keyRotateLeft, int keyRotateRight, int keyPause, int keyDrop, int keyExit) {
+    public void updateConfig(int id, String mode, int gridWidth, int gridHeight, String keyLeft, String keyRight, String keyDown, String keyRotateLeft, String keyRotateRight, String keyPause, String keyDrop, String keyExit) {
 
     }
 

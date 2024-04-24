@@ -13,10 +13,10 @@ import org.se13.sqlite.config.ConfigRepositoryImpl;
 import org.se13.sqlite.ranking.RankingRepositoryImpl;
 import org.se13.view.base.BaseController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class SettingScreenController extends BaseController {
-
     public Button moveLeftButton;
     public Button moveRightButton;
     public Button moveDownButton;
@@ -24,13 +24,17 @@ public class SettingScreenController extends BaseController {
     public Button rotateButton;
     public Button pauseButton;
     public Button moveDropButton;
+
     @FXML
     private ChoiceBox<String> screenSizeChoiceBox;
     @FXML
     private ChoiceBox<String> screenColorBlindChoiceBox;
 
+    private Map<String, String> keySettings;
+
     @FXML
     private void initialize() {
+        keySettings = new HashMap<>();
         ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
         Map<String, Object> configs = configRepository.getConfig(0);
 
@@ -45,27 +49,34 @@ public class SettingScreenController extends BaseController {
         screenColorBlindChoiceBox.setItems(FXCollections.observableArrayList("default", "Red-green", "Blue-yellow"));
         screenColorBlindChoiceBox.setValue(colorMode);
         // Add options in buttons for the choice in the keyboard
-        String keyMoveLeft = String.valueOf(configs.get("keyLeft"));
+        String keyMoveLeft = (String)configs.get("keyLeft");
+        keySettings.put("keyLeft", keyMoveLeft);
         System.out.println(keyMoveLeft);
-        moveLeftButton.setText("Left: " + asciiToString(keyMoveLeft));
+        moveLeftButton.setText("keyLeft: " + keyMoveLeft);
 
-        String keyMoveRight = String.valueOf(configs.get("keyRight"));
-        moveRightButton.setText("Right: " + asciiToString(keyMoveRight));
+        String keyMoveRight = (String)configs.get("keyRight");
+        keySettings.put("keyRight", keyMoveRight);
+        moveRightButton.setText("keyRight: " + keyMoveRight);
 
-        String keyMoveDown = String.valueOf(configs.get("keyDown"));
-        moveDownButton.setText("Down: " + asciiToString(keyMoveDown));
+        String keyMoveDown = (String)configs.get("keyDown");
+        keySettings.put("keyDown", keyMoveDown);
+        moveDownButton.setText("keyDown: " + keyMoveDown);
 
-        String keyExit = String.valueOf(configs.get("keyExit"));
-        exitButton.setText("Exit: " + asciiToString(keyExit));
+        String keyExit = (String)configs.get("keyExit");
+        keySettings.put("keyExit", keyExit);
+        exitButton.setText("keyExit: " + keyExit);
 
-        String keyDrop = String.valueOf(configs.get("keyDrop"));
-        moveDropButton.setText("Drop: " + asciiToString(keyDrop));
+        String keyDrop = (String)configs.get("keyDrop");
+        keySettings.put("keyDrop", keyDrop);
+        moveDropButton.setText("keyDrop: " + keyDrop);
 
-        String keyMoveRotate = String.valueOf(configs.get("keyRotateRight"));
-        rotateButton.setText("Rotate: " + asciiToString(keyMoveRotate));
+        String keyMoveRotate = (String)configs.get("keyRotate");
+        keySettings.put("keyRotate", keyMoveRotate);
+        rotateButton.setText("keyRotate: " + keyMoveRotate);
 
-        String keyPause = String.valueOf(configs.get("keyPause"));
-        pauseButton.setText("Pause: " + asciiToString(keyPause));
+        String keyPause = (String)configs.get("keyPause");
+        keySettings.put("keyPause", keyPause);
+        pauseButton.setText("keyPause: " + keyPause);
         // By selected scene size, the function will implement logic.
 
     }
@@ -87,7 +98,7 @@ public class SettingScreenController extends BaseController {
         }
     }
 
-    public int getAsciiCodeFromButtonText(Button button) {
+    public int getStringFromButtonText(Button button) {
         // 버튼의 텍스트를 가져옵니다.
         String text = button.getText();
 
@@ -111,6 +122,8 @@ public class SettingScreenController extends BaseController {
     @FXML
     private void keySaveButtonAction(ActionEvent event) {
         Button buttonToConfigure = (Button) event.getSource(); // 이벤트가 발생한 버튼을 가져옵니다.
+        String indicator = buttonToConfigure.getText().split(":")[0];
+
         // 사용자에게 키 입력을 요청하는 메시지 표시
         buttonToConfigure.setText("Press a key for...");
         // 키 이벤트 처리를 위한 리스너 정의
@@ -122,10 +135,12 @@ public class SettingScreenController extends BaseController {
                     // 키 코드의 이름을 사용하여 설정 메시지 표시
                     String keyName = keyCode.getName(); // 사용자에게 익숙한 키 이름 가져오기
                     keyName = keyName.toLowerCase();
-                    buttonToConfigure.setText(keyName);
+                    buttonToConfigure.setText(indicator + ": " + keyName);
+                    keySettings.put(indicator, keyName);
+
 
                     // 설정 완료 후 이벤트 리스너 제거
-                    buttonToConfigure.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, this);
+                    buttonToConfigure.removeEventHandler(KeyEvent.KEY_PRESSED, this);
 
                     // 다른 이벤트 처리 방지
                     e.consume();
@@ -133,7 +148,7 @@ public class SettingScreenController extends BaseController {
             }
         };
         // 키 이벤트 핸들러 추가
-        buttonToConfigure.getScene().addEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
+        buttonToConfigure.addEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
     }
 
     @FXML
@@ -147,18 +162,31 @@ public class SettingScreenController extends BaseController {
         // box color setting
         String selectedColorMode = screenColorBlindChoiceBox.getValue();
         // button setting
-        int selectedMoveLeft = getAsciiCodeFromButtonText(moveLeftButton);
-        int selectedMoveRight = getAsciiCodeFromButtonText(moveRightButton);
-        int selectedMoveDown = getAsciiCodeFromButtonText(moveDownButton);
-        int selectedRotate = getAsciiCodeFromButtonText(rotateButton);
-        int selectedPause = getAsciiCodeFromButtonText(pauseButton);
-        int selectedDrop = getAsciiCodeFromButtonText(moveDropButton);
-        int selectedExit = getAsciiCodeFromButtonText(exitButton);
+        String indicator = moveLeftButton.getText().split(":")[0];
+        String selectedMoveLeft = keySettings.get(indicator);
+
+        indicator = moveRightButton.getText().split(":")[0];
+        String selectedMoveRight = keySettings.get(indicator);
+
+        indicator = moveDownButton.getText().split(":")[0];
+        String selectedMoveDown = keySettings.get(indicator);
+
+        indicator = rotateButton.getText().split(":")[0];
+        String selectedRotate = keySettings.get(indicator);
+
+        indicator = pauseButton.getText().split(":")[0];
+        String selectedPause = keySettings.get(indicator);
+
+        indicator = moveDropButton.getText().split(":")[0];
+        String selectedDrop = keySettings.get(indicator);
+
+        indicator = exitButton.getText().split(":")[0];
+        String selectedExit = keySettings.get(indicator);
 
         ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
         configRepository.updateConfig(0, selectedColorMode, selectedWidth,
                 selectedHeight, selectedMoveLeft, selectedMoveRight,
-                selectedMoveDown, 120, selectedRotate,
+                selectedMoveDown, "", selectedRotate,
                 selectedPause, selectedDrop, selectedExit);
 
         int[] size = { selectedWidth, selectedHeight };

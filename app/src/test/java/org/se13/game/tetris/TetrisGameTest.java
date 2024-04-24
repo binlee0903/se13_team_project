@@ -1,5 +1,6 @@
 package org.se13.game.tetris;
 
+import javafx.scene.input.KeyCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.se13.SE13Application;
@@ -213,7 +214,7 @@ public class TetrisGameTest {
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(6, 5));
         resetedTetrisGame.deleteCurrentBlockFromGrid();
 
-        resetedTetrisGame.processUserInput('a');
+        resetedTetrisGame.processUserInput("a");
         resetedTetrisGame.drawBlockIntoGrid();
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(3, 4));
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(4, 4));

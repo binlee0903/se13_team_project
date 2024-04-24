@@ -57,14 +57,14 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("mode", "default");
         json.put("screenWidth", 300);
         json.put("screenHeight", 400);
-        json.put("keyLeft", 'a');
-        json.put("keyRight", 'd');
-        json.put("keyDown", 's');
+        json.put("keyLeft", "a");
+        json.put("keyRight", "d");
+        json.put("keyDown", "s");
         json.put("keyRotateLeft", 120);
-        json.put("keyRotateRight", 'e');
-        json.put("keyPause", 'p');
-        json.put("keyDrop", 'w');
-        json.put("keyExit", 'q');
+        json.put("keyRotate", "e");
+        json.put("keyPause", "p");
+        json.put("keyDrop", "w");
+        json.put("keyExit", "q");
 
         String sql = "INSERT INTO config (id, settings) VALUES(?,?)";
         try (Connection conn = this.connect();
@@ -78,7 +78,7 @@ public class ConfigRepositoryImpl implements ConfigRepository {
     }
 
     @Override
-    public void updateConfig(int id, String mode, int gridWidth, int gridHeight, int keyLeft, int keyRight, int keyDown, int keyRotateLeft, int keyRotateRight, int keyPause, int keyDrop, int keyExit) {
+    public void updateConfig(int id, String mode, int gridWidth, int gridHeight, String keyLeft, String keyRight, String keyDown, String keyRotateLeft, String keyRotateRight, String keyPause, String keyDrop, String keyExit) {
         JSONObject json = new JSONObject();
         json.put("mode", mode);
         json.put("screenWidth", gridWidth);
@@ -87,7 +87,7 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("keyRight", keyRight);
         json.put("keyDown", keyDown);
         json.put("keyRotateLeft", keyRotateLeft);
-        json.put("keyRotateRight", keyRotateRight);
+        json.put("keyRotate", keyRotateRight);
         json.put("keyPause", keyPause);
         json.put("keyDrop", keyDrop);
         json.put("keyExit", keyExit);
@@ -119,14 +119,14 @@ public class ConfigRepositoryImpl implements ConfigRepository {
                 result.put("mode", json.getString("mode"));
                 result.put("screenWidth", json.getInt("screenWidth"));
                 result.put("screenHeight", json.getInt("screenHeight"));
-                result.put("keyLeft", json.getInt("keyLeft"));
-                result.put("keyRight", json.getInt("keyRight"));
-                result.put("keyDown", json.getInt("keyDown"));
-                result.put("keyRotateLeft", json.getInt("keyRotateLeft"));
-                result.put("keyRotateRight", json.getInt("keyRotateRight"));
-                result.put("keyPause", json.getInt("keyPause"));
-                result.put("keyDrop", json.getInt("keyDrop"));
-                result.put("keyExit", json.getInt("keyExit"));
+                result.put("keyLeft", json.get("keyLeft"));
+                result.put("keyRight", json.get("keyRight"));
+                result.put("keyDown", json.get("keyDown"));
+                result.put("keyRotateLeft", json.get("keyRotateLeft"));
+                result.put("keyRotate", json.get("keyRotate"));
+                result.put("keyPause", json.get("keyPause"));
+                result.put("keyDrop", json.get("keyDrop"));
+                result.put("keyExit", json.get("keyExit"));
 
                 return result;
             }

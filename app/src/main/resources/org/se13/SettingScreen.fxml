@@ -25,12 +25,12 @@
     </HBox>
     <VBox alignment="CENTER" spacing="10">
         <Text styleClass="keySettingTitle" text="Key settings" />
-        <HBox spacing="10">
+        <HBox alignment="TOP_CENTER" spacing="10">
             <Button fx:id="moveLeftButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
             <Button fx:id="moveDownButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
             <Button fx:id="moveRightButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
         </HBox>
-        <HBox spacing="10">
+        <HBox alignment="TOP_CENTER" spacing="10">
             <Button fx:id="exitButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
             <Button fx:id="moveDropButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
             <Button fx:id="rotateButton" onAction="#keySaveButtonAction" styleClass="keyButton" />

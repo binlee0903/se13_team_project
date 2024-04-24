@@ -7,13 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import org.se13.game.config.InputConfig;
 import org.se13.game.tetris.DefaultTetrisGame;
-import org.se13.sqlite.config.ConfigRepositoryImpl;
 import org.se13.view.base.BaseController;
 import org.se13.view.difficulty.LevelSelectScreenController;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Map;
 
 public class TetrisScreenController extends BaseController {
     @Override
@@ -24,12 +19,12 @@ public class TetrisScreenController extends BaseController {
         Scene scene = gameCanvas.getScene();
 
         scene.setOnKeyPressed((keyEvent -> {
-            if (keyEvent.getText().isEmpty() == false) {
-                if (keyEvent.getText().charAt(0) == InputConfig.PAUSE) {
-                    this.tetrisGame.togglePauseState();
-                } else if (keyEvent.getText().charAt(0) == InputConfig.EXIT) {
-                    System.exit(0);
-                }
+            String keyName = keyEvent.getCode().getName();
+
+            if (keyName.compareToIgnoreCase(InputConfig.PAUSE) == 0) {
+                this.tetrisGame.togglePauseState();
+            } else if (keyName.compareToIgnoreCase(InputConfig.EXIT) == 0) {
+                System.exit(0);
             }
         }));
     }
@@ -49,6 +44,4 @@ public class TetrisScreenController extends BaseController {
     private Canvas gameCanvas;
 
     private DefaultTetrisGame tetrisGame;
-
-    private ConfigRepositoryImpl configRepository;
 }
