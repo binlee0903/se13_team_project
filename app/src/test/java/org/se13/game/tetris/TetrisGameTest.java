@@ -157,14 +157,14 @@ public class TetrisGameTest {
 
         long currentTime;
 
-        blockFallingTimer.fasterBlockFallingTime(GameLevel.EASY); // TODO: 난이도별 테스트 추가
+        blockFallingTimer.fasterBlockFallingTime(GameLevel.NORMAL); // TODO: 난이도별 테스트 추가
 
         while (true) {
             currentTime = System.nanoTime();
 
             blockFallingTimer.setCurrentTime(currentTime);
 
-            if (blockFallingTimer.getElapsedTime() >= 1100000000) {
+            if (blockFallingTimer.getElapsedTime() >= 2300000000L) {
                 assertTrue(blockFallingTimer.isBlockFallingTimeHasGone());
                 break;
             } else {

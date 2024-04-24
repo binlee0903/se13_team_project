@@ -29,7 +29,9 @@ public class CurrentBlock {
         return this.position;
     }
 
-    public Color getColor() { return block.blockColor; }
+    public Color getColor() {
+        return block.blockColor;
+    }
 
     public void rotateCW() {
         rotate = (rotate + 1) % 4;
@@ -56,7 +58,10 @@ public class CurrentBlock {
         position = block.startOffset;
     }
 
-    public CellID getId() { return block.cellId; }
+    public CellID getId() {
+        return block.cellId;
+    }
+
     public int getRotateState() {
         return rotate;
     }
@@ -68,16 +73,16 @@ public class CurrentBlock {
             cells[i] = new Cell(shape[i], getId());
         }
 
-        return bindItem(cells, item);
+        if (item != null) {
+            return bindItem(cells, item);
+        } else {
+            return cells;
+        }
     }
 
     private Cell[] bindItem(Cell[] original, TetrisItem item) {
-        if (item instanceof FeverItem) {
-            int mutate = ((FeverItem) item).getPosition();
-            original[mutate] = new Cell(original[mutate].position(), item.getId());
-            return original;
-        }
-
+        int mutate = item.getPosition();
+        original[mutate] = new Cell(original[mutate].position(), item.getId());
         return original;
     }
 }

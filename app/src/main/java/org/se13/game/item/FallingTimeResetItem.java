@@ -6,17 +6,17 @@ import org.se13.game.block.CellID;
 
 import java.util.Random;
 
-public class FeverItem implements TetrisItem {
+public class FallingTimeResetItem implements TetrisItem {
     private final int position;
 
-    public FeverItem(Random random, Block block) {
+    public FallingTimeResetItem(Random random, Block block) {
         BlockPosition[] shape = block.shape(0);
         position = random.nextInt(0, shape.length);
     }
 
     @Override
     public CellID getId() {
-        return CellID.FEVER_ITEM_ID;
+        return CellID.RESET_ITEM_ID;
     }
 
     @Override
