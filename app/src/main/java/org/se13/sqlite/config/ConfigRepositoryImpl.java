@@ -60,7 +60,6 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("keyLeft", "a");
         json.put("keyRight", "d");
         json.put("keyDown", "s");
-        json.put("keyRotateLeft", 120);
         json.put("keyRotate", "e");
         json.put("keyPause", "p");
         json.put("keyDrop", "w");
@@ -78,7 +77,7 @@ public class ConfigRepositoryImpl implements ConfigRepository {
     }
 
     @Override
-    public void updateConfig(int id, String mode, int gridWidth, int gridHeight, String keyLeft, String keyRight, String keyDown, String keyRotateLeft, String keyRotateRight, String keyPause, String keyDrop, String keyExit) {
+    public void updateConfig(int id, String mode, int gridWidth, int gridHeight, String keyLeft, String keyRight, String keyDown, String keyRotate, String keyPause, String keyDrop, String keyExit) {
         JSONObject json = new JSONObject();
         json.put("mode", mode);
         json.put("screenWidth", gridWidth);
@@ -86,8 +85,7 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("keyLeft", keyLeft);
         json.put("keyRight", keyRight);
         json.put("keyDown", keyDown);
-        json.put("keyRotateLeft", keyRotateLeft);
-        json.put("keyRotate", keyRotateRight);
+        json.put("keyRotate", keyRotate);
         json.put("keyPause", keyPause);
         json.put("keyDrop", keyDrop);
         json.put("keyExit", keyExit);
@@ -122,7 +120,6 @@ public class ConfigRepositoryImpl implements ConfigRepository {
                 result.put("keyLeft", json.get("keyLeft"));
                 result.put("keyRight", json.get("keyRight"));
                 result.put("keyDown", json.get("keyDown"));
-                result.put("keyRotateLeft", json.get("keyRotateLeft"));
                 result.put("keyRotate", json.get("keyRotate"));
                 result.put("keyPause", json.get("keyPause"));
                 result.put("keyDrop", json.get("keyDrop"));
