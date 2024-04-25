@@ -1,6 +1,7 @@
 package org.se13.game.tetris;
 
 import javafx.scene.input.KeyCode;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.se13.SE13Application;
@@ -189,7 +190,7 @@ public class TetrisGameTest {
         while (true) {
             blockFallingTimer.setCurrentTime(System.nanoTime());
 
-            if (blockFallingTimer.getElapsedTime() >= 2300000000L) {
+            if (blockFallingTimer.getElapsedTime() >= 2100000000L) {
                 assertTrue(blockFallingTimer.isBlockFallingTimeHasGone());
                 break;
             } else {
@@ -205,7 +206,7 @@ public class TetrisGameTest {
 
             blockFallingTimer.setCurrentTime(System.nanoTime());
 
-            if (blockFallingTimer.getElapsedTime() >= 2440000000L) {
+            if (blockFallingTimer.getElapsedTime() >= 2280000000L) {
                 assertTrue(blockFallingTimer.isBlockFallingTimeHasGone());
                 break;
             } else {
@@ -221,7 +222,7 @@ public class TetrisGameTest {
 
             blockFallingTimer.setCurrentTime(System.nanoTime());
 
-            if (blockFallingTimer.getElapsedTime() >= 2160000000L) {
+            if (blockFallingTimer.getElapsedTime() >= 1920000000L) {
                 assertTrue(blockFallingTimer.isBlockFallingTimeHasGone());
                 break;
             } else {
@@ -364,14 +365,27 @@ public class TetrisGameTest {
         WeightItem weightItem = new WeightItem(rand, Block.IBlock);
 
         assertSame(allClearItem.getId(), CellID.ALL_CLEAR_ITEM_ID);
+        assertSame(fallingTimeResetItem.getId(), CellID.RESET_ITEM_ID);
         assertSame(feverItem.getId(), CellID.FEVER_ITEM_ID);
         assertSame(clearItem.getId(), CellID.LINE_CLEAR_ITEM_ID);
         assertSame(weightItem.getId(), CellID.WEIGHT_ITEM_ID);
     }
 
     @Test
+    @Disabled
     @DisplayName("Memory Usage Test")
     void memoryUsageTest() {
+        new Thread(() -> {
+            Runtime.getRuntime().gc();
 
+            while (true) {
+                long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+                assertTrue(usedMemory/1024/1024 < 1500);
+            }
+        }).start();
+
+
+        String[] temp = new String[] {"dummy1", "dummy2"};
+        SE13Application.main(temp);
     }
 }
