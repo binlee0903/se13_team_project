@@ -5,7 +5,6 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -31,7 +30,7 @@ public class DefaultTetrisGame {
         PAUSED
     }
 
-    enum BlockSpeed {
+    public enum BlockSpeed {
         DEFAULT,
         FASTER,
         RAGE,
@@ -136,9 +135,6 @@ public class DefaultTetrisGame {
                     blockMovingTimer.restoreBlockFallingTime();
                     clearedLines = 0;
                     break;
-                case LINE_CLEAR_ITEM_ID:
-                    tetrisGameGrid.clearOneRow();
-                    break;
                 case ALL_CLEAR_ITEM_ID:
                     this.tetrisGameGrid = new TetrisGrid(ROW_SIZE, COL_SIZE);
                     break;
@@ -163,7 +159,7 @@ public class DefaultTetrisGame {
 
     public void pulse(long l) {
         if (gameStatus == GameStatus.RUNNING) {
-            if (inputManager.peekInput()) {
+            if (isTestMode == false && inputManager.peekInput()) {
                 processUserInput(inputManager.getInput());
             }
 
@@ -172,21 +168,32 @@ public class DefaultTetrisGame {
                 collideCheckingTimer = new BlockCollideTimer(l);
                 lineClearAnimationTimer = new LineClearAnimationTimer(l);
                 isGameStarted = true;
-                drawNextBlock();
+
+                if (isTestMode == false) {
+                    drawNextBlock();
+                }
             }
 
             if (feverModeTimer.isActive() && !isFeverMode()) {
                 feverModeTimer.release();
             }
 
-            tick(l);
-            prepare();
-            render();
+            if (isTestMode == false) {
+                tick(l);
+                prepare();
+                render();
+            } else {
+                tick(System.nanoTime());
+            }
+
             update();
         } else if (gameStatus == GameStatus.ANIMATION) {
             if (isAnimationEnded != true) {
-                prepare();
-                render();
+                if (isTestMode == false) {
+                    prepare();
+                    render();
+                }
+
                 update();
             }
         } else if (gameStatus == GameStatus.PAUSED) {
@@ -261,6 +268,10 @@ public class DefaultTetrisGame {
 
     public boolean isItemMode() {
         return gameMode == GameMode.ITEM;
+    }
+
+    public boolean isAnimationTimerEnded() {
+        return lineClearAnimationTimer.isTimerOver();
     }
 
     public BlockSpeed getBlockSpeed() {
@@ -368,6 +379,14 @@ public class DefaultTetrisGame {
         this.currentBlock = currentBlock;
     }
 
+    void setBlockPlaced(boolean isBlockPlaced) {
+        this.isBlockPlaced = isBlockPlaced;
+    }
+
+    void setClearedLines(int clearedLines) {
+        this.clearedLines = clearedLines;
+    }
+
     void drawBlockIntoGrid() {
         BlockPosition currentBlockPosition = currentBlock.getPosition();
 
@@ -402,7 +421,7 @@ public class DefaultTetrisGame {
         }
     }
 
-    void updateBlockSpeed() {
+    public void updateBlockSpeed() {
         if (clearedLines > 10 && clearedLines <= 30 && blockSpeed == BlockSpeed.DEFAULT) {
             blockSpeed = BlockSpeed.FASTER;
 
@@ -411,13 +430,21 @@ public class DefaultTetrisGame {
             }
 
             scoreWeight += 10 * gameDifficulty.getWeight();
-        } else if (clearedLines > 30 && clearedLines <= 100 && blockSpeed == BlockSpeed.FASTER) {
+        } else if (clearedLines > 30 && clearedLines <= 80 && blockSpeed == BlockSpeed.FASTER) {
             blockSpeed = BlockSpeed.RAGE;
-            blockMovingTimer.fasterBlockFallingTime(this.gameDifficulty);
+
+            if (this.isTestMode == false) {
+                blockMovingTimer.fasterBlockFallingTime(this.gameDifficulty);
+            }
+
             scoreWeight += 20 * gameDifficulty.getWeight();
-        } else if (clearedLines > 100 && blockSpeed == BlockSpeed.RAGE) {
+        } else if (clearedLines > 80 && blockSpeed == BlockSpeed.RAGE) {
             blockSpeed = BlockSpeed.IMPOSSIBLE;
-            blockMovingTimer.fasterBlockFallingTime(this.gameDifficulty);
+
+            if (this.isTestMode == false) {
+                blockMovingTimer.fasterBlockFallingTime(this.gameDifficulty);
+            }
+
             scoreWeight += 30 * gameDifficulty.getWeight();
         }
     }
@@ -459,29 +486,12 @@ public class DefaultTetrisGame {
             tetrisGameGrid.clearWeightCol(clearedColIndex);
         }
 
-
-        if (isBlockPlaced && currentBlock.getId() == CellID.LINE_CLEAR_ITEM_ID) {
-            tetrisGameGrid.clearOneRow();
-        }
-
         if (isBlockPlaced == true) {
-        }
-
-        if (this.isTestMode == true) {
-            int fullRows = tetrisGameGrid.clearFullRows();
-
-            if (fullRows > 0) {
-                clearedLines += fullRows;
-                lineCounterForItem += fullRows;
-                updateBlockSpeed();
-            }
-        }
-
-        if (this.isTestMode == false && isBlockPlaced == true) {
+            tetrisGameGrid.triggerLineClearItem();
             int fullRows = tetrisGameGrid.animateFullRows();
 
             if (fullRows > 0 || isAnimationEnded == false) {
-                lineClearAnimationTimer.startLineClearAnimation(collideCheckingTimer, blockMovingTimer, feverModeTimer);
+                lineClearAnimationTimer.startLineClearAnimation(collideCheckingTimer, blockMovingTimer, feverModeTimer, false);
 
                 if (lineClearAnimationTimer.isTimerOver() == true) {
                     blockMovingTimer.resumeTimer();
