@@ -5,12 +5,16 @@ public class LineClearAnimationTimer extends Timer {
         super(startedTime);
     }
 
-    public boolean startLineClearAnimation(BlockCollideTimer blockCollideTimer, BlockFallingTimer blockFallingTimer, FeverModeTimer feverModeTimer) {
+    public boolean startLineClearAnimation(BlockCollideTimer blockCollideTimer, BlockFallingTimer blockFallingTimer, FeverModeTimer feverModeTimer, boolean isTestMode) {
         if (isTimerStarted == false) {
             isTimerStarted = true;
-            blockCollideTimer.pauseTimer();
-            blockFallingTimer.pauseTimer();
-            feverModeTimer.setPause();
+
+            if (isTestMode == false) {
+                blockCollideTimer.pauseTimer();
+                blockFallingTimer.pauseTimer();
+                feverModeTimer.setPause();
+            }
+
             startedTime = System.nanoTime();
             currentTime = System.nanoTime();
 
