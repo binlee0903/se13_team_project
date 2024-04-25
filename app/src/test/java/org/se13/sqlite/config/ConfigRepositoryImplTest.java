@@ -141,4 +141,14 @@ public class ConfigRepositoryImplTest {
             }
         }
     }
+
+    @Test
+    @DisplayName("getScreenSize test")
+    @Order(6)
+    void getScreenSize() {
+        int[] screenSizes = configRepository.getScreenSize();
+
+        assertEquals(300, screenSizes[0]);
+        assertEquals(400, screenSizes[1]);
+    }
 }

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 public class SE13Application extends Application {
     private static final Logger log = LoggerFactory.getLogger(SE13Application.class);
     public static NavGraph navController;
+    public static boolean isTestMode = false;
 
     public static void main(String[] args) {
         launch(args);
@@ -17,8 +18,10 @@ public class SE13Application extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.setResizable(false);
-        navController = new StackNavGraph(stage, ConfigRepositoryImpl.getInstance());
-        navController.navigate(AppScreen.START);
+        if (isTestMode != true) {
+            stage.setResizable(false);
+            navController = new StackNavGraph(stage, ConfigRepositoryImpl.getInstance());
+            navController.navigate(AppScreen.START);
+        }
     }
 }

@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SettingScreenController extends BaseController {
+    public boolean isTestMode = false;
     public Button moveLeftButton;
     public Button moveRightButton;
     public Button moveDownButton;
@@ -33,7 +34,7 @@ public class SettingScreenController extends BaseController {
     private Map<String, String> keySettings;
 
     @FXML
-    private void initialize() {
+    public void initialize() {
         keySettings = new HashMap<>();
         ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
         Map<String, Object> configs = configRepository.getConfig(0);
@@ -42,6 +43,19 @@ public class SettingScreenController extends BaseController {
         int screenWidth = (Integer) configs.get("screenWidth");
         int screenHeight = (Integer) configs.get("screenHeight");
         String selectedScreenSize = screenWidth + "x" + screenHeight;
+
+        if (isTestMode == true) {
+            screenSizeChoiceBox = new ChoiceBox<>();
+            screenColorBlindChoiceBox = new ChoiceBox<>();
+            moveLeftButton = new Button("keyLeft:");
+            moveRightButton = new Button("keyRight:");
+            moveDownButton = new Button("keyDown:");
+            exitButton = new Button("Exit");
+            rotateButton = new Button("Rotate");
+            pauseButton = new Button("Pause");
+            moveDropButton = new Button("Drop");
+        }
+
         screenSizeChoiceBox.setItems(FXCollections.observableArrayList("300x400", "600x800", "1920x1080"));
         screenSizeChoiceBox.setValue(selectedScreenSize);
         // Add options in ChoiceBox for the choice among color mode
@@ -80,46 +94,14 @@ public class SettingScreenController extends BaseController {
 
     }
 
-    public String asciiToString(String asciiCode) {
-        try {
-            // 문자열을 정수로 변환
-            int code = Integer.parseInt(asciiCode);
-
-            // 정수 값을 문자로 캐스팅
-            char character = (char) code;
-
-            // 문자를 문자열로 변환하여 반환
-            return String.valueOf(character);
-        } catch (NumberFormatException e) {
-            // 입력 문자열이 유효한 정수가 아닌 경우 오류 처리
-            System.err.println("Invalid ASCII code: " + asciiCode);
-            return null;
-        }
-    }
-
-    public int getStringFromButtonText(Button button) {
-        // 버튼의 텍스트를 가져옵니다.
-        String text = button.getText();
-
-        // 텍스트가 비어있지 않은 경우 첫 번째 문자의 아스키 코드를 반환합니다.
-        if (!text.isEmpty()) {
-            return text.charAt(text.length()-1); // 첫 번째 문자의 아스키 코드 값을 반환
-        }
-
-        // 텍스트가 비어있는 경우, 오류 코드나 기본 값으로 처리할 수 있습니다.
-        // 예를 들어, 여기서는 -1을 반환합니다.
-        return -1;
-    }
-
-
     @FXML
-    private void handleBackButtonAction() {
+    public void handleBackButtonAction() {
         // Turn into last scene
         SE13Application.navController.popBackStack();
     }
 
     @FXML
-    private void keySaveButtonAction(ActionEvent event) {
+    public void keySaveButtonAction(ActionEvent event) {
         Button buttonToConfigure = (Button) event.getSource(); // 이벤트가 발생한 버튼을 가져옵니다.
         String indicator = buttonToConfigure.getText().split(":")[0];
 
@@ -151,7 +133,7 @@ public class SettingScreenController extends BaseController {
     }
 
     @FXML
-    private void handleSaveButtonAction(ActionEvent event) {
+    public void handleSaveButtonAction() {
         // Saving personal settings
         // screen size setting
         String selectedSize = screenSizeChoiceBox.getValue();
