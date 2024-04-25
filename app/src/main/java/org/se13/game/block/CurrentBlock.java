@@ -33,6 +33,8 @@ public class CurrentBlock {
         return block.blockColor;
     }
 
+    public TetrisItem getItem() { return item; }
+
     public void rotateCW() {
         rotate = (rotate + 1) % 4;
     }

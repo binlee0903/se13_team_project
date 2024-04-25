@@ -1,21 +1,18 @@
 package org.se13.game.tetris;
 
-import javafx.scene.input.KeyCode;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.se13.SE13Application;
 import org.se13.game.block.Block;
+import org.se13.game.block.BlockPosition;
 import org.se13.game.block.CellID;
 import org.se13.game.block.CurrentBlock;
 import org.se13.game.grid.TetrisGrid;
 import org.se13.game.item.*;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
-import org.se13.game.timer.BlockCollideTimer;
-import org.se13.game.timer.BlockFallingTimer;
-import org.se13.game.timer.LineClearAnimationTimer;
-import org.se13.game.timer.Timer;
+import org.se13.game.timer.*;
 
 import java.util.Random;
 
@@ -387,5 +384,115 @@ public class TetrisGameTest {
 
         String[] temp = new String[] {"dummy1", "dummy2"};
         SE13Application.main(temp);
+    }
+
+    @Test
+    @DisplayName("메모리릭_테스트")
+    void memoryLeakTest() {
+        DefaultTetrisGame game1 = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.DEFAULT, DefaultTetrisGame.GameSize.MEDIUM, true);
+        DefaultTetrisGame game2 = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.DEFAULT, DefaultTetrisGame.GameSize.MEDIUM, true);
+
+        assertEquals(game1, game2);
+
+        game1.resetGame();
+        DefaultTetrisGame game3 = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.DEFAULT, DefaultTetrisGame.GameSize.MEDIUM, true);
+
+        assertNotEquals(game1, game3);
+    }
+
+    @Test
+    @DisplayName("피버_모드_아이템_발동_테스트")
+    void feverItemTest() throws InterruptedException {
+        DefaultTetrisGame defaultTetrisGame = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.DEFAULT, DefaultTetrisGame.GameSize.MEDIUM, true);
+        FeverModeTimer.DEFAULT_DURATION = 500000000L;
+
+        defaultTetrisGame.startGame();
+        for (int i = 0; i < 10; i++) {
+            defaultTetrisGame
+                .getTetrisGrid()
+                .setCell(0, i, CellID.IBLOCK_ID);
+        }
+
+        defaultTetrisGame
+            .getTetrisGrid()
+            .setCell(0, 0, CellID.FEVER_ITEM_ID);
+
+        int currentWeight = defaultTetrisGame.getScoreWeight();
+        defaultTetrisGame.getTetrisGrid().clearFullRows();
+        int nextWeight = defaultTetrisGame.getScoreWeight();
+
+        assertTrue(currentWeight < nextWeight);
+
+        Thread.sleep(500);
+
+        defaultTetrisGame.pulse(System.nanoTime());
+        nextWeight = defaultTetrisGame.getScoreWeight();
+        assertEquals(currentWeight, nextWeight);
+    }
+
+    @Test
+    @DisplayName("속도_리셋_아이템_발동_테스트")
+    void resetSpeedItemTest() {
+        DefaultTetrisGame defaultTetrisGame = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.DEFAULT, DefaultTetrisGame.GameSize.MEDIUM, true);
+
+        defaultTetrisGame.startGame();
+        defaultTetrisGame.pulse(System.nanoTime());
+
+        for (int i = 0; i < 10; i++) {
+            defaultTetrisGame
+                .getTetrisGrid()
+                .setCell(0, i, CellID.IBLOCK_ID);
+        }
+
+        defaultTetrisGame
+            .getTetrisGrid()
+            .setCell(0, 0, CellID.RESET_ITEM_ID);
+
+        DefaultTetrisGame.BlockSpeed currentSpeed = defaultTetrisGame.getBlockSpeed();
+        defaultTetrisGame.getTetrisGrid().clearFullRows();
+        DefaultTetrisGame.BlockSpeed nextSpeed = defaultTetrisGame.getBlockSpeed();
+
+        assertEquals(currentSpeed, nextSpeed);
+    }
+
+    @Test
+    @DisplayName("보드_리셋_아이템_발동_테스트")
+    void resetBoardItemTest() {
+        DefaultTetrisGame defaultTetrisGame = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.DEFAULT, DefaultTetrisGame.GameSize.MEDIUM, true);
+        BlockPosition nothing = new BlockPosition(0, 0);
+
+        defaultTetrisGame.startGame();
+        defaultTetrisGame.pulse(System.nanoTime());
+
+        for (int i = 0; i < 10; i++) {
+            defaultTetrisGame
+                .getTetrisGrid()
+                .setCell(0, i, CellID.IBLOCK_ID);
+        }
+
+        defaultTetrisGame
+            .getTetrisGrid()
+            .setCell(0, 0, CellID.ALL_CLEAR_ITEM_ID);
+
+        defaultTetrisGame
+            .getTetrisGrid()
+            .setCell(1, 1, CellID.IBLOCK_ID);
+
+        assertEquals(CellID.IBLOCK_ID, defaultTetrisGame.getTetrisGrid().getCell(1, 1));
+        defaultTetrisGame.getTetrisGrid().clearFullRows();
+        assertEquals(CellID.EMPTY, defaultTetrisGame.getTetrisGrid().getCell(1, 1));
+    }
+
+    @Test
+    @DisplayName("아이템이_잘_생성되는지_테스트")
+    void createItemBlockTest() {
+        DefaultTetrisGame defaultTetrisGame = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.ITEM, DefaultTetrisGame.GameSize.MEDIUM, true);
+        defaultTetrisGame.resetGame();
+        defaultTetrisGame = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.ITEM, DefaultTetrisGame.GameSize.MEDIUM, true);
+
+        for (int i = 0; i < 100; i++) {
+            CurrentBlock block = defaultTetrisGame.nextBlock(10);
+            assertInstanceOf(TetrisItem.class, block.getItem());
+        }
     }
 }

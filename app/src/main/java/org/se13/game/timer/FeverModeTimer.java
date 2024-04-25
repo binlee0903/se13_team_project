@@ -1,7 +1,7 @@
 package org.se13.game.timer;
 
 public class FeverModeTimer {
-    public static final long DEFAULT_DURATION = 20000000000L;
+    public static long DEFAULT_DURATION = 20000000000L;
 
     private long endTime = 0;
     private long pauseTime = 0;

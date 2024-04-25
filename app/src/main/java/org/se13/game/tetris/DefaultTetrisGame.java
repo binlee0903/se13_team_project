@@ -13,11 +13,14 @@ import org.se13.game.block.*;
 import org.se13.game.config.Config;
 import org.se13.game.grid.TetrisGrid;
 import org.se13.game.input.InputManager;
+import org.se13.game.item.*;
 import org.se13.game.rule.BlockQueue;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
-import org.se13.game.rule.ItemQueue;
-import org.se13.game.timer.*;
+import org.se13.game.timer.BlockCollideTimer;
+import org.se13.game.timer.BlockFallingTimer;
+import org.se13.game.timer.FeverModeTimer;
+import org.se13.game.timer.LineClearAnimationTimer;
 import org.se13.view.nav.AppScreen;
 
 import java.util.Random;
@@ -46,7 +49,6 @@ public class DefaultTetrisGame {
     protected DefaultTetrisGame(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel, GameLevel gameLevel, GameMode gameMode, GameSize gameSize, boolean isTestMode) {
         this.random = new Random();
         this.blockQueue = new BlockQueue(random, gameLevel);
-        this.itemBlockQueue = new ItemQueue(gameLevel);
         this.tetrisGameGrid = new TetrisGrid(ROW_SIZE, COL_SIZE);
 
         this.gameStatus = GameStatus.PAUSED;
@@ -264,6 +266,10 @@ public class DefaultTetrisGame {
                 assert (false);
                 return null;
         }
+    }
+
+    public int getScoreWeight() {
+        return scoreWeight;
     }
 
     public boolean isItemMode() {
@@ -531,9 +537,31 @@ public class DefaultTetrisGame {
     }
 
     private CurrentBlock nextBlock() {
-        if (gameMode == GameMode.ITEM && lineCounterForItem >= 10) {
-            lineCounterForItem -= 10;
-            return new CurrentBlock(blockQueue.nextBlock(), itemBlockQueue.nextItem());
+        CurrentBlock block = nextBlock(lineCounterForItem);
+        lineCounterForItem -= 10;
+        return block;
+    }
+
+    CurrentBlock nextBlock(int lineCounter) {
+        if (gameMode == GameMode.ITEM && lineCounter >= 10) {
+            CellID[] list = new CellID[]{
+                CellID.FEVER_ITEM_ID,
+                CellID.WEIGHT_ITEM_ID,
+                CellID.RESET_ITEM_ID,
+                CellID.LINE_CLEAR_ITEM_ID,
+                CellID.ALL_CLEAR_ITEM_ID,
+            };
+
+            Block block = blockQueue.nextBlock();
+
+            return switch (list[random.nextInt(list.length)]) {
+                case FEVER_ITEM_ID -> new CurrentBlock(block, new FeverItem(random, block));
+                case WEIGHT_ITEM_ID -> new CurrentBlock(block, new WeightItem(random, block));
+                case RESET_ITEM_ID -> new CurrentBlock(block, new FallingTimeResetItem(random, block));
+                case LINE_CLEAR_ITEM_ID -> new CurrentBlock(block, new LineClearItem(random, block));
+                case ALL_CLEAR_ITEM_ID -> new CurrentBlock(block, new AllClearItem(random, block));
+                default -> throw new IllegalStateException();
+            };
         } else {
             return new CurrentBlock(blockQueue.nextBlock());
         }
@@ -681,7 +709,6 @@ public class DefaultTetrisGame {
     private InputManager inputManager;
     private TetrisGrid tetrisGameGrid;
     private final BlockQueue blockQueue;
-    private final ItemQueue itemBlockQueue;
     private CurrentBlock currentBlock;
     private CurrentBlock nextBlock;
     private final GraphicsContext gameGraphicsContext;
