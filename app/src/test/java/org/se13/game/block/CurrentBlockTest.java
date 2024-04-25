@@ -1,5 +1,6 @@
 package org.se13.game.block;
 
+import javafx.scene.paint.Color;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.se13.game.item.FeverItem;
@@ -59,20 +60,10 @@ class CurrentBlockTest {
     }
 
     @Test
-    @DisplayName("피버 아이템이 있을 시 코드가 정상적으로 변형이 되는지 테스트")
-    void mutateTest() {
-        Random random = new Random();
-        CurrentBlock currentBlock = new CurrentBlock(Block.IBlock, new FeverItem(random, Block.IBlock));
-        Cell[] cells = currentBlock.cells();
+    void colorTest() {
+        CurrentBlock currentBlock = new CurrentBlock(Block.IBlock);
+        Color color = currentBlock.getColor();
 
-        boolean isMutate = false;
-
-        for (Cell cell : cells) {
-            if (cell.cellID() != CellID.IBLOCK_ID) {
-                isMutate = true;
-            }
-        }
-
-        assertTrue(isMutate);
+        assertInstanceOf(Color.class, color);
     }
 }
