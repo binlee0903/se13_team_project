@@ -66,10 +66,10 @@ public class DefaultTetrisGame {
         this.isBlockCollided = false;
         this.isAnimationEnded = true;
 
-        Scene scene = tetrisGameCanvas.getScene();
-        BorderPane parent = (BorderPane) scene.lookup("#frame");
-
         if (isTestMode == false) {
+            Scene scene = tetrisGameCanvas.getScene();
+            BorderPane parent = (BorderPane) scene.lookup("#frame");
+
             this.gameGraphicsContext = tetrisGameCanvas.getGraphicsContext2D();
             this.nextBlockGraphicsContext = nextBlockCanvas.getGraphicsContext2D();
 
