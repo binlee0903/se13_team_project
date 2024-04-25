@@ -114,8 +114,7 @@ public class ConfigRepositoryImplTest {
                 "r",
                 "t",
                 "y",
-                "u",
-                "i");
+                "u");
         Map<String, Object> config = configRepository.getConfig(0);
         assertNotNull(config);
         assertEquals("test", config.get("mode"));
@@ -124,11 +123,10 @@ public class ConfigRepositoryImplTest {
         assertEquals("q", config.get("keyLeft"));
         assertEquals("w", config.get("keyRight"));
         assertEquals("e", config.get("keyDown"));
-        assertEquals("r", config.get("keyRotateLeft"));
-        assertEquals("t", config.get("keyRotate"));
-        assertEquals("y", config.get("keyPause"));
-        assertEquals("u", config.get("keyDrop"));
-        assertEquals("i", config.get("keyExit"));
+        assertEquals("r", config.get("keyRotate"));
+        assertEquals("t", config.get("keyPause"));
+        assertEquals("y", config.get("keyDrop"));
+        assertEquals("u", config.get("keyExit"));
     }
 
     @Test
