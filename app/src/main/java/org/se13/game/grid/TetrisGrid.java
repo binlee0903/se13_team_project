@@ -136,7 +136,9 @@ public class TetrisGrid {
 
     private void fillAnimationCellIntoRow(int rowIndex) {
         for (int i = 0; i < colSize; i++) {
-            setCell(rowIndex, i, CellID.CBLOCK_ID);
+            if (CellID.CBLOCK_ID.compareTo(getCell(rowIndex, i)) > 0) {
+                setCell(rowIndex, i, CellID.CBLOCK_ID);
+            }
         }
     }
 
