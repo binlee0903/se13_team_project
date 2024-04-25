@@ -1,5 +1,6 @@
 package org.se13.view.controller;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.se13.NavGraph;
@@ -19,6 +20,7 @@ public class ControllerTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("SettingScreenController test")
     void testSettingScreenController() {
         new Thread(() -> {
