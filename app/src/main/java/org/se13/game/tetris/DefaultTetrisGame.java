@@ -537,34 +537,33 @@ public class DefaultTetrisGame {
     }
 
     private CurrentBlock nextBlock() {
-        CurrentBlock block = nextBlock(lineCounterForItem);
-        lineCounterForItem -= 10;
-        return block;
+        if (gameMode == GameMode.ITEM && lineCounterForItem >= 10) {
+            CurrentBlock block = nextItemBlock();
+            lineCounterForItem -= 10;
+            return block;
+        }
+        return new CurrentBlock(blockQueue.nextBlock());
     }
 
-    CurrentBlock nextBlock(int lineCounter) {
-        if (gameMode == GameMode.ITEM && lineCounter >= 10) {
-            CellID[] list = new CellID[]{
-                CellID.FEVER_ITEM_ID,
-                CellID.WEIGHT_ITEM_ID,
-                CellID.RESET_ITEM_ID,
-                CellID.LINE_CLEAR_ITEM_ID,
-                CellID.ALL_CLEAR_ITEM_ID,
-            };
+    CurrentBlock nextItemBlock() {
+        CellID[] list = new CellID[]{
+            CellID.FEVER_ITEM_ID,
+            CellID.WEIGHT_ITEM_ID,
+            CellID.RESET_ITEM_ID,
+            CellID.LINE_CLEAR_ITEM_ID,
+            CellID.ALL_CLEAR_ITEM_ID,
+        };
 
-            Block block = blockQueue.nextBlock();
+        Block block = blockQueue.nextBlock();
 
-            return switch (list[random.nextInt(list.length)]) {
-                case FEVER_ITEM_ID -> new CurrentBlock(block, new FeverItem(random, block));
-                case WEIGHT_ITEM_ID -> new CurrentBlock(block, new WeightItem(random, block));
-                case RESET_ITEM_ID -> new CurrentBlock(block, new FallingTimeResetItem(random, block));
-                case LINE_CLEAR_ITEM_ID -> new CurrentBlock(block, new LineClearItem(random, block));
-                case ALL_CLEAR_ITEM_ID -> new CurrentBlock(block, new AllClearItem(random, block));
-                default -> throw new IllegalStateException();
-            };
-        } else {
-            return new CurrentBlock(blockQueue.nextBlock());
-        }
+        return switch (list[random.nextInt(list.length)]) {
+            case FEVER_ITEM_ID -> new CurrentBlock(block, new FeverItem(random, block));
+            case WEIGHT_ITEM_ID -> new CurrentBlock(block, new WeightItem(random, block));
+            case RESET_ITEM_ID -> new CurrentBlock(block, new FallingTimeResetItem(random, block));
+            case LINE_CLEAR_ITEM_ID -> new CurrentBlock(block, new LineClearItem(random, block));
+            case ALL_CLEAR_ITEM_ID -> new CurrentBlock(block, new AllClearItem(random, block));
+            default -> throw new IllegalStateException();
+        };
     }
 
     private void drawNextBlock() {
