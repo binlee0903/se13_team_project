@@ -8,11 +8,15 @@ import org.se13.game.block.Block;
 import org.se13.game.block.CellID;
 import org.se13.game.block.CurrentBlock;
 import org.se13.game.grid.TetrisGrid;
+import org.se13.game.item.*;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.game.timer.BlockCollideTimer;
 import org.se13.game.timer.BlockFallingTimer;
+import org.se13.game.timer.LineClearAnimationTimer;
 import org.se13.game.timer.Timer;
+
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -81,7 +85,15 @@ public class TetrisGameTest {
         assertTrue(grid.isRowFull(4));
         assertFalse(grid.isRowEmpty(4));
 
+        int count = grid.animateFullRows();
+
+        assertEquals(1, count);
         assertEquals(1, grid.clearFullRows());
+
+        grid.clearWeightCol(0);
+        grid.clearWeightCol(4);
+        grid.clearWeightCol(6);
+        assertFalse(grid.isRowEmpty(19));
     }
 
     @Test
@@ -115,6 +127,22 @@ public class TetrisGameTest {
         assertTrue(blockCollideTimer.isTimerStarted());
         assertTrue(blockCollideTimer.getElapsedTime() >= 2000000000);
         assertTrue(blockCollideTimer.isBlockPlaceTimeEnded());
+    }
+
+    @Test
+    @DisplayName("LineClearAnimationTimer 테스트")
+    void lineClearAnimationTimerTest() {
+        LineClearAnimationTimer lineClearAnimationTimer = new LineClearAnimationTimer(System.nanoTime());
+
+        lineClearAnimationTimer.startLineClearAnimation(null, null, null, true);
+
+        while (lineClearAnimationTimer.isTimerOver() == true) {
+            ;
+        }
+
+        lineClearAnimationTimer.resetFlags();
+
+        assertTrue(true);
     }
 
     @Test
@@ -156,16 +184,44 @@ public class TetrisGameTest {
     void fallingTimerTest() {
         BlockFallingTimer blockFallingTimer = new BlockFallingTimer(System.nanoTime());
 
-        long currentTime;
-
-        blockFallingTimer.fasterBlockFallingTime(GameLevel.NORMAL); // TODO: 난이도별 테스트 추가
+        blockFallingTimer.fasterBlockFallingTime(GameLevel.NORMAL);
 
         while (true) {
-            currentTime = System.nanoTime();
-
-            blockFallingTimer.setCurrentTime(currentTime);
+            blockFallingTimer.setCurrentTime(System.nanoTime());
 
             if (blockFallingTimer.getElapsedTime() >= 2300000000L) {
+                assertTrue(blockFallingTimer.isBlockFallingTimeHasGone());
+                break;
+            } else {
+                assertFalse(blockFallingTimer.isBlockFallingTimeHasGone());
+            }
+        }
+
+        blockFallingTimer.reset(System.nanoTime());
+        blockFallingTimer.restoreBlockFallingTime();
+        blockFallingTimer.fasterBlockFallingTime(GameLevel.EASY);
+
+        while (true) {
+
+            blockFallingTimer.setCurrentTime(System.nanoTime());
+
+            if (blockFallingTimer.getElapsedTime() >= 2440000000L) {
+                assertTrue(blockFallingTimer.isBlockFallingTimeHasGone());
+                break;
+            } else {
+                assertFalse(blockFallingTimer.isBlockFallingTimeHasGone());
+            }
+        }
+
+        blockFallingTimer.reset(System.nanoTime());
+        blockFallingTimer.restoreBlockFallingTime();
+        blockFallingTimer.fasterBlockFallingTime(GameLevel.HARD);
+
+        while (true) {
+
+            blockFallingTimer.setCurrentTime(System.nanoTime());
+
+            if (blockFallingTimer.getElapsedTime() >= 2160000000L) {
                 assertTrue(blockFallingTimer.isBlockFallingTimeHasGone());
                 break;
             } else {
@@ -269,7 +325,53 @@ public class TetrisGameTest {
         }
 
 
+        resetedTetrisGame.setBlockPlaced(true);
+        resetedTetrisGame.pulse(System.nanoTime());
         resetedTetrisGame.update();
+        assertEquals(DefaultTetrisGame.BlockSpeed.DEFAULT, resetedTetrisGame.getBlockSpeed());
+
+        while (resetedTetrisGame.isAnimationTimerEnded() == true) {
+            resetedTetrisGame.update();
+        }
+
+        resetedTetrisGame.update();
+
+        resetedTetrisGame.setClearedLines(11);
+        resetedTetrisGame.updateBlockSpeed();
+
         assertEquals(DefaultTetrisGame.BlockSpeed.FASTER, resetedTetrisGame.getBlockSpeed());
+
+        resetedTetrisGame.setClearedLines(31);
+        resetedTetrisGame.updateBlockSpeed();
+
+        assertEquals(DefaultTetrisGame.BlockSpeed.RAGE, resetedTetrisGame.getBlockSpeed());
+
+        resetedTetrisGame.setClearedLines(101);
+        resetedTetrisGame.updateBlockSpeed();
+
+        assertEquals(DefaultTetrisGame.BlockSpeed.IMPOSSIBLE, resetedTetrisGame.getBlockSpeed());
+    }
+
+    @Test
+    @DisplayName("Item Test")
+    void itemTest() {
+        Random rand = new Random();
+
+        AllClearItem allClearItem = new AllClearItem(rand, Block.IBlock);
+        FallingTimeResetItem fallingTimeResetItem = new FallingTimeResetItem(rand, Block.IBlock);
+        FeverItem feverItem = new FeverItem(rand, Block.IBlock);
+        LineClearItem clearItem = new LineClearItem(rand, Block.IBlock);
+        WeightItem weightItem = new WeightItem(rand, Block.IBlock);
+
+        assertSame(allClearItem.getId(), CellID.ALL_CLEAR_ITEM_ID);
+        assertSame(feverItem.getId(), CellID.FEVER_ITEM_ID);
+        assertSame(clearItem.getId(), CellID.LINE_CLEAR_ITEM_ID);
+        assertSame(weightItem.getId(), CellID.WEIGHT_ITEM_ID);
+    }
+
+    @Test
+    @DisplayName("Memory Usage Test")
+    void memoryUsageTest() {
+
     }
 }
