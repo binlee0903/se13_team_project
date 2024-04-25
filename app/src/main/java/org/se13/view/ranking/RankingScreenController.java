@@ -52,7 +52,7 @@ public class RankingScreenController extends BaseController {
     @FXML
     private void handleTetrisButtonAction() {
         // Turn into a tetris screen
-        SE13Application.navController.navigate(AppScreen.TETRIS);
+        SE13Application.navController.navigate(AppScreen.LEVEL_SELECT);
     }
 
     @Override
