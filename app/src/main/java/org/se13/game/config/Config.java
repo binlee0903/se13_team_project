@@ -4,8 +4,8 @@ import org.se13.sqlite.config.ConfigRepositoryImpl;
 
 import java.util.Map;
 
-public class InputConfig {
-    public InputConfig() {
+public class Config {
+    static {
         ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
         Map<String, Object> configs = configRepository.getConfig(0);
         DROP = (String)configs.get("keyDrop");
@@ -15,6 +15,8 @@ public class InputConfig {
         CW_SPIN = (String)configs.get("keyRotate");
         PAUSE = (String)configs.get("keyPause");
         EXIT = (String)configs.get("keyExit");
+        SCREEN_WIDTH = (Integer) configs.get("screenWidth");
+        SCREEN_HEIGHT = (Integer) configs.get("screenHeight");
     }
 
     public static String DROP;
@@ -24,4 +26,6 @@ public class InputConfig {
     public static String CW_SPIN;
     public static String PAUSE;
     public static String EXIT;
+    public static int SCREEN_WIDTH;
+    public static int SCREEN_HEIGHT;
 }
