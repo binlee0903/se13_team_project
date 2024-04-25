@@ -510,8 +510,10 @@ public class DefaultTetrisGame {
                     case RESET_ITEM_ID:
                         gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
                         gameGraphicsContext.fillText(String.valueOf(RESET_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
+                        break;
                     case EMPTY:
                         gameGraphicsContext.fillText(String.valueOf(' '), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
+                        break;
                 }
             }
         }
