@@ -58,7 +58,6 @@ public class ConfigRepositoryImplTest {
         json.put("keyLeft", "a");
         json.put("keyRight", "d");
         json.put("keyDown", "s");
-        json.put("keyRotateLeft", 120);
         json.put("keyRotate", "e");
         json.put("keyPause", "p");
         json.put("keyDrop", "w");
@@ -90,7 +89,6 @@ public class ConfigRepositoryImplTest {
         assertEquals("a", config.get("keyLeft"));
         assertEquals("d", config.get("keyRight"));
         assertEquals("s", config.get("keyDown"));
-        assertEquals(120, config.get("keyRotateLeft"));
         assertEquals("e", config.get("keyRotate"));
         assertEquals("p", config.get("keyPause"));
         assertEquals("w", config.get("keyDrop"));
