@@ -416,12 +416,28 @@ public class DefaultTetrisGame {
             tetrisGameGrid.clearWeightCol(clearedColIndex);
         }
 
+
         if (isBlockPlaced && currentBlock.getId() == CellID.LINE_CLEAR_ITEM_ID) {
             tetrisGameGrid.clearOneRow();
         }
 
         if (isBlockPlaced == true) {
+        }
+
+        if (this.isTestMode == true) {
+            int fullRows = tetrisGameGrid.clearFullRows();
+
+            if (fullRows > 0) {
+                clearedLines += fullRows;
+                lineCounterForItem += fullRows;
+                updateBlockSpeed();
+            }
+        }
+
+        if (this.isTestMode == false && isBlockPlaced == true) {
             int fullRows = tetrisGameGrid.animateFullRows();
+            score += scoreWeight * fullRows;
+            tetrisGameGrid.clearFullRows();
 
             if (fullRows > 0 || isAnimationEnded == false) {
                 lineClearAnimationTimer.startLineClearAnimation(collideCheckingTimer, blockMovingTimer, feverModeTimer);
