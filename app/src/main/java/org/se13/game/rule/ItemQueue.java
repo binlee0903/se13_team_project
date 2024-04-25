@@ -1,10 +1,7 @@
 package org.se13.game.rule;
 
 import org.se13.game.block.Block;
-import org.se13.game.item.FallingTimeResetItem;
-import org.se13.game.item.FeverItem;
-import org.se13.game.item.TetrisItem;
-import org.se13.game.item.WeightItem;
+import org.se13.game.item.*;
 
 import java.util.*;
 
@@ -21,6 +18,8 @@ public class ItemQueue {
         tetrisItems.add(new FeverItem(rand, blocks.nextBlock()));
         tetrisItems.add(new WeightItem(rand, blocks.nextBlock()));
         tetrisItems.add(new FallingTimeResetItem(rand, blocks.nextBlock()));
+        tetrisItems.add(new LineClearItem(rand, blocks.nextBlock()));
+        tetrisItems.add(new AllClearItem(rand, blocks.nextBlock()));
     }
 
     public TetrisItem nextItem() {

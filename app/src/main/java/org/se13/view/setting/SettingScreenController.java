@@ -185,7 +185,7 @@ public class SettingScreenController extends BaseController {
         ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
         configRepository.updateConfig(0, selectedColorMode, selectedWidth,
                 selectedHeight, selectedMoveLeft, selectedMoveRight,
-                selectedMoveDown, "", selectedRotate,
+                selectedMoveDown, selectedRotate,
                 selectedPause, selectedDrop, selectedExit);
 
         int[] size = { selectedWidth, selectedHeight };

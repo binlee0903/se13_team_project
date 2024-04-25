@@ -182,6 +182,21 @@ public class TetrisGrid {
         }
         setCell(rowSize - 1, colIndex, CellID.WEIGHT_BLOCK_ID);
     }
+    public void clearOneRow() {
+        for (int i = 0; i < rowSize; i++) {
+            for (int j = 0; j < colSize; j++) {
+                if (gridCells[i][j] == CellID.LINE_CLEAR_ITEM_ID) {
+                    clearRow(i);  // 아이템이 발견된 행을 삭제합니다.
+                }
+            }
+        }
+    }
+
+    public void allClear() {
+        for (int i = 0; i < rowSize; i++) {
+            clearRow(i);
+        }
+    }
 
     // column size of tetris board
     private final int colSize;

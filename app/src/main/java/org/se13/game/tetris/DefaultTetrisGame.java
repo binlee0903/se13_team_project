@@ -93,6 +93,12 @@ public class DefaultTetrisGame {
                     blockMovingTimer.restoreBlockFallingTime();
                     clearedLines = 0;
                     break;
+                case LINE_CLEAR_ITEM_ID:
+                    tetrisGameGrid.clearOneRow();
+                    break;
+                case ALL_CLEAR_ITEM_ID:
+                    this.tetrisGameGrid = new TetrisGrid(ROW_SIZE, COL_SIZE);
+                    break;
             }
         });
 
@@ -410,6 +416,14 @@ public class DefaultTetrisGame {
             tetrisGameGrid.clearWeightCol(clearedColIndex);
         }
 
+
+        if (isBlockPlaced && currentBlock.getId() == CellID.LINE_CLEAR_ITEM_ID) {
+            tetrisGameGrid.clearOneRow();
+        }
+
+        if (isBlockPlaced == true) {
+        }
+
         if (this.isTestMode == true) {
             int fullRows = tetrisGameGrid.clearFullRows();
 
@@ -564,6 +578,12 @@ public class DefaultTetrisGame {
                     case RESET_ITEM_ID:
                         gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
                         gameGraphicsContext.fillText(String.valueOf(RESET_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
+                    case LINE_CLEAR_ITEM_ID:
+                        gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
+                        gameGraphicsContext.fillText("L", j * TEXT_INTERVAL, i * TEXT_INTERVAL);
+                    case ALL_CLEAR_ITEM_ID:
+                        gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
+                        gameGraphicsContext.fillText("A", j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
                     case EMPTY:
                         gameGraphicsContext.fillText(String.valueOf(' '), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
