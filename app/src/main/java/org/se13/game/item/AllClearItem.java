@@ -14,6 +14,7 @@ public class AllClearItem implements TetrisItem{
     }
     @Override
     public CellID getId() { return CellID.ALL_CLEAR_ITEM_ID; }
+
     @Override
     public int getPosition() {
         return position;
