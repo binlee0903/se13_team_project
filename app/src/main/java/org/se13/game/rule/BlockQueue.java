@@ -18,7 +18,7 @@ public class BlockQueue {
         this(random, level, BlockWeight.DefaultWeight);
     }
 
-    public BlockQueue(Random random, GameLevel level, BlockWeight weight) {
+    BlockQueue(Random random, GameLevel level, BlockWeight weight) {
         this.random = random;
         this.level = level;
         this.weight = weight;
