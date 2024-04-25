@@ -17,7 +17,8 @@ public class Timer {
         this.beforePausedTimeInterval = this.currentTime - this.startedTime;
     }
 
-    public void resumeTimer(long l) {
+    public void resumeTimer() {
+        long l = System.nanoTime();
         this.startedTime = l - this.beforePausedTimeInterval;
         this.currentTime = l;
     }

@@ -4,7 +4,6 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import org.se13.SE13Application;
 import org.se13.game.block.*;
@@ -15,18 +14,15 @@ import org.se13.game.rule.BlockQueue;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.game.rule.ItemQueue;
-import org.se13.game.timer.FeverModeTimer;
-import org.se13.sqlite.config.ConfigRepositoryImpl;
-import org.se13.game.timer.BlockCollideTimer;
-import org.se13.game.timer.BlockFallingTimer;
+import org.se13.game.timer.*;
 import org.se13.view.nav.AppScreen;
 
-import java.util.Map;
 import java.util.Random;
 
 public class DefaultTetrisGame {
     enum GameStatus {
         GAMEOVER,
+        ANIMATION,
         RUNNING,
         PAUSED
     }
@@ -57,6 +53,7 @@ public class DefaultTetrisGame {
         this.isTestMode = isTestMode;
         this.isBlockPlaced = false;
         this.isBlockCollided = false;
+        this.isAnimationEnded = true;
 
         this.currentBlock = nextBlock();
         this.nextBlock = nextBlock();
@@ -79,8 +76,8 @@ public class DefaultTetrisGame {
         }
 
         feverModeTimer = new FeverModeTimer(
-            () -> scoreWeight += FEVER_SCORE_WEIGHT,
-            () -> scoreWeight -= FEVER_SCORE_WEIGHT
+                () -> scoreWeight += FEVER_SCORE_WEIGHT,
+                () -> scoreWeight -= FEVER_SCORE_WEIGHT
         );
 
         this.tetrisGameGrid.registerItemListener((cellID) -> {
@@ -99,7 +96,7 @@ public class DefaultTetrisGame {
             }
         });
 
-        this.animationTimer = new AnimationTimer() {
+        this.tetrisTimer = new AnimationTimer() {
             @Override
             public void handle(long l) {
                 pulse(l);
@@ -107,7 +104,7 @@ public class DefaultTetrisGame {
         };
     }
 
-    public static DefaultTetrisGame getInstance(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel, GameLevel gameDifficulty, GameMode gameMode,boolean isTestMode) {
+    public static DefaultTetrisGame getInstance(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel, GameLevel gameDifficulty, GameMode gameMode, boolean isTestMode) {
         if (tetrisGame == null) {
             tetrisGame = new DefaultTetrisGame(tetrisGameCanvas, nextBlockCanvas, scoreLabel, gameDifficulty, gameMode, isTestMode);
         }
@@ -124,6 +121,7 @@ public class DefaultTetrisGame {
             if (isGameStarted == false) {
                 blockMovingTimer = new BlockFallingTimer(l);
                 collideCheckingTimer = new BlockCollideTimer(l);
+                lineClearAnimationTimer = new LineClearAnimationTimer(l);
                 isGameStarted = true;
                 drawNextBlock();
             }
@@ -136,10 +134,16 @@ public class DefaultTetrisGame {
             prepare();
             render();
             update();
+        } else if (gameStatus == GameStatus.ANIMATION) {
+            if (isAnimationEnded != true) {
+                prepare();
+                render();
+                update();
+            }
         } else if (gameStatus == GameStatus.PAUSED) {
-            animationTimer.stop();
+            tetrisTimer.stop();
         } else {
-            animationTimer.stop();
+            tetrisTimer.stop();
         }
     }
 
@@ -147,7 +151,7 @@ public class DefaultTetrisGame {
         this.gameStatus = GameStatus.RUNNING;
 
         if (this.isTestMode == false) {
-            animationTimer.start();
+            tetrisTimer.start();
         }
     }
 
@@ -168,16 +172,18 @@ public class DefaultTetrisGame {
                 feverModeTimer.setPause();
                 blockMovingTimer.pauseTimer();
                 collideCheckingTimer.pauseTimer();
+                lineClearAnimationTimer.pauseTimer();
             }
         } else {
             this.gameStatus = GameStatus.RUNNING;
 
             if (this.isTestMode == false) {
                 feverModeTimer.setResume();
-                blockMovingTimer.resumeTimer(System.nanoTime());
-                collideCheckingTimer.resumeTimer(System.nanoTime());
+                blockMovingTimer.resumeTimer();
+                collideCheckingTimer.resumeTimer();
+                lineClearAnimationTimer.resumeTimer();
 
-                animationTimer.start();
+                tetrisTimer.start();
             }
         }
     }
@@ -199,7 +205,7 @@ public class DefaultTetrisGame {
             case HARD:
                 return "Hard";
             default:
-                assert(false);
+                assert (false);
                 return null;
         }
     }
@@ -405,27 +411,44 @@ public class DefaultTetrisGame {
         }
 
         if (isBlockPlaced == true) {
-            int clearedRows = tetrisGameGrid.clearFullRows();
-            clearedLines += clearedRows;
-            lineCounterForItem += clearedRows;
+            int fullRows = tetrisGameGrid.animateFullRows();
 
-            if (clearedRows > 0) {
-                score += scoreWeight * clearedRows;
+            if (fullRows > 0 || isAnimationEnded == false) {
+                lineClearAnimationTimer.startLineClearAnimation(collideCheckingTimer, blockMovingTimer, feverModeTimer);
+
+                if (lineClearAnimationTimer.isTimerOver() == true) {
+                    blockMovingTimer.resumeTimer();
+                    collideCheckingTimer.resumeTimer();
+                    feverModeTimer.setResume();
+
+                    score += scoreWeight * fullRows;
+                    tetrisGameGrid.clearFullRows();
+                    clearedLines += fullRows;
+                    lineCounterForItem += fullRows;
+                    lineClearAnimationTimer.resetFlags();
+                    gameStatus = GameStatus.RUNNING;
+                    isAnimationEnded = true;
+                } else {
+                    gameStatus = GameStatus.ANIMATION;
+                    isAnimationEnded = false;
+                }
             }
 
-            updateBlockSpeed();
+            if (isAnimationEnded == true) {
+                updateBlockSpeed();
 
-            currentBlock = nextBlock;
-            nextBlock = nextBlock();
+                currentBlock = nextBlock;
+                nextBlock = nextBlock();
 
-            if (this.isTestMode == false) {
-                drawNextBlock();
-            }
+                if (this.isTestMode == false) {
+                    drawNextBlock();
+                }
 
-            isBlockPlaced = false;
+                isBlockPlaced = false;
 
-            if (isGameOver() == true) {
-                stopGame();
+                if (isGameOver() == true) {
+                    stopGame();
+                }
             }
         }
     }
@@ -462,8 +485,6 @@ public class DefaultTetrisGame {
 
     private void render() {
         gameGraphicsContext.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
-        Map<String, Object> configs = configRepository.getConfig(0);
 
         for (int i = 0; i < ROW_SIZE; i++) {
             for (int j = 0; j < COL_SIZE; j++) {
@@ -496,9 +517,13 @@ public class DefaultTetrisGame {
                         gameGraphicsContext.setFill(Block.ZBlock.blockColor);
                         gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
+                    case CBLOCK_ID:
+                        gameGraphicsContext.setFill(Color.WHITE);
+                        gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
+                        break;
                     case FEVER_ITEM_ID:
                         gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
-                        gameGraphicsContext.fillText("F", j * TEXT_INTERVAL, i * TEXT_INTERVAL);
+                        gameGraphicsContext.fillText(String.valueOf(FEVER_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
                     case WEIGHT_ITEM_ID:
                         gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
@@ -511,8 +536,10 @@ public class DefaultTetrisGame {
                     case RESET_ITEM_ID:
                         gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
                         gameGraphicsContext.fillText(String.valueOf(RESET_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
+                        break;
                     case EMPTY:
                         gameGraphicsContext.fillText(String.valueOf(' '), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
+                        break;
                 }
             }
         }
@@ -535,7 +562,7 @@ public class DefaultTetrisGame {
     private final char WEIGHT_ITEM_BLOCK_TEXT = 'W';
     private final char RESET_BLOCK_TEXT = 'R';
     private final int FEVER_SCORE_WEIGHT = 10;
-    private AnimationTimer animationTimer;
+    private AnimationTimer tetrisTimer;
     private InputManager inputManager;
     private InputConfig inputConfig;
     private TetrisGrid tetrisGameGrid;
@@ -552,7 +579,8 @@ public class DefaultTetrisGame {
     private Label scoreLabel;
     private BlockFallingTimer blockMovingTimer;
     private BlockCollideTimer collideCheckingTimer;
-    private FeverModeTimer feverModeTimer;;
+    private FeverModeTimer feverModeTimer;
+    private LineClearAnimationTimer lineClearAnimationTimer;
     private int score;
     private int scoreWeight;
     private int clearedLines = 0;
@@ -561,5 +589,6 @@ public class DefaultTetrisGame {
     private boolean isTestMode;
     private boolean isBlockPlaced;
     private boolean isBlockCollided;
+    private boolean isAnimationEnded;
     private Random random;
 }
