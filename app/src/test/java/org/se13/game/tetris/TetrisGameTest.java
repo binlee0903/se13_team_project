@@ -177,14 +177,14 @@ public class TetrisGameTest {
     @Test
     @DisplayName("전반적인 테트리스 게임 테스트")
     void tetrisGameTest() {
-        DefaultTetrisGame defaultTetrisGame = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.DEFAULT, true);
+        DefaultTetrisGame defaultTetrisGame = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.DEFAULT, DefaultTetrisGame.GameSize.MEDIUM,true);
 
         defaultTetrisGame.startGame();
         defaultTetrisGame.stopGame();
         assertFalse(defaultTetrisGame.isGameOver());
         defaultTetrisGame.resetGame();
 
-        DefaultTetrisGame resetedTetrisGame = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.DEFAULT, true);
+        DefaultTetrisGame resetedTetrisGame = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.DEFAULT, DefaultTetrisGame.GameSize.MEDIUM,true);
 
         assertNotSame(defaultTetrisGame, resetedTetrisGame);
         assertEquals(0, resetedTetrisGame.getScore());

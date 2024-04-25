@@ -15,7 +15,7 @@ public class GameOverScreenController extends BaseController {
     public void onStart() {
         super.onStart();
 
-        defaultTetrisGame = DefaultTetrisGame.getInstance(null, null, null, null, null, false);
+        defaultTetrisGame = DefaultTetrisGame.getInstance(null, null, null, null, null, null,false);
         score.setText(String.valueOf(defaultTetrisGame.getScore()));
         rankingRepository = new RankingRepositoryImpl();
         rankingRepository.createNewTableRanking();
