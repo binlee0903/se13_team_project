@@ -422,8 +422,6 @@ public class DefaultTetrisGame {
 
         if (this.isTestMode == false && isBlockPlaced == true) {
             int fullRows = tetrisGameGrid.animateFullRows();
-            score += scoreWeight * fullRows;
-            tetrisGameGrid.clearFullRows();
 
             if (fullRows > 0 || isAnimationEnded == false) {
                 lineClearAnimationTimer.startLineClearAnimation(collideCheckingTimer, blockMovingTimer, feverModeTimer);
@@ -481,16 +479,34 @@ public class DefaultTetrisGame {
 
         int colIndex = 0;
         int rowIndex = 0;
+        Cell[] cells = nextBlock.cells();
 
         for (int i = 0; i < 4; i++) {
             colIndex = nextBlockPositions[i].getColIndex();
             rowIndex = nextBlockPositions[i].getRowIndex() + 1; // 더 잘보이게 하기 위해 행 인덱스에 1을 더해줌
 
             nextBlockGraphicsContext.setFill(nextBlock.getColor());
-            if (nextBlock.getId() == Block.WeightItemBlock.cellId) {
-                nextBlockGraphicsContext.fillText(String.valueOf(WEIGHT_ITEM_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-            } else {
-                nextBlockGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
+
+            switch (cells[i].cellID()) {
+                case FEVER_ITEM_ID:
+                    nextBlockGraphicsContext.setFill(Color.WHITE);
+                    nextBlockGraphicsContext.fillText(String.valueOf(FEVER_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
+                    break;
+
+                case WEIGHT_ITEM_ID:
+                case CellID.WEIGHT_BLOCK_ID:
+                    nextBlockGraphicsContext.setFill(Color.WHITE);
+                    nextBlockGraphicsContext.fillText(String.valueOf(WEIGHT_ITEM_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
+                    break;
+
+                case RESET_ITEM_ID:
+                    nextBlockGraphicsContext.setFill(Color.WHITE);
+                    nextBlockGraphicsContext.fillText(String.valueOf(RESET_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
+                    break;
+
+                default:
+                    nextBlockGraphicsContext.setFill(nextBlock.getColor());
+                    nextBlockGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
             }
         }
     }
