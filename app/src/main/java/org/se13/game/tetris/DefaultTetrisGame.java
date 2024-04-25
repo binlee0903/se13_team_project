@@ -551,7 +551,7 @@ public class DefaultTetrisGame {
                         gameGraphicsContext.fillText("L", j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                     case ALL_CLEAR_ITEM_ID:
                         gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
-                        gameGraphicsContext.fillText("A", j * TEXT_INTERVAL, i * TEXT_INTERVAL)
+                        gameGraphicsContext.fillText("A", j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                         break;
                     case EMPTY:
                         gameGraphicsContext.fillText(String.valueOf(' '), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
