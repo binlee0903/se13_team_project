@@ -19,6 +19,7 @@ public class ItemQueue {
         tetrisItems.add(new WeightItem(rand, blocks.nextBlock()));
         tetrisItems.add(new FallingTimeResetItem(rand, blocks.nextBlock()));
         tetrisItems.add(new LineClearItem(rand, blocks.nextBlock()));
+        tetrisItems.add(new AllClearItem(rand, blocks.nextBlock()));
     }
 
     public TetrisItem nextItem() {

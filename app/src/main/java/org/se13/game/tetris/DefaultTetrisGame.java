@@ -97,7 +97,11 @@ public class DefaultTetrisGame {
                     clearedLines = 0;
                     break;
                 case LINE_CLEAR_ITEM_ID:
-
+                    tetrisGameGrid.clearOneRow();
+                    break;
+                case ALL_CLEAR_ITEM_ID:
+                    this.tetrisGameGrid = new TetrisGrid(ROW_SIZE, COL_SIZE);
+                    break;
             }
         });
 
@@ -406,6 +410,10 @@ public class DefaultTetrisGame {
             tetrisGameGrid.clearWeightCol(clearedColIndex);
         }
 
+        if (isBlockPlaced && currentBlock.getId() == CellID.LINE_CLEAR_ITEM_ID) {
+            tetrisGameGrid.clearOneRow();
+        }
+
         if (isBlockPlaced == true) {
             int clearedRows = tetrisGameGrid.clearFullRows();
             clearedLines += clearedRows;
@@ -516,6 +524,9 @@ public class DefaultTetrisGame {
                     case LINE_CLEAR_ITEM_ID:
                         gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
                         gameGraphicsContext.fillText("L", j * TEXT_INTERVAL, i * TEXT_INTERVAL);
+                    case ALL_CLEAR_ITEM_ID:
+                        gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
+                        gameGraphicsContext.fillText("A", j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                     case EMPTY:
                         gameGraphicsContext.fillText(String.valueOf(' '), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
                 }
