@@ -46,7 +46,6 @@ public class SettingScreenController extends BaseController {
         screenColorBlindChoiceBox.setValue(colorMode);
         // Add options in buttons for the choice in the keyboard
         String keyMoveLeft = String.valueOf(configs.get("keyLeft"));
-        System.out.println(keyMoveLeft);
         moveLeftButton.setText("Left: " + asciiToString(keyMoveLeft));
 
         String keyMoveRight = String.valueOf(configs.get("keyRight"));
