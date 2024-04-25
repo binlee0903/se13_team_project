@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.se13"
-version = "0.1"
+version = "1.0"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
