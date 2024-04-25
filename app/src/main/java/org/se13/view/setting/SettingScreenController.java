@@ -51,7 +51,6 @@ public class SettingScreenController extends BaseController {
         // Add options in buttons for the choice in the keyboard
         String keyMoveLeft = (String)configs.get("keyLeft");
         keySettings.put("keyLeft", keyMoveLeft);
-        System.out.println(keyMoveLeft);
         moveLeftButton.setText("keyLeft: " + keyMoveLeft);
 
         String keyMoveRight = (String)configs.get("keyRight");

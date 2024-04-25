@@ -78,6 +78,19 @@ public class TetrisGrid {
         return true;
     }
 
+    public int animateFullRows() {
+        int fulledRows = 0;
+
+        for (int i = rowSize - 1; i >= 0; i--) {
+            if (isRowFull(i)) {
+                fillAnimationCellIntoRow(i);
+                fulledRows++;
+            }
+        }
+
+        return fulledRows;
+    }
+
     /**
      * clears full rows
      *
@@ -119,6 +132,12 @@ public class TetrisGrid {
         }
 
         return grid;
+    }
+
+    private void fillAnimationCellIntoRow(int rowIndex) {
+        for (int i = 0; i < colSize; i++) {
+            setCell(rowIndex, i, CellID.CBLOCK_ID);
+        }
     }
 
     /**

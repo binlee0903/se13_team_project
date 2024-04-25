@@ -138,7 +138,7 @@ public class TetrisGameTest {
             }
 
             if (timer2.getElapsedTime() > 2000000000) {
-                timer1.resumeTimer(currentTime);
+                timer1.resumeTimer();
                 break;
             }
         }
