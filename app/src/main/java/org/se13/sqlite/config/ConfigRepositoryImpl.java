@@ -8,7 +8,7 @@ import java.util.Map;
 
 
 public class ConfigRepositoryImpl implements ConfigRepository {
-    private ConfigRepositoryImpl() {
+    public ConfigRepositoryImpl() {
         super();
 
         this.createNewTableConfig();
