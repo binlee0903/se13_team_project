@@ -8,8 +8,8 @@
       stylesheets="@style.css"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.se13.view.start.StartScreenController">
-    <Text text="START" styleClass="gameTitle"/>
-    <Button fx:id="startButton" text="TETRIS" styleClass="menuButton" onAction="#handleTetrisButtonAction"/>
+    <Text text="Tetris" styleClass="gameTitle"/>
+    <Button fx:id="startButton" text="Start" styleClass="menuButton" onAction="#handleTetrisButtonAction"/>
     <Button fx:id="settingsButton" text="SETTINGS" styleClass="menuButton" onAction="#handleSettingsButtonAction"/>
     <Button fx:id="scoreButton" text="SCORE" styleClass="menuButton" onAction="#handleScoreButtonAction"/>
     <Button fx:id="quitButton" text="QUIT" styleClass="menuButton" onAction="#handleQuitButtonAction"/>
