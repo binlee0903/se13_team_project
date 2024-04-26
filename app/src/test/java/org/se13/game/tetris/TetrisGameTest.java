@@ -491,7 +491,7 @@ public class TetrisGameTest {
         defaultTetrisGame = DefaultTetrisGame.getInstance(null, null, null, GameLevel.NORMAL, GameMode.ITEM, DefaultTetrisGame.GameSize.MEDIUM, true);
 
         for (int i = 0; i < 100; i++) {
-            CurrentBlock block = defaultTetrisGame.nextBlock(10);
+            CurrentBlock block = defaultTetrisGame.nextItemBlock();
             assertInstanceOf(TetrisItem.class, block.getItem());
         }
     }
