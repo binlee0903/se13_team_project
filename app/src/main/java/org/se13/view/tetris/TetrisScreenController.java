@@ -1,5 +1,6 @@
 package org.se13.view.tetris;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -94,9 +95,11 @@ public class TetrisScreenController extends BaseController {
 
     private Subscriber<TetrisState> updateState() {
         return (state) -> {
-            drawNextBlock(state.nextBlock());
-            setTetrisState(state.tetrisGrid());
-            score.setText(String.valueOf(state.score()));
+            Platform.runLater(() -> {
+                drawNextBlock(state.nextBlock());
+                setTetrisState(state.tetrisGrid());
+                score.setText(String.valueOf(state.score()));
+            });
         };
     }
 
