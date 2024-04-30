@@ -20,6 +20,10 @@ public class TetrisGrid {
         this.listeners = new ArrayList<>();
     }
 
+    public CellID[][] getGrid() {
+        return gridCells;
+    }
+
     public void setCell(int rowIndex, int colIndex, CellID cellId) {
         gridCells[rowIndex][colIndex] = cellId;
     }

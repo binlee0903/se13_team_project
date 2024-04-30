@@ -4,35 +4,36 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 import org.se13.SE13Application;
-import org.se13.game.tetris.DefaultTetrisGame;
 import org.se13.sqlite.ranking.RankingRepositoryImpl;
-import org.se13.view.ranking.RankingScreenController;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
+import org.se13.view.ranking.RankingScreenController;
 
 public class GameOverScreenController extends BaseController {
     @Override
     public void onStart() {
         super.onStart();
-
-        defaultTetrisGame = DefaultTetrisGame.getInstance(null, null, null, null, null, null,false);
-        score.setText(String.valueOf(defaultTetrisGame.getScore()));
+        score.setText(String.valueOf(endData.score()));
         rankingRepository = new RankingRepositoryImpl();
         rankingRepository.createNewTableRanking();
     }
 
     public void handleRankingButtonAction() {
         SE13Application.navController.navigate(AppScreen.RANKING, (RankingScreenController controller) -> {
-            controller.setArguments(defaultTetrisGame.getScore(), defaultTetrisGame.isItemMode(), defaultTetrisGame.getDifficulty());
+            controller.setArguments(endData.score(), endData.isItemMode(), endData.difficulty());
         });
-        defaultTetrisGame.resetGame();
     }
 
-    private DefaultTetrisGame defaultTetrisGame;
+    public void setArguments(TetrisGameEndData endData) {
+        this.endData = endData;
+    }
+
     private RankingRepositoryImpl rankingRepository;
 
     @FXML
     private Text score;
     @FXML
     public Button rankingButton;
+
+    private TetrisGameEndData endData;
 }

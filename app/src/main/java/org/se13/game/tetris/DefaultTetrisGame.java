@@ -1,16 +1,7 @@
 package org.se13.game.tetris;
 
-import javafx.animation.AnimationTimer;
-import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import org.se13.SE13Application;
+import org.se13.game.action.TetrisAction;
 import org.se13.game.block.*;
-import org.se13.game.config.Config;
 import org.se13.game.grid.TetrisGrid;
 import org.se13.game.input.InputManager;
 import org.se13.game.item.*;
@@ -21,11 +12,20 @@ import org.se13.game.timer.BlockCollideTimer;
 import org.se13.game.timer.BlockFallingTimer;
 import org.se13.game.timer.FeverModeTimer;
 import org.se13.game.timer.LineClearAnimationTimer;
-import org.se13.view.nav.AppScreen;
+import org.se13.server.TetrisServer;
+import org.se13.utils.Observer;
+import org.se13.utils.Subscriber;
+import org.se13.view.tetris.TetrisState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
 public class DefaultTetrisGame {
+    private static final Logger log = LoggerFactory.getLogger(DefaultTetrisGame.class);
+    private TetrisServer server;
+    private Observer<TetrisState> state;
+
     enum GameStatus {
         GAMEOVER,
         ANIMATION,
@@ -40,14 +40,10 @@ public class DefaultTetrisGame {
         IMPOSSIBLE
     }
 
-    public enum GameSize {
-        SMALL,
-        MEDIUM,
-        LARGE
-    }
-
-    protected DefaultTetrisGame(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel, GameLevel gameLevel, GameMode gameMode, GameSize gameSize, boolean isTestMode) {
+    public DefaultTetrisGame(GameLevel gameLevel, GameMode gameMode, TetrisServer server) {
         this.random = new Random();
+        this.server = server;
+        this.state = new Observer<>();
         this.blockQueue = new BlockQueue(random, gameLevel);
         this.tetrisGameGrid = new TetrisGrid(ROW_SIZE, COL_SIZE);
 
@@ -55,69 +51,18 @@ public class DefaultTetrisGame {
         this.blockSpeed = BlockSpeed.DEFAULT;
         this.gameDifficulty = gameLevel;
         this.gameMode = gameMode;
-        this.gameSize = gameSize;
         this.score = 0;
         this.scoreWeight = 10;
         this.clearedLines = 0;
         this.lineCounterForItem = 0;
 
-        this.isGameStarted = false;
-        this.isTestMode = isTestMode;
         this.isBlockPlaced = false;
         this.isBlockCollided = false;
         this.isAnimationEnded = true;
 
-        if (isTestMode == false) {
-            Scene scene = tetrisGameCanvas.getScene();
-            BorderPane parent = (BorderPane) scene.lookup("#frame");
-
-            this.gameGraphicsContext = tetrisGameCanvas.getGraphicsContext2D();
-            this.nextBlockGraphicsContext = nextBlockCanvas.getGraphicsContext2D();
-
-            switch (this.gameSize) {
-                case GameSize.SMALL:
-                    this.CANVAS_WIDTH = 100;
-                    this.CANVAS_HEIGHT = 210;
-                    TEXT_INTERVAL = 10;
-                    break;
-                case GameSize.MEDIUM:
-                    this.CANVAS_WIDTH = 150;
-                    this.CANVAS_HEIGHT = 315;
-                    TEXT_INTERVAL = 15;
-                    this.gameGraphicsContext.setFont(new Font("Arial", 20));
-                    this.nextBlockGraphicsContext.setFont(new Font("Arial", 20));
-                    nextBlockCanvas.setWidth(100);
-                    break;
-                case GameSize.LARGE:
-                    this.CANVAS_WIDTH = 250;
-                    this.CANVAS_HEIGHT = 530;
-                    TEXT_INTERVAL = 25;
-                    this.gameGraphicsContext.setFont(new Font("Arial", 30));
-                    this.nextBlockGraphicsContext.setFont(new Font("Arial", 30));
-                    nextBlockCanvas.setWidth(100);
-                    break;
-                default:
-                    this.CANVAS_WIDTH = 600;
-                    this.CANVAS_HEIGHT = 600;
-            }
-
-            parent.setMaxWidth(this.CANVAS_WIDTH);
-            parent.setMaxHeight(this.CANVAS_HEIGHT);
-            tetrisGameCanvas.setWidth(this.CANVAS_WIDTH);
-            tetrisGameCanvas.setHeight(this.CANVAS_HEIGHT);
-
-            this.scoreLabel = scoreLabel;
-            this.inputManager = InputManager.getInstance(scoreLabel.getScene());
-        } else {
-            this.isBlockPlaced = true;
-            this.gameGraphicsContext = null;
-            this.nextBlockGraphicsContext = null;
-            this.CANVAS_WIDTH = 200;
-            this.CANVAS_HEIGHT = 400;
-        }
-
         this.currentBlock = nextBlock();
         this.nextBlock = nextBlock();
+        this.inputManager = new InputManager();
 
         feverModeTimer = new FeverModeTimer(
                 () -> scoreWeight += FEVER_SCORE_WEIGHT,
@@ -142,116 +87,74 @@ public class DefaultTetrisGame {
                     break;
             }
         });
-
-        this.tetrisTimer = new AnimationTimer() {
-            @Override
-            public void handle(long l) {
-                pulse(l);
-            }
-        };
     }
 
-    public static DefaultTetrisGame getInstance(Canvas tetrisGameCanvas, Canvas nextBlockCanvas, Label scoreLabel, GameLevel gameDifficulty, GameMode gameMode, GameSize gameSize,boolean isTestMode) {
-        if (tetrisGame == null) {
-            tetrisGame = new DefaultTetrisGame(tetrisGameCanvas, nextBlockCanvas, scoreLabel, gameDifficulty, gameMode, gameSize, isTestMode);
-        }
 
-        return tetrisGame;
+    public void subscribe(Subscriber<TetrisState> subscriber) {
+        state.subscribe(subscriber);
     }
 
     public void pulse(long l) {
         if (gameStatus == GameStatus.RUNNING) {
-            if (isTestMode == false && inputManager.peekInput()) {
+            if (inputManager.peekInput()) {
                 processUserInput(inputManager.getInput());
-            }
-
-            if (isGameStarted == false) {
-                blockMovingTimer = new BlockFallingTimer(l);
-                collideCheckingTimer = new BlockCollideTimer(l);
-                lineClearAnimationTimer = new LineClearAnimationTimer(l);
-                isGameStarted = true;
-
-                if (isTestMode == false) {
-                    drawNextBlock();
-                }
             }
 
             if (feverModeTimer.isActive() && !isFeverMode()) {
                 feverModeTimer.release();
             }
 
-            if (isTestMode == false) {
-                tick(l);
-                prepare();
-                render();
-            } else {
-                tick(System.nanoTime());
-            }
-
+            tick(l);
             update();
         } else if (gameStatus == GameStatus.ANIMATION) {
             if (isAnimationEnded != true) {
-                if (isTestMode == false) {
-                    prepare();
-                    render();
-                }
-
                 update();
             }
-        } else if (gameStatus == GameStatus.PAUSED) {
-            tetrisTimer.stop();
-        } else {
-            tetrisTimer.stop();
         }
+
+        updateState(tetrisGameGrid, nextBlock, score);
     }
 
     public void startGame() {
+        long startTime = System.nanoTime();
         this.gameStatus = GameStatus.RUNNING;
-
-        if (this.isTestMode == false) {
-            tetrisTimer.start();
-        }
+        blockMovingTimer = new BlockFallingTimer(startTime);
+        collideCheckingTimer = new BlockCollideTimer(startTime);
+        lineClearAnimationTimer = new LineClearAnimationTimer(startTime);
     }
 
     public void stopGame() {
         this.gameStatus = GameStatus.GAMEOVER;
-
-        if (this.isTestMode == false) {
-            this.inputManager.reset();
-            SE13Application.navController.navigate(AppScreen.GAMEOVER);
-        }
+        this.inputManager.reset();
+        server.responseGameOver(getScore(), isItemMode(), getDifficulty());
     }
 
-    public void togglePauseState() {
+    public boolean togglePauseState() {
         if (this.gameStatus != GameStatus.PAUSED) {
             this.gameStatus = GameStatus.PAUSED;
 
-            if (this.isTestMode == false) {
-                feverModeTimer.setPause();
-                blockMovingTimer.pauseTimer();
-                collideCheckingTimer.pauseTimer();
-                lineClearAnimationTimer.pauseTimer();
-            }
+            feverModeTimer.setPause();
+            blockMovingTimer.pauseTimer();
+            collideCheckingTimer.pauseTimer();
+            lineClearAnimationTimer.pauseTimer();
+            return false;
         } else {
             this.gameStatus = GameStatus.RUNNING;
 
-            if (this.isTestMode == false) {
-                feverModeTimer.setResume();
-                blockMovingTimer.resumeTimer();
-                collideCheckingTimer.resumeTimer();
-                lineClearAnimationTimer.resumeTimer();
-
-                tetrisTimer.start();
-            }
+            feverModeTimer.setResume();
+            blockMovingTimer.resumeTimer();
+            collideCheckingTimer.resumeTimer();
+            lineClearAnimationTimer.resumeTimer();
+            return true;
         }
     }
 
-    public void resetGame() {
-        tetrisGame = null;
+    int getScore() {
+        return this.score;
     }
 
-    public int getScore() {
-        return this.score;
+    public void requestInput(TetrisAction input) {
+        inputManager.add(input);
     }
 
     public String getDifficulty() {
@@ -309,7 +212,7 @@ public class DefaultTetrisGame {
         return true;
     }
 
-    void rotateBlockCW() {
+    public void rotateBlockCW() {
         deleteCurrentBlockFromGrid();
         currentBlock.rotateCW();
 
@@ -321,7 +224,7 @@ public class DefaultTetrisGame {
         }
     }
 
-    void moveBlockLeft() {
+    public void moveBlockLeft() {
         deleteCurrentBlockFromGrid();
         currentBlock.move(0, -1);
 
@@ -330,7 +233,7 @@ public class DefaultTetrisGame {
         }
     }
 
-    void moveBlockRight() {
+    public void moveBlockRight() {
         deleteCurrentBlockFromGrid();
         currentBlock.move(0, 1);
 
@@ -339,7 +242,7 @@ public class DefaultTetrisGame {
         }
     }
 
-    void moveBlockDown() {
+    public void moveBlockDown() {
         deleteCurrentBlockFromGrid();
         currentBlock.move(1, 0);
         this.score += scoreWeight / 10;
@@ -353,7 +256,7 @@ public class DefaultTetrisGame {
         }
     }
 
-    void immediateBlockPlace() {
+    public void immediateBlockPlace() {
         deleteCurrentBlockFromGrid();
 
         for (int i = currentBlock.getPosition().getRowIndex(); i < ROW_SIZE; i++) {
@@ -413,44 +316,29 @@ public class DefaultTetrisGame {
         }
     }
 
-    void processUserInput(String keyCode) {
-        if (keyCode.compareToIgnoreCase(Config.DROP) == 0) {
-            immediateBlockPlace();
-        } else if (keyCode.compareToIgnoreCase(Config.DOWN) == 0) {
-            moveBlockDown();
-        } else if (keyCode.compareToIgnoreCase(Config.LEFT) == 0) {
-            moveBlockLeft();
-        } else if (keyCode.compareToIgnoreCase(Config.RIGHT) == 0) {
-            moveBlockRight();
-        } else if (keyCode.compareToIgnoreCase(Config.CW_SPIN) == 0) {
-            rotateBlockCW();
+    void processUserInput(TetrisAction input) {
+        switch (input) {
+            case IMMEDIATE_BLOCK_PLACE -> immediateBlockPlace();
+            case MOVE_BLOCK_DOWN -> moveBlockDown();
+            case MOVE_BLOCK_LEFT -> moveBlockLeft();
+            case MOVE_BLOCK_RIGHT -> moveBlockRight();
+            case ROTATE_BLOCK_CW -> rotateBlockCW();
+            case TOGGLE_PAUSE_STATE -> togglePauseState();
         }
     }
 
     public void updateBlockSpeed() {
         if (clearedLines > 10 && clearedLines <= 30 && blockSpeed == BlockSpeed.DEFAULT) {
             blockSpeed = BlockSpeed.FASTER;
-
-            if (this.isTestMode == false) {
-                blockMovingTimer.fasterBlockFallingTime(this.gameDifficulty);
-            }
-
+            blockMovingTimer.fasterBlockFallingTime(this.gameDifficulty);
             scoreWeight += 10 * gameDifficulty.getWeight();
         } else if (clearedLines > 30 && clearedLines <= 80 && blockSpeed == BlockSpeed.FASTER) {
             blockSpeed = BlockSpeed.RAGE;
-
-            if (this.isTestMode == false) {
-                blockMovingTimer.fasterBlockFallingTime(this.gameDifficulty);
-            }
-
+            blockMovingTimer.fasterBlockFallingTime(this.gameDifficulty);
             scoreWeight += 20 * gameDifficulty.getWeight();
         } else if (clearedLines > 80 && blockSpeed == BlockSpeed.RAGE) {
             blockSpeed = BlockSpeed.IMPOSSIBLE;
-
-            if (this.isTestMode == false) {
-                blockMovingTimer.fasterBlockFallingTime(this.gameDifficulty);
-            }
-
+            blockMovingTimer.fasterBlockFallingTime(this.gameDifficulty);
             scoreWeight += 30 * gameDifficulty.getWeight();
         }
     }
@@ -481,10 +369,6 @@ public class DefaultTetrisGame {
 
     void update() {
         drawBlockIntoGrid();
-
-        if (this.isTestMode == false) {
-            scoreLabel.setText(String.valueOf(score));
-        }
 
         // WeightBlock이 떨어졌을 때, 해당 열을 지워줌
         if (isBlockPlaced == true && currentBlock.getId() == Block.WeightItemBlock.cellId) {
@@ -519,14 +403,8 @@ public class DefaultTetrisGame {
 
             if (isAnimationEnded == true) {
                 updateBlockSpeed();
-
                 currentBlock = nextBlock;
                 nextBlock = nextBlock();
-
-                if (this.isTestMode == false) {
-                    drawNextBlock();
-                }
-
                 isBlockPlaced = false;
 
                 if (isGameOver() == true) {
@@ -566,158 +444,22 @@ public class DefaultTetrisGame {
         };
     }
 
-    private void drawNextBlock() {
-        nextBlockGraphicsContext.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-        BlockPosition[] nextBlockPositions = nextBlock.shape();
-
-        int colIndex = 0;
-        int rowIndex = 0;
-        Cell[] cells = nextBlock.cells();
-
-        for (int i = 0; i < 4; i++) {
-            colIndex = nextBlockPositions[i].getColIndex();
-            rowIndex = nextBlockPositions[i].getRowIndex() + 1; // 더 잘보이게 하기 위해 행 인덱스에 1을 더해줌
-
-            nextBlockGraphicsContext.setFill(nextBlock.getColor());
-
-            switch (cells[i].cellID()) {
-                case FEVER_ITEM_ID:
-                    nextBlockGraphicsContext.setFill(Color.WHITE);
-                    nextBlockGraphicsContext.fillText(String.valueOf(FEVER_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-                    break;
-
-                case WEIGHT_ITEM_ID:
-                case CellID.WEIGHT_BLOCK_ID:
-                    nextBlockGraphicsContext.setFill(Color.WHITE);
-                    nextBlockGraphicsContext.fillText(String.valueOf(WEIGHT_ITEM_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-                    break;
-
-                case RESET_ITEM_ID:
-                    nextBlockGraphicsContext.setFill(Color.WHITE);
-                    nextBlockGraphicsContext.fillText(String.valueOf(RESET_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-                    break;
-
-                case ALL_CLEAR_ITEM_ID:
-                    nextBlockGraphicsContext.setFill(Color.WHITE);
-                    nextBlockGraphicsContext.fillText(String.valueOf(ALL_CLEAR_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-                    break;
-
-                case LINE_CLEAR_ITEM_ID:
-                    nextBlockGraphicsContext.setFill(Color.WHITE);
-                    nextBlockGraphicsContext.fillText(String.valueOf(LINE_CLEAR_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-                    break;
-
-                default:
-                    nextBlockGraphicsContext.setFill(nextBlock.getColor());
-                    nextBlockGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), colIndex * TEXT_INTERVAL, rowIndex * TEXT_INTERVAL);
-            }
-        }
+    private void updateState(TetrisGrid newTetrisGird, CurrentBlock newNextBlock, int newScore) {
+        state.setValue(new TetrisState(newTetrisGird.getGrid(), newNextBlock, newScore));
     }
 
-    private void render() {
-        gameGraphicsContext.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-        for (int i = 0; i < ROW_SIZE; i++) {
-            for (int j = 0; j < COL_SIZE; j++) {
-                switch (tetrisGameGrid.getCell(i, j)) {
-                    case IBLOCK_ID: // I Block
-                        gameGraphicsContext.setFill(Block.IBlock.blockColor);
-                        gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                    case JBLOCK_ID: // J Block
-                        gameGraphicsContext.setFill(Block.JBlock.blockColor);
-                        gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                    case LBLOCK_ID: // L Block
-                        gameGraphicsContext.setFill(Block.LBlock.blockColor);
-                        gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                    case OBLOCK_ID: // O Block
-                        gameGraphicsContext.setFill(Block.OBlock.blockColor);
-                        gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                    case SBLOCK_ID: // S Block
-                        gameGraphicsContext.setFill(Block.SBlock.blockColor);
-                        gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                    case TBLOCK_ID: // T Block
-                        gameGraphicsContext.setFill(Block.TBlock.blockColor);
-                        gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                    case ZBLOCK_ID:
-                        gameGraphicsContext.setFill(Block.ZBlock.blockColor);
-                        gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                    case CBLOCK_ID:
-                        gameGraphicsContext.setFill(Color.WHITE);
-                        gameGraphicsContext.fillText(String.valueOf(DEFAULT_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                    case FEVER_ITEM_ID:
-                        gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
-                        gameGraphicsContext.fillText(String.valueOf(FEVER_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                    case WEIGHT_ITEM_ID:
-                        gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
-                        gameGraphicsContext.fillText(String.valueOf(WEIGHT_ITEM_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                    case WEIGHT_BLOCK_ID:
-                        gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
-                        gameGraphicsContext.fillText(String.valueOf(WEIGHT_ITEM_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                    case RESET_ITEM_ID:
-                        gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
-                        gameGraphicsContext.fillText(String.valueOf(RESET_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                    case LINE_CLEAR_ITEM_ID:
-                        gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
-                        gameGraphicsContext.fillText(String.valueOf(LINE_CLEAR_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                    case ALL_CLEAR_ITEM_ID:
-                        gameGraphicsContext.setFill(Color.rgb(255, 255, 255));
-                        gameGraphicsContext.fillText(String.valueOf(ALL_CLEAR_BLOCK_TEXT), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                    case EMPTY:
-                        gameGraphicsContext.fillText(String.valueOf(' '), j * TEXT_INTERVAL, i * TEXT_INTERVAL);
-                        break;
-                }
-            }
-        }
-    }
-
-    private void prepare() {
-        gameGraphicsContext.setFill(new Color(0, 0, 0, 1.0));
-        gameGraphicsContext.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    }
-
-    private static DefaultTetrisGame tetrisGame;
-
-    private int TEXT_INTERVAL;
     private final int ROW_SIZE = 22;
     private final int COL_SIZE = 10;
-    private final double CANVAS_WIDTH;
-    private final double CANVAS_HEIGHT;
-    private final char DEFAULT_BLOCK_TEXT = 'O';
-    private final char FEVER_BLOCK_TEXT = 'F';
-    private final char WEIGHT_ITEM_BLOCK_TEXT = 'W';
-    private final char RESET_BLOCK_TEXT = 'R';
-    private final char ALL_CLEAR_BLOCK_TEXT = 'A';
-    private final char LINE_CLEAR_BLOCK_TEXT = 'L';
     private final int FEVER_SCORE_WEIGHT = 10;
-    private AnimationTimer tetrisTimer;
     private InputManager inputManager;
     private TetrisGrid tetrisGameGrid;
     private final BlockQueue blockQueue;
     private CurrentBlock currentBlock;
     private CurrentBlock nextBlock;
-    private final GraphicsContext gameGraphicsContext;
-    private final GraphicsContext nextBlockGraphicsContext;
     private GameStatus gameStatus;
     private GameLevel gameDifficulty;
-    private GameSize gameSize;
     private GameMode gameMode;
     private BlockSpeed blockSpeed;
-    private Label scoreLabel;
     private BlockFallingTimer blockMovingTimer;
     private BlockCollideTimer collideCheckingTimer;
     private FeverModeTimer feverModeTimer;
@@ -726,8 +468,6 @@ public class DefaultTetrisGame {
     private int scoreWeight;
     private int clearedLines = 0;
     private int lineCounterForItem;
-    private boolean isGameStarted;
-    private boolean isTestMode;
     private boolean isBlockPlaced;
     private boolean isBlockCollided;
     private boolean isAnimationEnded;
