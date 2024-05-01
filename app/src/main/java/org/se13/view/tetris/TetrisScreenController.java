@@ -105,8 +105,10 @@ public class TetrisScreenController extends BaseController {
 
     private Subscriber<TetrisGameEndData> bindGameEnd() {
         return (endData) -> {
-            SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
-                controller.setArguments(endData);
+            Platform.runLater(() -> {
+                SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
+                    controller.setArguments(endData);
+                });
             });
         };
     }
