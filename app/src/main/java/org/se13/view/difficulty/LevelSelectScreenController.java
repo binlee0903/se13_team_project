@@ -38,10 +38,10 @@ public class LevelSelectScreenController extends BaseController {
 
     private void startLocalTetrisGame(GameLevel level, GameMode mode) {
         TetrisStateRepository stateRepository = new TetrisStateRepositoryImpl();
-        TetrisClient client = new TetrisClient(stateRepository);
+        TetrisClient client = new TetrisClient(-1, stateRepository);
         LocalTetrisServer server = new LocalTetrisServer(level, mode);
         TetrisActionHandler handler = server.connect(client);
-        TetrisActionRepository actionRepository = new TetrisActionRepositoryImpl(-1, handler);
+        TetrisActionRepository actionRepository = new TetrisActionRepositoryImpl(client.getUserId(), handler);
 
         SE13Application.navController.navigate(AppScreen.TETRIS, (controller) -> {
             ((TetrisScreenController) controller).setArguments(actionRepository, stateRepository);

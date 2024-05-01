@@ -9,7 +9,8 @@ public class TetrisClient {
     private int userId;
     private TetrisStateRepository repository;
 
-    public TetrisClient(TetrisStateRepository repository) {
+    public TetrisClient(int userId, TetrisStateRepository repository) {
+        this.userId = userId;
         this.repository = repository;
     }
 
