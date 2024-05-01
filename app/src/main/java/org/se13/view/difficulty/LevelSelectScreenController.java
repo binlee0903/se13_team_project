@@ -7,8 +7,12 @@ import javafx.scene.control.ChoiceBox;
 import org.se13.SE13Application;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
+import org.se13.server.LocalTetrisServer;
+import org.se13.server.TetrisActionHandler;
+import org.se13.server.TetrisClient;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
+import org.se13.view.tetris.*;
 
 public class LevelSelectScreenController extends BaseController {
     @FXML
@@ -19,23 +23,29 @@ public class LevelSelectScreenController extends BaseController {
 
     @FXML
     private void handleEasyButtonAction() {
-        gameLevel = GameLevel.EASY;
-        gameMode = setGameMode(modeChoiceBox.getValue());
-        SE13Application.navController.navigate(AppScreen.TETRIS);
+        startLocalTetrisGame(GameLevel.EASY, setGameMode(modeChoiceBox.getValue()));
     }
 
     @FXML
     private void handleNormalButtonAction() {
-        gameLevel = GameLevel.NORMAL;
-        gameMode = setGameMode(modeChoiceBox.getValue());
-        SE13Application.navController.navigate(AppScreen.TETRIS);
+        startLocalTetrisGame(GameLevel.NORMAL, setGameMode(modeChoiceBox.getValue()));
     }
 
     @FXML
     private void handleHardButtonAction() {
-        gameLevel = GameLevel.HARD;
-        gameMode = setGameMode(modeChoiceBox.getValue());
-        SE13Application.navController.navigate(AppScreen.TETRIS);
+        startLocalTetrisGame(GameLevel.HARD, setGameMode(modeChoiceBox.getValue()));
+    }
+
+    private void startLocalTetrisGame(GameLevel level, GameMode mode) {
+        TetrisStateRepository stateRepository = new TetrisStateRepositoryImpl();
+        TetrisClient client = new TetrisClient(-1, stateRepository);
+        LocalTetrisServer server = new LocalTetrisServer(level, mode);
+        TetrisActionHandler handler = server.connect(client);
+        TetrisActionRepository actionRepository = new TetrisActionRepositoryImpl(client.getUserId(), handler);
+
+        SE13Application.navController.navigate(AppScreen.TETRIS, (controller) -> {
+            ((TetrisScreenController) controller).setArguments(actionRepository, stateRepository);
+        });
     }
 
     private GameMode setGameMode(String gameMode) {
