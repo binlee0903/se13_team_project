@@ -40,6 +40,6 @@ public class LocalBattleTetrisServer implements TetrisServer {
     }
 
     public void handleStartGame(int userId) {
-        sessions.get(userId).startGame();
+
     }
 }

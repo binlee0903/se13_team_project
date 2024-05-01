@@ -12,19 +12,7 @@ public class TetrisRoom {
     public TetrisRoom(TetrisClient player, DefaultTetrisGame playerGame) {
         this.player = player;
         this.playerGame = playerGame;
-    }
-
-    public TetrisActionHandler connect() {
-        return request -> {
-            switch (request.action()) {
-                case START -> isPlayerReady = true;
-                case EXIT_GAME -> isPlayerReady = false;
-            }
-        };
-    }
-
-    public boolean isPlayerReady() {
-        return isPlayerReady;
+        playerGame.subscribe(player::response);
     }
 
     public void startGame() {
