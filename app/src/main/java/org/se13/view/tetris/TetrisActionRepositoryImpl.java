@@ -1,53 +1,56 @@
 package org.se13.view.tetris;
 
 import org.se13.game.action.TetrisAction;
-import org.se13.server.TetrisServer;
+import org.se13.server.TetrisActionHandler;
+import org.se13.server.TetrisActionPacket;
 
 public class TetrisActionRepositoryImpl implements TetrisActionRepository {
 
-    private TetrisServer server;
+    private int userId;
+    private TetrisActionHandler handler;
 
-    public TetrisActionRepositoryImpl(TetrisServer server) {
-        this.server = server;
+    public TetrisActionRepositoryImpl(int userId, TetrisActionHandler handler) {
+        this.userId = userId;
+        this.handler = handler;
     }
 
     @Override
     public void connect() {
-        server.handle(TetrisAction.CONNECT);
+        handler.request(new TetrisActionPacket(userId, TetrisAction.START));
     }
 
     @Override
     public void immediateBlockPlace() {
-        server.handle(TetrisAction.IMMEDIATE_BLOCK_PLACE);
+        handler.request(new TetrisActionPacket(userId, TetrisAction.IMMEDIATE_BLOCK_PLACE));
     }
 
     @Override
     public void moveBlockDown() {
-        server.handle(TetrisAction.MOVE_BLOCK_DOWN);
+        handler.request(new TetrisActionPacket(userId, TetrisAction.MOVE_BLOCK_DOWN));
     }
 
     @Override
     public void moveBlockLeft() {
-        server.handle(TetrisAction.MOVE_BLOCK_LEFT);
+        handler.request(new TetrisActionPacket(userId, TetrisAction.MOVE_BLOCK_LEFT));
     }
 
     @Override
     public void moveBlockRight() {
-        server.handle(TetrisAction.MOVE_BLOCK_RIGHT);
+        handler.request(new TetrisActionPacket(userId, TetrisAction.MOVE_BLOCK_RIGHT));
     }
 
     @Override
     public void rotateBlockCW() {
-        server.handle(TetrisAction.ROTATE_BLOCK_CW);
+        handler.request(new TetrisActionPacket(userId, TetrisAction.ROTATE_BLOCK_CW));
     }
 
     @Override
     public void togglePauseState() {
-        server.handle(TetrisAction.TOGGLE_PAUSE_STATE);
+        handler.request(new TetrisActionPacket(userId, TetrisAction.TOGGLE_PAUSE_STATE));
     }
 
     @Override
     public void exitGame() {
-        server.handle(TetrisAction.EXIT_GAME);
+        handler.request(new TetrisActionPacket(userId, TetrisAction.EXIT_GAME));
     }
 }

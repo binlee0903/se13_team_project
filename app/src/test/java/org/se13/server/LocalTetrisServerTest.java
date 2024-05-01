@@ -17,6 +17,7 @@ class LocalTetrisServerTest {
     TetrisStateRepository repository;
     TetrisClient client;
     LocalTetrisServer server;
+    TetrisActionHandler handler;
 
     TetrisState stateTest;
     TetrisGameEndData endDataTest;
@@ -35,34 +36,64 @@ class LocalTetrisServerTest {
             }
         };
         client = new TetrisClient(repository);
-        server = new LocalTetrisServer(GameLevel.EASY, GameMode.ITEM, client);
+        server = new LocalTetrisServer(GameLevel.EASY, GameMode.ITEM);
+        handler = server.connect(client);
     }
 
     @Test
-    void baseTest() {
-        server.handle(TetrisAction.CONNECT);
-        server.handle(TetrisAction.TOGGLE_PAUSE_STATE);
-        server.handle(TetrisAction.TOGGLE_PAUSE_STATE);
-        server.handle(TetrisAction.MOVE_BLOCK_LEFT);
-        server.handle(TetrisAction.MOVE_BLOCK_RIGHT);
-        server.handle(TetrisAction.ROTATE_BLOCK_CW);
-        server.handle(TetrisAction.EXIT_GAME);
+    void baseTest() throws InterruptedException {
+        repository = new TetrisStateRepositoryImpl() {
+            private TetrisState before = null;
 
-        assertNotNull(stateTest);
+            @Override
+            public void response(TetrisState state) {
+                assertNotSame(before, state);
+                before = state;
+            }
+
+            @Override
+            public void gameOver(TetrisGameEndData endData) {
+                endDataTest = endData;
+            }
+        };
+        client = new TetrisClient(repository);
+        server = new LocalTetrisServer(GameLevel.EASY, GameMode.ITEM);
+        handler = server.connect(client);
+
+        handler.request(new TetrisActionPacket(client.getUserId(), TetrisAction.START));
+        server.testPulse();
+
+        handler.request(new TetrisActionPacket(client.getUserId(), TetrisAction.TOGGLE_PAUSE_STATE));
+        server.testPulse();
+
+        handler.request(new TetrisActionPacket(client.getUserId(), TetrisAction.TOGGLE_PAUSE_STATE));
+        server.testPulse();
+
+        handler.request(new TetrisActionPacket(client.getUserId(), TetrisAction.MOVE_BLOCK_LEFT));
+        server.testPulse();
+
+        handler.request(new TetrisActionPacket(client.getUserId(), TetrisAction.MOVE_BLOCK_RIGHT));
+        server.testPulse();
+
+        handler.request(new TetrisActionPacket(client.getUserId(), TetrisAction.ROTATE_BLOCK_CW));
+        server.testPulse();
     }
 
     @Test
     void gameOverTest() {
-        server = new LocalTetrisServer(GameLevel.EASY, GameMode.ITEM, client);
-        server.handle(TetrisAction.EXIT_GAME);
+        server = new LocalTetrisServer(GameLevel.EASY, GameMode.ITEM);
+        handler = server.connect(client);
+        handler.request(new TetrisActionPacket(client.getUserId(), TetrisAction.EXIT_GAME));
         assertEquals("Easy", endDataTest.difficulty());
 
-        server = new LocalTetrisServer(GameLevel.NORMAL, GameMode.ITEM, client);
-        server.handle(TetrisAction.EXIT_GAME);
+        server = new LocalTetrisServer(GameLevel.NORMAL, GameMode.ITEM);
+        handler = server.connect(client);
+        handler.request(new TetrisActionPacket(client.getUserId(), TetrisAction.EXIT_GAME));
         assertEquals("Normal", endDataTest.difficulty());
 
-        server = new LocalTetrisServer(GameLevel.HARD, GameMode.ITEM, client);
-        server.handle(TetrisAction.EXIT_GAME);
+        server = new LocalTetrisServer(GameLevel.HARD, GameMode.ITEM);
+        handler = server.connect(client);
+        handler.request(new TetrisActionPacket(client.getUserId(), TetrisAction.EXIT_GAME));
         assertEquals("Hard", endDataTest.difficulty());
     }
 }

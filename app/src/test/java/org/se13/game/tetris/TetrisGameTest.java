@@ -14,6 +14,8 @@ import org.se13.game.item.*;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.game.timer.*;
+import org.se13.server.TetrisActionHandler;
+import org.se13.server.TetrisClient;
 import org.se13.server.TetrisServer;
 
 import java.util.Random;
@@ -33,7 +35,12 @@ public class TetrisGameTest {
             }
 
             @Override
-            public void handle(TetrisAction request) {
+            public TetrisActionHandler connect(TetrisClient client) {
+                return null;
+            }
+
+            @Override
+            public void disconnect(TetrisClient client) {
 
             }
         });

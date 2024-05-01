@@ -8,6 +8,7 @@ import org.se13.SE13Application;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.server.LocalTetrisServer;
+import org.se13.server.TetrisActionHandler;
 import org.se13.server.TetrisClient;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
@@ -38,8 +39,9 @@ public class LevelSelectScreenController extends BaseController {
     private void startLocalTetrisGame(GameLevel level, GameMode mode) {
         TetrisStateRepository stateRepository = new TetrisStateRepositoryImpl();
         TetrisClient client = new TetrisClient(stateRepository);
-        LocalTetrisServer server = new LocalTetrisServer(level, mode, client);
-        TetrisActionRepository actionRepository = new TetrisActionRepositoryImpl(server);
+        LocalTetrisServer server = new LocalTetrisServer(level, mode);
+        TetrisActionHandler handler = server.connect(client);
+        TetrisActionRepository actionRepository = new TetrisActionRepositoryImpl(-1, handler);
 
         SE13Application.navController.navigate(AppScreen.TETRIS, (controller) -> {
             ((TetrisScreenController) controller).setArguments(actionRepository, stateRepository);
