@@ -35,7 +35,7 @@ class LocalTetrisServerTest {
                 endDataTest = endData;
             }
         };
-        client = new TetrisClient(repository);
+        client = new TetrisClient(-1, repository);
         server = new LocalTetrisServer(GameLevel.EASY, GameMode.ITEM);
         handler = server.connect(client);
     }
@@ -56,7 +56,7 @@ class LocalTetrisServerTest {
                 endDataTest = endData;
             }
         };
-        client = new TetrisClient(repository);
+        client = new TetrisClient(-1, repository);
         server = new LocalTetrisServer(GameLevel.EASY, GameMode.ITEM);
         handler = server.connect(client);
 
