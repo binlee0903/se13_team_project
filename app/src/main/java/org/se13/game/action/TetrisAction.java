@@ -1,7 +1,6 @@
 package org.se13.game.action;
 
 public enum TetrisAction {
-
     START,
     IMMEDIATE_BLOCK_PLACE,
     MOVE_BLOCK_DOWN,
