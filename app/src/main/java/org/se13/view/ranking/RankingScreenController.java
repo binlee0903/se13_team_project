@@ -22,14 +22,24 @@ import org.se13.view.nav.AppScreen;
 
 
 public class RankingScreenController extends BaseController {
+    private final RankingRepository rankingRepository;
+
+    public RankingScreenController() {
+        this.rankingRepository = new RankingRepositoryImpl();
+    }
+
+    private List<Map<String, Object>> loadRankingData() {
+        return rankingRepository.getRankingList();
+    }
+
     private int score; // 최종 점수
     private boolean isItem; // 아이템
     private String diff; // 난이도
+
     @FXML
     private Button homeButton;
     @FXML
     private Button tetrisButton;
-
     @FXML
     private TableView<Ranking> tableView;
     @FXML
@@ -79,21 +89,23 @@ public class RankingScreenController extends BaseController {
         this.isItem = isItem;
         this.diff = diff;
     }
+
     // test를 위한 getter
     public int getScore() {
         return score;
     }
+
     public boolean getIsItem() {
         return isItem;
     }
+
     public String getDiff() {
         return diff;
     }
 
     private int getLastRankingScore() {
-        RankingRepository rankingRepository = new RankingRepositoryImpl();
         // 랭킹 데이터 가져오기
-        List<Map<String, Object>> rankingData = rankingRepository.getRankingList();
+        List<Map<String, Object>> rankingData = loadRankingData();
         if (rankingData == null || rankingData.isEmpty()) {
             return 0; // 랭킹 데이터가 없는 경우
         }
@@ -122,10 +134,9 @@ public class RankingScreenController extends BaseController {
 
         result.ifPresent(nickname -> {
             // 랭킹 테이블에 인서트
-            RankingRepository rankingRepository = new RankingRepositoryImpl();
             rankingRepository.insertRanking(nickname, score, isItem, diff);
             // 랭킹 데이터 로드
-            List<Map<String, Object>> rankingData = rankingRepository.getRankingList();
+            List<Map<String, Object>> rankingData = loadRankingData();
             // id가 autoincrement로 설정되어 있으므로 마지막 id를 가져옴
             int lastId = rankingData.stream().mapToInt(e -> (int) e.get("id")).max().orElse(0);
             tableView.setRowFactory(tv -> new TableRow<Ranking>() {
@@ -145,8 +156,7 @@ public class RankingScreenController extends BaseController {
 
     public void loadRanking() {
         // 랭킹 데이터 로드
-        RankingRepository rankingRepository = new RankingRepositoryImpl();
-        List<Map<String, Object>> rankingData = rankingRepository.getRankingList();
+        List<Map<String, Object>> rankingData = loadRankingData();
 
         ObservableList<Ranking> rankings;
         if (rankingData != null && !rankingData.isEmpty()) {
