@@ -22,47 +22,8 @@ import org.se13.view.nav.AppScreen;
 
 
 public class RankingScreenController extends BaseController {
-    private final RankingRepository rankingRepository;
-
     public RankingScreenController() {
         this.rankingRepository = new RankingRepositoryImpl();
-    }
-
-    private List<Map<String, Object>> loadRankingData() {
-        return rankingRepository.getRankingList();
-    }
-
-    private int score; // 최종 점수
-    private boolean isItem; // 아이템
-    private String diff; // 난이도
-
-    @FXML
-    private Button homeButton;
-    @FXML
-    private Button tetrisButton;
-    @FXML
-    private TableView<Ranking> tableView;
-    @FXML
-    private TableColumn<Ranking, Number> positionColumn;
-    @FXML
-    private TableColumn<Ranking, String> nameColumn;
-    @FXML
-    private TableColumn<Ranking, Number> scoreColumn;
-    @FXML
-    private TableColumn<Ranking, Boolean> isItemColumn;
-    @FXML
-    private TableColumn<Ranking, String> diffColumn;
-
-    @FXML
-    private void handleHomeButtonAction() {
-        // Turn into a start screen
-        SE13Application.navController.navigate(AppScreen.START);
-    }
-
-    @FXML
-    private void handleTetrisButtonAction() {
-        // Turn into a tetris screen
-        SE13Application.navController.navigate(AppScreen.LEVEL_SELECT);
     }
 
     @Override
@@ -101,6 +62,24 @@ public class RankingScreenController extends BaseController {
 
     public String getDiff() {
         return diff;
+    }
+
+    public void loadRanking() {
+        // 랭킹 데이터 로드
+        List<Map<String, Object>> rankingData = loadRankingData();
+
+        ObservableList<Ranking> rankings;
+        if (rankingData != null && !rankingData.isEmpty()) {
+            rankings = convertToRankingsList(rankingData);
+        } else {
+            // 데이터가 없는 경우 빈 ObservableList를 설정
+            rankings = FXCollections.observableArrayList();
+        }
+        tableView.setItems(rankings);
+    }
+
+    private List<Map<String, Object>> loadRankingData() {
+        return rankingRepository.getRankingList();
     }
 
     private int getLastRankingScore() {
@@ -154,20 +133,6 @@ public class RankingScreenController extends BaseController {
         });
     }
 
-    public void loadRanking() {
-        // 랭킹 데이터 로드
-        List<Map<String, Object>> rankingData = loadRankingData();
-
-        ObservableList<Ranking> rankings;
-        if (rankingData != null && !rankingData.isEmpty()) {
-            rankings = convertToRankingsList(rankingData);
-        } else {
-            // 데이터가 없는 경우 빈 ObservableList를 설정
-            rankings = FXCollections.observableArrayList();
-        }
-        tableView.setItems(rankings);
-    }
-
     private ObservableList<Ranking> convertToRankingsList(List<Map<String, Object>> rawData) {
         ObservableList<Ranking> rankings = FXCollections.observableArrayList();
         int rank = 1; // 순위를 나타내는 변수 초기화
@@ -187,4 +152,39 @@ public class RankingScreenController extends BaseController {
 
         return rankings;
     }
+
+    @FXML
+    private void handleHomeButtonAction() {
+        // Turn into a start screen
+        SE13Application.navController.navigate(AppScreen.START);
+    }
+
+    @FXML
+    private void handleTetrisButtonAction() {
+        // Turn into a tetris screen
+        SE13Application.navController.navigate(AppScreen.LEVEL_SELECT);
+    }
+
+    private final RankingRepository rankingRepository;
+
+    private int score; // 최종 점수
+    private boolean isItem; // 아이템
+    private String diff; // 난이도
+
+    @FXML
+    private Button homeButton;
+    @FXML
+    private Button tetrisButton;
+    @FXML
+    private TableView<Ranking> tableView;
+    @FXML
+    private TableColumn<Ranking, Number> positionColumn;
+    @FXML
+    private TableColumn<Ranking, String> nameColumn;
+    @FXML
+    private TableColumn<Ranking, Number> scoreColumn;
+    @FXML
+    private TableColumn<Ranking, Boolean> isItemColumn;
+    @FXML
+    private TableColumn<Ranking, String> diffColumn;
 }
