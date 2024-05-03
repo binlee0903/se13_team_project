@@ -12,7 +12,7 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         super();
 
         this.createNewTableConfig();
-        this.insertDefaultConfig(0);
+        this.insertDefaultConfig();
     }
 
     public static ConfigRepositoryImpl getInstance() {
@@ -37,13 +37,16 @@ public class ConfigRepositoryImpl implements ConfigRepository {
 
     // 초기 테이블 생성
     public void createNewTableConfig() {
+        //String dropSql = "DROP TABLE IF EXISTS config;";
+
         String sql = "CREATE TABLE IF NOT EXISTS config ("
-                + "	id integer PRIMARY KEY,"
+                + "	id integer PRIMARY KEY CHECK (id=0),"
                 + "	settings text NOT NULL" // JSON 형식의 설정 값
                 + ");";
 
         try (Connection conn = this.connect();
              Statement stmt = conn.createStatement()) {
+            //stmt.execute(dropSql);
             stmt.execute(sql);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -52,7 +55,7 @@ public class ConfigRepositoryImpl implements ConfigRepository {
 
     // 초기 설정 값 삽입
     @Override
-    public void insertDefaultConfig(int id) {
+    public void insertDefaultConfig() {
         JSONObject json = new JSONObject();
         json.put("mode", "default");
         json.put("screenWidth", 300);
@@ -65,19 +68,18 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("keyDrop", "w");
         json.put("keyExit", "q");
 
-        String sql = "INSERT INTO config (id, settings) VALUES(?,?)";
+        String sql = "INSERT INTO config (id, settings) VALUES(0,?)";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            pstmt.setString(2, json.toString());
+            pstmt.setString(1, json.toString());
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error inserting default config: "+ e.getMessage());
         }
     }
 
     @Override
-    public void updateConfig(int id, String mode, int gridWidth, int gridHeight, String keyLeft, String keyRight, String keyDown, String keyRotate, String keyPause, String keyDrop, String keyExit) {
+    public void updateConfig(String mode, int gridWidth, int gridHeight, String keyLeft, String keyRight, String keyDown, String keyRotate, String keyPause, String keyDrop, String keyExit) {
         JSONObject json = new JSONObject();
         json.put("mode", mode);
         json.put("screenWidth", gridWidth);
@@ -90,23 +92,21 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("keyDrop", keyDrop);
         json.put("keyExit", keyExit);
 
-        String sql = "UPDATE config SET settings = ? WHERE id = ?";
+        String sql = "UPDATE config SET settings = ? WHERE id = 0";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, json.toString());
-            pstmt.setInt(2, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error updating config: " + e.getMessage());
         }
     }
 
     @Override
-    public Map<String, Object> getConfig(int id) {
-        String sql = "SELECT settings FROM config WHERE id = ?";
+    public Map<String, Object> getConfig() {
+        String sql = "SELECT settings FROM config WHERE id = 0";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
@@ -128,17 +128,16 @@ public class ConfigRepositoryImpl implements ConfigRepository {
                 return result;
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error getting config: " + e.getMessage());
         }
         return null;
     }
 
     @Override
-    public void clearConfig(int id) {
-        String sql = "DELETE FROM config WHERE id = ?";
+    public void clearConfig() {
+        String sql = "DELETE FROM config WHERE id = 0";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -147,7 +146,12 @@ public class ConfigRepositoryImpl implements ConfigRepository {
 
     @Override
     public int[] getScreenSize() {
-        Map<String, Object> config = getConfig(0);
+        Map<String, Object> config = getConfig();
+
+        if (config == null){
+            return new int[]{300, 400};
+        }
+
         int screenWidth = (Integer) config.get("screenWidth");
         int screenHeight = (Integer) config.get("screenHeight");
 

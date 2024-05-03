@@ -92,7 +92,7 @@ public enum Block {
         startOffset = new BlockPosition(offset[0], offset[1]);
 
         ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
-        Map<String, Object> configs = configRepository.getConfig(0);
+        Map<String, Object> configs = configRepository.getConfig();
         String colorMode = (String) configs.get("mode");
         if (Objects.equals(colorMode, "Red-green")) {
             this.blockColor = blockColor.getBlockColor(colorMode);

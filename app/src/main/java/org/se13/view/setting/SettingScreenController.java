@@ -37,7 +37,7 @@ public class SettingScreenController extends BaseController {
     public void initialize() {
         keySettings = new HashMap<>();
         ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
-        Map<String, Object> configs = configRepository.getConfig(0);
+        Map<String, Object> configs = configRepository.getConfig();
 
         // Add options in ChoiceBox for the choice among scene size
         int screenWidth = (Integer) configs.get("screenWidth");
@@ -165,7 +165,7 @@ public class SettingScreenController extends BaseController {
         String selectedExit = keySettings.get(indicator);
 
         ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
-        configRepository.updateConfig(0, selectedColorMode, selectedWidth,
+        configRepository.updateConfig(selectedColorMode, selectedWidth,
                 selectedHeight, selectedMoveLeft, selectedMoveRight,
                 selectedMoveDown, selectedRotate,
                 selectedPause, selectedDrop, selectedExit);
@@ -176,8 +176,8 @@ public class SettingScreenController extends BaseController {
 
     public void handleSettingClearButtonAction() {
         ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
-        configRepository.clearConfig(0);
-        configRepository.insertDefaultConfig(0);
+        configRepository.clearConfig();
+        configRepository.insertDefaultConfig();
     }
 
     public void handleRankingClearButtonAction() {

@@ -7,7 +7,7 @@ import java.util.Map;
 public class Config {
     static {
         ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
-        Map<String, Object> configs = configRepository.getConfig(0);
+        Map<String, Object> configs = configRepository.getConfig();
         DROP = (String)configs.get("keyDrop");
         DOWN = (String)configs.get("keyDown");
         LEFT = (String)configs.get("keyLeft");

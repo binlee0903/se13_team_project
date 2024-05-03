@@ -80,7 +80,7 @@ public class ConfigRepositoryImplTest {
     void getConfigTest() {
         configRepository.createNewTableConfig();
 
-        Map<String, Object> config = configRepository.getConfig(0);
+        Map<String, Object> config = configRepository.getConfig();
         assertNotNull(config);
         //assertEquals(11, config.size()); 이건 어떤 테스트인가요? 이 부분에서 빌드 오류 때문에 PR 안되서 일단 주석 처리 해놓습니다.
         assertEquals("default", config.get("mode"));
@@ -102,7 +102,6 @@ public class ConfigRepositoryImplTest {
         configRepository.createNewTableConfig();
 
         configRepository.updateConfig(
-                0,
                 "test",
                 100,
                 200,
@@ -113,7 +112,7 @@ public class ConfigRepositoryImplTest {
                 "t",
                 "y",
                 "u");
-        Map<String, Object> config = configRepository.getConfig(0);
+        Map<String, Object> config = configRepository.getConfig();
         assertNotNull(config);
         assertEquals("test", config.get("mode"));
         assertEquals(100, config.get("screenWidth"));
@@ -132,7 +131,7 @@ public class ConfigRepositoryImplTest {
     @Order(5)
     void clearConfigTest() throws SQLException {
         configRepository.createNewTableConfig();
-        configRepository.clearConfig(0);
+        configRepository.clearConfig();
         String url = "jdbc:sqlite:./tetris.db";
         try (Connection conn = DriverManager.getConnection(url);
              PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM config WHERE id = 0")) {
