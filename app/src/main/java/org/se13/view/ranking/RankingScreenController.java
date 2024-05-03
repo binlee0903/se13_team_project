@@ -11,15 +11,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableRow;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.se13.SE13Application;
+import org.se13.sqlite.ranking.Ranking;
 import org.se13.sqlite.ranking.RankingRepository;
 import org.se13.sqlite.ranking.RankingRepositoryImpl;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
-
 
 public class RankingScreenController extends BaseController {
     public RankingScreenController() {
@@ -66,9 +65,9 @@ public class RankingScreenController extends BaseController {
 
     public void loadRanking() {
         // 랭킹 데이터 로드
-        List<Map<String, Object>> rankingData = loadRankingData();
+        List<Ranking> rankingData = loadRankingData();
 
-        ObservableList<Ranking> rankings;
+        ObservableList<RankingProperty> rankings;
         if (rankingData != null && !rankingData.isEmpty()) {
             rankings = convertToRankingsList(rankingData);
         } else {
@@ -78,13 +77,13 @@ public class RankingScreenController extends BaseController {
         tableView.setItems(rankings);
     }
 
-    private List<Map<String, Object>> loadRankingData() {
+    private List<Ranking> loadRankingData() {
         return rankingRepository.getRankingList();
     }
 
     private int getLastRankingScore() {
         // 랭킹 데이터 가져오기
-        List<Map<String, Object>> rankingData = loadRankingData();
+        List<Ranking> rankingData = loadRankingData();
         if (rankingData == null || rankingData.isEmpty()) {
             return 0; // 랭킹 데이터가 없는 경우
         }
@@ -93,12 +92,8 @@ public class RankingScreenController extends BaseController {
             return 0; // 랭킹 데이터가 10개 미만인 경우
         }
         // 마지막 랭킹 항목의 점수를 가져오기
-        Object scoreObject = rankingData.getLast().get("score");
-        if (scoreObject instanceof Number) {
-            return ((Number) scoreObject).intValue();
-        } else {
-            return 0; // 점수 데이터가 유효하지 않는 경우
-        }
+        Number scoreObject = rankingData.getLast().getScore();
+        return scoreObject.intValue();
     }
 
     private void showNicknameInputUI() {
@@ -115,12 +110,12 @@ public class RankingScreenController extends BaseController {
             // 랭킹 테이블에 인서트
             rankingRepository.insertRanking(nickname, score, isItem, diff);
             // 랭킹 데이터 로드
-            List<Map<String, Object>> rankingData = loadRankingData();
+            List<Ranking> rankingData = loadRankingData();
             // id가 autoincrement로 설정되어 있으므로 마지막 id를 가져옴
-            int lastId = rankingData.stream().mapToInt(e -> (int) e.get("id")).max().orElse(0);
-            tableView.setRowFactory(tv -> new TableRow<Ranking>() {
+            int lastId = rankingData.stream().mapToInt(Ranking::getId).max().orElse(0);
+            tableView.setRowFactory(tv -> new TableRow<RankingProperty>() {
                 @Override
-                protected void updateItem(Ranking item, boolean empty) {
+                protected void updateItem(RankingProperty item, boolean empty) {
                     super.updateItem(item, empty);
                     if (item != null && item.getId() == lastId) {
                         // 조건을 만족하는 row의 배경색을 변경
@@ -133,20 +128,20 @@ public class RankingScreenController extends BaseController {
         });
     }
 
-    private ObservableList<Ranking> convertToRankingsList(List<Map<String, Object>> rawData) {
-        ObservableList<Ranking> rankings = FXCollections.observableArrayList();
+    private ObservableList<RankingProperty> convertToRankingsList(List<Ranking> rawData) {
+        ObservableList<RankingProperty> rankings = FXCollections.observableArrayList();
         int rank = 1; // 순위를 나타내는 변수 초기화
 
-        for (Map<String, Object> entry : rawData) {
-            if (entry.get("name") == null || entry.get("score") == null) {
+        for (Ranking entry : rawData) {
+            if (entry.getName() == null || entry.getScore() == 0) {
                 continue;
             }
-            int id = (Integer) entry.get("id");
-            String name = (String) entry.get("name");
-            int score = (Integer) entry.get("score");
-            boolean isItem = (Boolean) entry.get("isItem");
-            String diff = (String) entry.get("diff");
-            rankings.add(new Ranking(id, rank, name, score, isItem, diff));
+            int id = entry.getId();
+            String name = entry.getName();
+            int score = entry.getScore();
+            boolean isItem = entry.isItem();
+            String diff = entry.getDiff();
+            rankings.add(new RankingProperty(id, rank, name, score, isItem, diff));
             rank++; // 다음 순위로 업데이트
         }
 
@@ -176,15 +171,15 @@ public class RankingScreenController extends BaseController {
     @FXML
     private Button tetrisButton;
     @FXML
-    private TableView<Ranking> tableView;
+    private TableView<RankingProperty> tableView;
     @FXML
-    private TableColumn<Ranking, Number> positionColumn;
+    private TableColumn<RankingProperty, Number> positionColumn;
     @FXML
-    private TableColumn<Ranking, String> nameColumn;
+    private TableColumn<RankingProperty, String> nameColumn;
     @FXML
-    private TableColumn<Ranking, Number> scoreColumn;
+    private TableColumn<RankingProperty, Number> scoreColumn;
     @FXML
-    private TableColumn<Ranking, Boolean> isItemColumn;
+    private TableColumn<RankingProperty, Boolean> isItemColumn;
     @FXML
-    private TableColumn<Ranking, String> diffColumn;
+    private TableColumn<RankingProperty, String> diffColumn;
 }

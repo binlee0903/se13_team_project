@@ -21,4 +21,6 @@ module org.se13 {
     opens org.se13.view.tetris to javafx.fxml;
     exports org.se13.view.nav;
     opens org.se13.view.nav to javafx.fxml;
+    exports org.se13.sqlite.ranking;
+    opens org.se13.sqlite.ranking to javafx.fxml;
 }

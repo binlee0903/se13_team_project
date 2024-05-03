@@ -4,15 +4,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
-public class Ranking {
-    private SimpleIntegerProperty id;
-    private SimpleIntegerProperty position;
-    private SimpleStringProperty name;
-    private SimpleIntegerProperty score;
-    private SimpleBooleanProperty isItem;
-    private SimpleStringProperty diff;
-
-    public Ranking(int id, int position, String name, int score, boolean isItem, String diff) {
+public class RankingProperty {
+    public RankingProperty(int id, int position, String name, int score, boolean isItem, String diff) {
         this.id = new SimpleIntegerProperty(id);
         this.position = new SimpleIntegerProperty(position);
         this.name = new SimpleStringProperty(name);
@@ -34,4 +27,11 @@ public class Ranking {
     public SimpleIntegerProperty scoreProperty() { return score; }
     public SimpleBooleanProperty isItemProperty() { return isItem; }
     public SimpleStringProperty diffProperty() { return diff; }
+
+    private SimpleIntegerProperty id;
+    private SimpleIntegerProperty position;
+    private SimpleStringProperty name;
+    private SimpleIntegerProperty score;
+    private SimpleBooleanProperty isItem;
+    private SimpleStringProperty diff;
 }
