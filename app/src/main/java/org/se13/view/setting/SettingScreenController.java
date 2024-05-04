@@ -178,6 +178,9 @@ public class SettingScreenController extends BaseController {
         ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
         configRepository.clearConfig();
         configRepository.insertDefaultConfig();
+
+        initialize();
+        SE13Application.navController.setScreenSize(configRepository.getScreenSize());
     }
 
     public void handleRankingClearButtonAction() {
