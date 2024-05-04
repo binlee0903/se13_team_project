@@ -9,6 +9,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.se13.SE13Application;
+import org.se13.sqlite.config.ConfigRepository;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
 import org.se13.sqlite.ranking.RankingRepositoryImpl;
 import org.se13.view.base.BaseController;
@@ -32,11 +33,12 @@ public class SettingScreenController extends BaseController {
     private ChoiceBox<String> screenColorBlindChoiceBox;
 
     private Map<String, String> keySettings;
+    private ConfigRepository configRepository;
 
     @FXML
-    public void initialize() {
+    public void initialize(ConfigRepository configRepository) {
+        this.configRepository = configRepository;
         keySettings = new HashMap<>();
-        ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
         Map<String, Object> configs = configRepository.getConfig();
 
         // Add options in ChoiceBox for the choice among scene size
@@ -164,7 +166,6 @@ public class SettingScreenController extends BaseController {
         indicator = exitButton.getText().split(":")[0];
         String selectedExit = keySettings.get(indicator);
 
-        ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
         configRepository.updateConfig(selectedColorMode, selectedWidth,
                 selectedHeight, selectedMoveLeft, selectedMoveRight,
                 selectedMoveDown, selectedRotate,
@@ -175,11 +176,10 @@ public class SettingScreenController extends BaseController {
     }
 
     public void handleSettingClearButtonAction() {
-        ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
         configRepository.clearConfig();
         configRepository.insertDefaultConfig();
 
-        initialize();
+        initialize(configRepository);
         SE13Application.navController.setScreenSize(configRepository.getScreenSize());
     }
 
