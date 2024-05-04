@@ -158,5 +158,16 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         return new int[]{screenWidth, screenHeight};
     }
 
+    @Override
+    public String getBlockColorMode() {
+        Map<String, Object> config = getConfig();
+
+        if (config == null){
+            return "default";
+        }
+
+        return (String) config.get("mode");
+    }
+
     private static ConfigRepositoryImpl configRepositoryImpl;
 }

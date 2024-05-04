@@ -8,4 +8,5 @@ public interface ConfigRepository {
     Map<String, Object> getConfig();
     void clearConfig();
     int[] getScreenSize();
+    String getBlockColorMode();
 }
