@@ -7,9 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class RankingRepositoryImpl implements RankingRepository {
     private Connection connect() {
@@ -57,21 +55,20 @@ public class RankingRepositoryImpl implements RankingRepository {
     }
 
     @Override
-    public List<Map<String, Object>> getRankingList() {
+    public List<Ranking> getRankingList() {
         String sql = "SELECT * FROM ranking ORDER BY score DESC LIMIT 10";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             ResultSet rs = pstmt.executeQuery();
 
-            List<Map<String, Object>> results = new ArrayList<>();
+            List<Ranking> results = new ArrayList<>();
             while (rs.next()) {
-                Map<String, Object> result = new HashMap<>();
-                result.put("id", rs.getInt("id"));
-                result.put("name", rs.getString("name"));
-                result.put("score", rs.getInt("score"));
-                result.put("isItem", rs.getBoolean("isItem"));
-                result.put("diff", rs.getString("diff"));
-                results.add(result);
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                int score = rs.getInt("score");
+                boolean isItem = rs.getBoolean("isItem");
+                String diff = rs.getString("diff");
+                results.add(new Ranking(id, name, score, isItem, diff));
             }
             return results;
         } catch (SQLException e) {

@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -95,18 +94,18 @@ class RankingRepositoryImplTest {
                 pstmt.executeUpdate();
             }
         }
-        List<Map<String, Object>> ranking = rankingRepository.getRankingList();
+        List<Ranking> ranking = rankingRepository.getRankingList();
         assertNotNull(ranking);
         assertEquals(2, ranking.size());
-        assertEquals("getRanking1", ranking.get(1).get("name"));
-        assertEquals(10, ranking.get(1).get("score"));
-        assertFalse((Boolean) ranking.get(1).get("isItem"));
-        assertEquals("easy", ranking.get(1).get("diff"));
-        assertEquals("getRanking2", ranking.getFirst().get("name"));
-        assertEquals(20, ranking.getFirst().get("score"));
-        assertTrue((Boolean) ranking.getFirst().get("isItem"));
-        assertEquals("hard", ranking.getFirst().get("diff"));
-        assertTrue((int) ranking.getFirst().get("score") > (int) ranking.get(1).get("score"));
+        assertEquals("getRanking1", ranking.get(1).getName());
+        assertEquals(10, ranking.get(1).getScore());
+        assertFalse(ranking.get(1).isItem());
+        assertEquals("easy", ranking.get(1).getDiff());
+        assertEquals("getRanking2", ranking.getFirst().getName());
+        assertEquals(20, ranking.getFirst().getScore());
+        assertTrue(ranking.getFirst().isItem());
+        assertEquals("hard", ranking.getFirst().getDiff());
+        assertTrue(ranking.getFirst().getScore() > ranking.get(1).getScore());
     }
 
     @Test
