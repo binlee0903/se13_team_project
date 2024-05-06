@@ -14,6 +14,7 @@
     -fx-text-fill: black;
     -fx-padding: 10px;
     -fx-min-width: 100px;
+    -fx-font-family: Cambria;
 }
 
 .menuButton:hover {
@@ -30,6 +31,7 @@
     -fx-text-fill: black;
     -fx-padding: 10px;
     -fx-min-width: 75px;
+    -fx-font-family: Cambria;
 }
 
 .keyButton:hover {
@@ -44,6 +46,18 @@
     -fx-font-size: 24px;
     -fx-fill: white;
     -fx-font-weight: bold;
+}
+
+.settingsLabel {
+    -fx-font-family: Cambria;
+}
+
+.colorBlind {
+    -fx-font-family: Cambria;
+}
+
+.choiceBox {
+    -fx-font-family: Cambria;
 }
 
 .keySettingTitle {
