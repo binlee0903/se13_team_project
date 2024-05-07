@@ -35,9 +35,13 @@ public class SettingScreenController extends BaseController {
     private Map<String, String> keySettings;
     private ConfigRepository configRepository;
 
-    @FXML
-    public void initialize(ConfigRepository configRepository) {
-        this.configRepository = configRepository;
+    @Override
+    public void onCreate() {
+        this.configRepository = ConfigRepositoryImpl.getInstance();
+        resetSettingButtons();
+    }
+
+    public void resetSettingButtons() {
         keySettings = new HashMap<>();
         Map<String, Object> configs = configRepository.getConfig();
 
@@ -93,7 +97,6 @@ public class SettingScreenController extends BaseController {
         keySettings.put("keyPause", keyPause);
         pauseButton.setText("keyPause: " + keyPause);
         // By selected scene size, the function will implement logic.
-
     }
 
     @FXML
@@ -179,7 +182,7 @@ public class SettingScreenController extends BaseController {
         configRepository.clearConfig();
         configRepository.insertDefaultConfig();
 
-        initialize(configRepository);
+        resetSettingButtons();
         SE13Application.navController.setScreenSize(configRepository.getScreenSize());
     }
 
