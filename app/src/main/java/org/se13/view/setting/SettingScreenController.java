@@ -38,10 +38,10 @@ public class SettingScreenController extends BaseController {
     @Override
     public void onCreate() {
         this.configRepository = ConfigRepositoryImpl.getInstance();
-        retSettingButtons();
+        resetSettingButtons();
     }
 
-    public void retSettingButtons() {
+    public void resetSettingButtons() {
         keySettings = new HashMap<>();
         Map<String, Object> configs = configRepository.getConfig();
 
@@ -182,7 +182,7 @@ public class SettingScreenController extends BaseController {
         configRepository.clearConfig();
         configRepository.insertDefaultConfig();
 
-        retSettingButtons();
+        resetSettingButtons();
         SE13Application.navController.setScreenSize(configRepository.getScreenSize());
     }
 
