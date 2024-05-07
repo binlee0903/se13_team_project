@@ -33,9 +33,8 @@ public class ControllerTest {
 
         SettingScreenController settingScreenController = new SettingScreenController();
         settingScreenController.isTestMode = true;
-        ConfigRepository configRepository = new ConfigRepositoryImpl();
 
-        settingScreenController.initialize(configRepository);
+        settingScreenController.resetSettingButtons();
 
     }
 }
