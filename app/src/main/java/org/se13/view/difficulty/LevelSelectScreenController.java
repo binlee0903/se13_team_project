@@ -37,7 +37,7 @@ public class LevelSelectScreenController extends BaseController {
     }
 
     private void startLocalTetrisGame(GameLevel level, GameMode mode) {
-        TetrisStateRepository stateRepository = new TetrisStateRepositoryImpl();
+        TetrisEventRepository stateRepository = new TetrisEventRepositoryImpl();
         TetrisClient client = new TetrisClient(-1, stateRepository);
         LocalTetrisServer server = new LocalTetrisServer(level, mode);
         TetrisActionHandler handler = server.connect(client);

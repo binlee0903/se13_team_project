@@ -13,6 +13,9 @@ import javafx.scene.text.Font;
 import org.se13.SE13Application;
 import org.se13.game.block.*;
 import org.se13.game.config.Config;
+import org.se13.game.event.ServerErrorEvent;
+import org.se13.game.event.TetrisEvent;
+import org.se13.game.event.UpdateTetrisState;
 import org.se13.utils.Subscriber;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
@@ -40,7 +43,7 @@ public class TetrisScreenController extends BaseController {
 
     private TetrisScreenViewModel viewModel;
     private TetrisActionRepository actionRepository;
-    private TetrisStateRepository stateRepository;
+    private TetrisEventRepository stateRepository;
     private GraphicsContext tetrisGridView;
     private GraphicsContext nextBlockView;
 
@@ -65,7 +68,7 @@ public class TetrisScreenController extends BaseController {
 
         setInitState();
 
-        viewModel.observe(updateState(), bindGameEnd());
+        viewModel.observe(observeEvent(), bindGameEnd());
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
             String keyCode = key.getCode().getName().toLowerCase();
@@ -77,7 +80,7 @@ public class TetrisScreenController extends BaseController {
         viewModel.connect();
     }
 
-    public void setArguments(TetrisActionRepository actionRepository, TetrisStateRepository stateRepository) {
+    public void setArguments(TetrisActionRepository actionRepository, TetrisEventRepository stateRepository) {
         this.actionRepository = actionRepository;
         this.stateRepository = stateRepository;
     }
@@ -93,14 +96,26 @@ public class TetrisScreenController extends BaseController {
         gameCanvas.setHeight(height);
     }
 
-    private Subscriber<TetrisState> updateState() {
-        return (state) -> {
+    private Subscriber<TetrisEvent> observeEvent() {
+        return (event) -> {
             Platform.runLater(() -> {
-                drawNextBlock(state.nextBlock());
-                setTetrisState(state.tetrisGrid());
-                score.setText(String.valueOf(state.score()));
+                switch (event) {
+                    case UpdateTetrisState state -> handleUpdateState(state);
+                    case ServerErrorEvent error -> handleServerError(error);
+                    default -> {}
+                }
             });
         };
+    }
+
+    private void handleServerError(ServerErrorEvent error) {
+        // TODO: 서버 에러 메시지를 보여주는 기능
+    }
+
+    private void handleUpdateState(UpdateTetrisState state) {
+        drawNextBlock(state.nextBlock());
+        setTetrisState(state.tetrisGrid());
+        score.setText(String.valueOf(state.score()));
     }
 
     private Subscriber<TetrisGameEndData> bindGameEnd() {
