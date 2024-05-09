@@ -1,5 +1,6 @@
 package org.se13.server;
 
+import org.se13.game.action.TetrisAction;
 import org.se13.game.event.AttackTetrisBlocks;
 import org.se13.game.event.TetrisEvent;
 import org.se13.game.tetris.DefaultTetrisGame;
@@ -17,8 +18,8 @@ public class TetrisSession {
     }
 
     public void startGame(TetrisEventHandler handler) {
-        playerGame.startGame();
         playerGame.subscribe((event) -> handler.handle(player.getUserId(), event));
+        playerGame.startGame();
     }
 
     public void response(TetrisEvent event) {
@@ -35,5 +36,13 @@ public class TetrisSession {
 
     public void attack(AttackTetrisBlocks blocks) {
         playerGame.attacked(blocks);
+    }
+
+    public void requestInput(TetrisAction action) {
+        playerGame.requestInput(action);
+    }
+
+    public void pulse(long nanoTime) {
+        playerGame.pulse(nanoTime);
     }
 }
