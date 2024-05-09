@@ -2,5 +2,6 @@ package org.se13.game.rule;
 
 public enum GameMode {
     DEFAULT,
-    ITEM
+    ITEM,
+    TIME_LIMIT
 }

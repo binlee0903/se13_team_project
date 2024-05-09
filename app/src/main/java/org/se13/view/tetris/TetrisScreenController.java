@@ -10,9 +10,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import org.se13.SE13Application;
 import org.se13.game.block.*;
 import org.se13.game.config.Config;
+import org.se13.game.timer.TimeLimitModeTimer;
 import org.se13.utils.Subscriber;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
@@ -37,6 +39,10 @@ public class TetrisScreenController extends BaseController {
     private BorderPane frame;
     @FXML
     private Canvas gameCanvas;
+    @FXML
+    public Text timeLimitPanel;
+    @FXML
+    public Text time;
 
     private TetrisScreenViewModel viewModel;
     private TetrisActionRepository actionRepository;
@@ -99,6 +105,7 @@ public class TetrisScreenController extends BaseController {
                 drawNextBlock(state.nextBlock());
                 setTetrisState(state.tetrisGrid());
                 score.setText(String.valueOf(state.score()));
+                time.setText(String.valueOf(state.remainingTime()));
             });
         };
     }
