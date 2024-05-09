@@ -20,7 +20,7 @@ class LocalTetrisServerTest {
     LocalTetrisServer server;
     TetrisActionHandler handler;
 
-    UpdateTetrisState stateTest;
+    TetrisEvent stateTest;
     TetrisGameEndData endDataTest;
 
     @BeforeEach
@@ -44,7 +44,7 @@ class LocalTetrisServerTest {
     @Test
     void baseTest() throws InterruptedException {
         repository = new TetrisEventRepositoryImpl() {
-            private UpdateTetrisState before = null;
+            private TetrisEvent before = null;
 
             @Override
             public void response(TetrisEvent event) {
