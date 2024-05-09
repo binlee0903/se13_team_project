@@ -20,21 +20,4 @@ public class ControllerTest {
         baseController.onCreate();
         baseController.onStart();
     }
-
-    @Test
-    @Disabled
-    @DisplayName("SettingScreenController test")
-    void testSettingScreenController() {
-
-        new Thread(() -> {
-            SE13Application.isTestMode = true;
-            SE13Application.main(new String[0]);
-        }).start();
-
-        SettingScreenController settingScreenController = new SettingScreenController();
-        settingScreenController.isTestMode = true;
-
-        settingScreenController.resetSettingButtons();
-
-    }
 }
