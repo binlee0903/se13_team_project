@@ -3,6 +3,7 @@ package org.se13.server;
 import org.se13.game.event.AttackTetrisBlocks;
 import org.se13.game.event.ServerErrorEvent;
 import org.se13.game.event.TetrisEvent;
+import org.se13.game.event.UpdateTetrisState;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.game.tetris.DefaultTetrisGame;
@@ -83,6 +84,7 @@ public class LocalBattleTetrisServer implements TetrisServer {
     private TetrisEventHandler createHandlers() {
         return (userId, event) -> {
             switch (event) {
+                case UpdateTetrisState state -> broadcast(state);
                 case AttackTetrisBlocks blocks -> handleAttacks(userId, blocks);
                 default -> {
                 }
