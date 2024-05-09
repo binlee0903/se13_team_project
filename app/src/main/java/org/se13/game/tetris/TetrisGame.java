@@ -8,10 +8,7 @@ import org.se13.game.item.*;
 import org.se13.game.rule.BlockQueue;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
-import org.se13.game.timer.BlockCollideTimer;
-import org.se13.game.timer.BlockFallingTimer;
-import org.se13.game.timer.FeverModeTimer;
-import org.se13.game.timer.LineClearAnimationTimer;
+import org.se13.game.timer.*;
 import org.se13.server.TetrisServer;
 import org.se13.utils.Observer;
 import org.se13.utils.Subscriber;
@@ -21,8 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
-public class DefaultTetrisGame {
-    private static final Logger log = LoggerFactory.getLogger(DefaultTetrisGame.class);
+public class TetrisGame {
+    private static final Logger log = LoggerFactory.getLogger(TetrisGame.class);
     private TetrisServer server;
     private Observer<TetrisState> state;
 
@@ -40,7 +37,7 @@ public class DefaultTetrisGame {
         IMPOSSIBLE
     }
 
-    public DefaultTetrisGame(GameLevel gameLevel, GameMode gameMode, TetrisServer server) {
+    public TetrisGame(GameLevel gameLevel, GameMode gameMode, TetrisServer server) {
         this.random = new Random();
         this.server = server;
         this.state = new Observer<>();
@@ -112,7 +109,7 @@ public class DefaultTetrisGame {
             }
         }
 
-        updateState(tetrisGameGrid, nextBlock, score);
+        updateState(tetrisGameGrid, nextBlock, score, timeLimitModeTimer.getRemainingTime());
     }
 
     public void startGame() {
@@ -121,6 +118,7 @@ public class DefaultTetrisGame {
         blockMovingTimer = new BlockFallingTimer(startTime);
         collideCheckingTimer = new BlockCollideTimer(startTime);
         lineClearAnimationTimer = new LineClearAnimationTimer(startTime);
+        timeLimitModeTimer = new TimeLimitModeTimer(startTime);
     }
 
     public void stopGame() {
@@ -137,6 +135,7 @@ public class DefaultTetrisGame {
             blockMovingTimer.pauseTimer();
             collideCheckingTimer.pauseTimer();
             lineClearAnimationTimer.pauseTimer();
+            timeLimitModeTimer.pauseTimer();
             return false;
         } else {
             this.gameStatus = GameStatus.RUNNING;
@@ -145,6 +144,7 @@ public class DefaultTetrisGame {
             blockMovingTimer.resumeTimer();
             collideCheckingTimer.resumeTimer();
             lineClearAnimationTimer.resumeTimer();
+            timeLimitModeTimer.resumeTimer();
             return true;
         }
     }
@@ -346,6 +346,7 @@ public class DefaultTetrisGame {
     void tick(long l) {
         blockMovingTimer.setCurrentTime(l);
         collideCheckingTimer.setCurrentTime(l);
+        timeLimitModeTimer.setCurrentTime(l);
 
         if (blockMovingTimer.isBlockFallingTimeHasGone() == true) {
             moveBlockDown();
@@ -368,6 +369,10 @@ public class DefaultTetrisGame {
     }
 
     void update() {
+        if (timeLimitModeTimer.isTimeOver() == true) {
+            stopGame();
+        }
+
         drawBlockIntoGrid();
 
         // WeightBlock이 떨어졌을 때, 해당 열을 지워줌
@@ -444,8 +449,8 @@ public class DefaultTetrisGame {
         };
     }
 
-    private void updateState(TetrisGrid newTetrisGird, CurrentBlock newNextBlock, int newScore) {
-        state.setValue(new TetrisState(newTetrisGird.getGrid(), newNextBlock, newScore));
+    private void updateState(TetrisGrid newTetrisGird, CurrentBlock newNextBlock, int newScore, int newRemainingTime) {
+        state.setValue(new TetrisState(newTetrisGird.getGrid(), newNextBlock, newScore, newRemainingTime));
     }
 
     private final int ROW_SIZE = 22;
@@ -462,6 +467,7 @@ public class DefaultTetrisGame {
     private BlockSpeed blockSpeed;
     private BlockFallingTimer blockMovingTimer;
     private BlockCollideTimer collideCheckingTimer;
+    private TimeLimitModeTimer timeLimitModeTimer;
     private FeverModeTimer feverModeTimer;
     private LineClearAnimationTimer lineClearAnimationTimer;
     private int score;

@@ -2,7 +2,7 @@ package org.se13.server;
 
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
-import org.se13.game.tetris.DefaultTetrisGame;
+import org.se13.game.tetris.TetrisGame;
 
 import java.util.Map;
 
@@ -25,7 +25,7 @@ public class LocalBattleTetrisServer implements TetrisServer {
 
     @Override
     public TetrisActionHandler connect(TetrisClient client) {
-        sessions.put(client.getUserId(), new TetrisRoom(client, new DefaultTetrisGame(level, mode, this)));
+        sessions.put(client.getUserId(), new TetrisRoom(client, new TetrisGame(level, mode, this)));
 
         return packet -> {
             switch (packet.action()) {

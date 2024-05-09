@@ -2,7 +2,7 @@ package org.se13.server;
 
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
-import org.se13.game.tetris.DefaultTetrisGame;
+import org.se13.game.tetris.TetrisGame;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -13,7 +13,7 @@ public class LocalTetrisServer implements TetrisServer {
 
     private Timer tetrisTimer;
     private TetrisClient player;
-    private DefaultTetrisGame playerGame;
+    private TetrisGame playerGame;
 
     public LocalTetrisServer(GameLevel gameLevel, GameMode gameMode) {
         this.level = gameLevel;
@@ -30,7 +30,7 @@ public class LocalTetrisServer implements TetrisServer {
     @Override
     public TetrisActionHandler connect(TetrisClient client) {
         player = client;
-        playerGame = new DefaultTetrisGame(level, mode, this);
+        playerGame = new TetrisGame(level, mode, this);
         playerGame.subscribe(player::response);
 
         return request -> {

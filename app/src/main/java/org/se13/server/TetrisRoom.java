@@ -1,15 +1,15 @@
 package org.se13.server;
 
-import org.se13.game.tetris.DefaultTetrisGame;
+import org.se13.game.tetris.TetrisGame;
 
 public class TetrisRoom {
 
     private TetrisClient player;
-    private DefaultTetrisGame playerGame;
+    private TetrisGame playerGame;
 
     private boolean isPlayerReady;
 
-    public TetrisRoom(TetrisClient player, DefaultTetrisGame playerGame) {
+    public TetrisRoom(TetrisClient player, TetrisGame playerGame) {
         this.player = player;
         this.playerGame = playerGame;
         playerGame.subscribe(player::response);
