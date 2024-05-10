@@ -2,6 +2,9 @@ package org.se13.game.tetris;
 
 import org.se13.game.action.TetrisAction;
 import org.se13.game.block.*;
+import org.se13.game.event.AttackTetrisBlocks;
+import org.se13.game.event.TetrisEvent;
+import org.se13.game.event.UpdateTetrisState;
 import org.se13.game.grid.TetrisGrid;
 import org.se13.game.input.InputManager;
 import org.se13.game.item.*;
@@ -15,7 +18,6 @@ import org.se13.game.timer.LineClearAnimationTimer;
 import org.se13.server.TetrisServer;
 import org.se13.utils.Observer;
 import org.se13.utils.Subscriber;
-import org.se13.view.tetris.TetrisState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +26,7 @@ import java.util.Random;
 public class DefaultTetrisGame {
     private static final Logger log = LoggerFactory.getLogger(DefaultTetrisGame.class);
     private TetrisServer server;
-    private Observer<TetrisState> state;
+    private Observer<TetrisEvent> events;
 
     enum GameStatus {
         GAMEOVER,
@@ -43,7 +45,7 @@ public class DefaultTetrisGame {
     public DefaultTetrisGame(GameLevel gameLevel, GameMode gameMode, TetrisServer server) {
         this.random = new Random();
         this.server = server;
-        this.state = new Observer<>();
+        this.events = new Observer<>();
         this.blockQueue = new BlockQueue(random, gameLevel);
         this.tetrisGameGrid = new TetrisGrid(ROW_SIZE, COL_SIZE);
 
@@ -90,8 +92,8 @@ public class DefaultTetrisGame {
     }
 
 
-    public void subscribe(Subscriber<TetrisState> subscriber) {
-        state.subscribe(subscriber);
+    public void subscribe(Subscriber<TetrisEvent> subscriber) {
+        events.subscribe(subscriber);
     }
 
     public void pulse(long l) {
@@ -343,6 +345,10 @@ public class DefaultTetrisGame {
         }
     }
 
+    public void attacked(AttackTetrisBlocks blocks) {
+        // TODO: 기존 테트리스 블럭을 위로 올리고 blocks를 하단에 넣어주기
+    }
+
     void tick(long l) {
         blockMovingTimer.setCurrentTime(l);
         collideCheckingTimer.setCurrentTime(l);
@@ -395,6 +401,8 @@ public class DefaultTetrisGame {
                     lineClearAnimationTimer.resetFlags();
                     gameStatus = GameStatus.RUNNING;
                     isAnimationEnded = true;
+                    // TODO Attack Event 개발 (BattleTetrisGame 클래스 구조로 리팩토링 하기엔 어려워 보임)
+                    attackEvent(null);
                 } else {
                     gameStatus = GameStatus.ANIMATION;
                     isAnimationEnded = false;
@@ -445,7 +453,11 @@ public class DefaultTetrisGame {
     }
 
     private void updateState(TetrisGrid newTetrisGird, CurrentBlock newNextBlock, int newScore) {
-        state.setValue(new TetrisState(newTetrisGird.getGrid(), newNextBlock, newScore));
+        events.setValue(new UpdateTetrisState(newTetrisGird.getGrid(), newNextBlock, newScore));
+    }
+
+    private void attackEvent(BlockPosition[][] blocks) {
+        events.setValue(new AttackTetrisBlocks(blocks));
     }
 
     private final int ROW_SIZE = 22;

@@ -4,6 +4,7 @@ public enum AppScreen {
     START("StartScreen.fxml"),
     LEVEL_SELECT("LevelSelectScreen.fxml"),
     TETRIS("TetrisScreen.fxml"),
+    BATTLE("BattleScreen.fxml"),
     SETTING("SettingScreen.fxml"),
     RANKING("RankingScreen.fxml"),
     GAMEOVER("GameOverScreen.fxml");

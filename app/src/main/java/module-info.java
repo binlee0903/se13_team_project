@@ -23,4 +23,6 @@ module org.se13 {
     opens org.se13.view.nav to javafx.fxml;
     exports org.se13.sqlite.ranking;
     opens org.se13.sqlite.ranking to javafx.fxml;
+    exports org.se13.game.event;
+    opens org.se13.game.event to javafx.fxml;
 }
