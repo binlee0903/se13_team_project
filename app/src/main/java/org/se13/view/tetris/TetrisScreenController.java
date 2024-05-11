@@ -121,6 +121,7 @@ public class TetrisScreenController extends BaseController {
         drawNextBlock(state.nextBlock());
         setTetrisState(state.tetrisGrid());
         score.setText(String.valueOf(state.score()));
+        time.setText(String.valueOf(state.remainingTime()));
     }
 
     private Subscriber<TetrisGameEndData> bindGameEnd() {

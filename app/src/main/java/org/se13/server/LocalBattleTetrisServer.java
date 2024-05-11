@@ -41,12 +41,8 @@ public class LocalBattleTetrisServer implements TetrisServer {
 
     @Override
     public TetrisActionHandler connect(TetrisClient client) {
-<<<<<<< HEAD
-        sessions.put(client.getUserId(), new TetrisRoom(client, new TetrisGame(level, mode, this)));
-=======
-        sessions.put(client.getUserId(), new TetrisSession(client, new DefaultTetrisGame(level, mode, this)));
+        sessions.put(client.getUserId(), new TetrisSession(client, new TetrisGame(level, mode, this)));
         handlers.put(client.getUserId(), createHandlers());
->>>>>>> main
 
         return packet -> {
             switch (packet.action()) {

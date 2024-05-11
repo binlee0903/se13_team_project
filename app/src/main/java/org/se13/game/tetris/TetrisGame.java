@@ -457,8 +457,8 @@ public class TetrisGame {
         };
     }
 
-    private void updateState(TetrisGrid newTetrisGird, CurrentBlock newNextBlock, int newScore) {
-        events.setValue(new UpdateTetrisState(newTetrisGird.getGrid(), newNextBlock, newScore));
+    private void updateState(TetrisGrid newTetrisGird, CurrentBlock newNextBlock, int newScore, int newRemainingTime) {
+        events.setValue(new UpdateTetrisState(newTetrisGird.getGrid(), newNextBlock, newScore, newRemainingTime));
     }
 
     private void attackEvent(BlockPosition[][] blocks) {

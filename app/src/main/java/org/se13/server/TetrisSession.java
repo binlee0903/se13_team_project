@@ -3,16 +3,16 @@ package org.se13.server;
 import org.se13.game.action.TetrisAction;
 import org.se13.game.event.AttackTetrisBlocks;
 import org.se13.game.event.TetrisEvent;
-import org.se13.game.tetris.DefaultTetrisGame;
+import org.se13.game.tetris.TetrisGame;
 
 public class TetrisSession {
 
     private TetrisClient player;
-    private DefaultTetrisGame playerGame;
+    private TetrisGame playerGame;
 
     private boolean isPlayerReady;
 
-    public TetrisSession(TetrisClient player, DefaultTetrisGame playerGame) {
+    public TetrisSession(TetrisClient player, TetrisGame playerGame) {
         this.player = player;
         this.playerGame = playerGame;
     }
