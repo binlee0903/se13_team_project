@@ -18,4 +18,7 @@ public enum CellID {
     RESET_ITEM_ID,
     LINE_CLEAR_ITEM_ID,
     ALL_CLEAR_ITEM_ID,
+
+    // 대전 모드를 위한 아이디
+    ATTACKED_BLOCK_ID,
 }

@@ -346,7 +346,8 @@ public class TetrisGame {
     }
 
     public void attacked(AttackTetrisBlocks blocks) {
-        // TODO: 기존 테트리스 블럭을 위로 올리고 blocks를 하단에 넣어주기
+        // 기존 테트리스 블럭을 위로 올리고 blocks를 하단에 넣어주기
+        tetrisGameGrid.attackedBlocks(blocks);
     }
 
     void tick(long l) {

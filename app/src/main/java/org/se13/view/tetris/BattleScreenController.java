@@ -112,8 +112,7 @@ public class BattleScreenController extends BaseController {
                 switch (event) {
                     case UpdateTetrisState state -> handleUpdateState(state);
                     case ServerErrorEvent error -> handleServerError(error);
-                    default -> {
-                    }
+                    default -> {}
                 }
             });
         };
@@ -215,6 +214,7 @@ public class BattleScreenController extends BaseController {
                  RESET_ITEM_ID,
                  LINE_CLEAR_ITEM_ID,
                  ALL_CLEAR_ITEM_ID -> Color.WHITE;
+            case ATTACKED_BLOCK_ID -> Block.AttackedBlock.blockColor;
         };
     }
 
@@ -233,7 +233,8 @@ public class BattleScreenController extends BaseController {
                  SBLOCK_ID,
                  TBLOCK_ID,
                  ZBLOCK_ID,
-                 CBLOCK_ID -> DEFAULT_BLOCK_TEXT;
+                 CBLOCK_ID,
+                 ATTACKED_BLOCK_ID-> DEFAULT_BLOCK_TEXT;
         };
     }
 

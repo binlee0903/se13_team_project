@@ -203,6 +203,7 @@ public class TetrisScreenController extends BaseController {
             case SBLOCK_ID -> Block.SBlock.blockColor;
             case TBLOCK_ID -> Block.TBlock.blockColor;
             case ZBLOCK_ID -> Block.ZBlock.blockColor;
+            case ATTACKED_BLOCK_ID -> Block.AttackedBlock.blockColor;
             case CBLOCK_ID,
                  WEIGHT_ITEM_ID,
                  FEVER_ITEM_ID,
@@ -228,7 +229,8 @@ public class TetrisScreenController extends BaseController {
                  SBLOCK_ID,
                  TBLOCK_ID,
                  ZBLOCK_ID,
-                 CBLOCK_ID -> DEFAULT_BLOCK_TEXT;
+                 CBLOCK_ID,
+                 ATTACKED_BLOCK_ID-> DEFAULT_BLOCK_TEXT;
         };
     }
 

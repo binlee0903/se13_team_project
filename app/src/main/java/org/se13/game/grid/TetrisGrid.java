@@ -1,6 +1,7 @@
 package org.se13.game.grid;
 
 import org.se13.game.block.CellID;
+import org.se13.game.event.AttackTetrisBlocks;
 import org.se13.game.item.CellClearedListener;
 
 import java.util.ArrayList;
@@ -117,7 +118,6 @@ public class TetrisGrid {
 
     /**
      * clears full rows
-     *
      */
     public void clearWeightCol(int colIndex) {
         for (int i = colIndex; i < colIndex + 4; i++) {
@@ -197,6 +197,26 @@ public class TetrisGrid {
 
                     break;
                 }
+            }
+        }
+    }
+
+    /**
+     * attacked
+     * move blocks up and insert attacked blocks on the bottom
+     * @param blocks attacked blocks
+     */
+    public void attackedBlocks(AttackTetrisBlocks blocks) {
+        int attackBlockRows = blocks.blocks().length;
+        for (int i = 0; i < rowSize - attackBlockRows; i++) {
+            for (int j = 0; j < colSize; j++) {
+                setCell(i, j, getGrid()[i + attackBlockRows][j]);
+            }
+        }
+
+        for (int i = 0; i < attackBlockRows; i++) {
+            for (int j = 0; j < blocks.blocks()[i].length; j++) {
+                setCell(rowSize - attackBlockRows + i, j, CellID.ATTACKED_BLOCK_ID);
             }
         }
     }
