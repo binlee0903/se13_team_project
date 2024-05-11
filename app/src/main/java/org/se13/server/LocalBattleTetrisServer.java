@@ -7,7 +7,7 @@ import org.se13.game.event.TetrisEvent;
 import org.se13.game.event.UpdateTetrisState;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
-import org.se13.game.tetris.DefaultTetrisGame;
+import org.se13.game.tetris.TetrisGame;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +41,7 @@ public class LocalBattleTetrisServer implements TetrisServer {
 
     @Override
     public TetrisActionHandler connect(TetrisClient client) {
-        sessions.put(client.getUserId(), new TetrisSession(client, new DefaultTetrisGame(level, mode, this)));
+        sessions.put(client.getUserId(), new TetrisSession(client, new TetrisGame(level, mode, this)));
         handlers.put(client.getUserId(), createHandlers());
 
         return packet -> {

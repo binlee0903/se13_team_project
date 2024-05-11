@@ -19,7 +19,7 @@ public class LevelSelectScreenController extends BaseController {
 
     @FXML
     private void initialize() {
-        modeChoiceBox.setItems(FXCollections.observableArrayList("default","item"));
+        modeChoiceBox.setItems(FXCollections.observableArrayList("default","item","timeLimit"));
         modeChoiceBox.setValue("default");
         typeChoiceBox.setItems(FXCollections.observableArrayList("single", "battle"));
         typeChoiceBox.setValue("single");
@@ -82,6 +82,7 @@ public class LevelSelectScreenController extends BaseController {
         return switch (gameMode) {
             case "default" -> GameMode.DEFAULT;
             case "item" -> GameMode.ITEM;
+            case "timeLimit" -> GameMode.TIME_LIMIT;
             default -> {
                 assert (false);
                 yield null;

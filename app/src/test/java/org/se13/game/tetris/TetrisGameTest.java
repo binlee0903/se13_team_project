@@ -24,11 +24,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TetrisGameTest {
 
-    DefaultTetrisGame defaultTetrisGame;
+    TetrisGame tetrisGame;
 
     @BeforeEach
     void before() {
-        defaultTetrisGame = new DefaultTetrisGame(GameLevel.NORMAL, GameMode.ITEM, new TetrisServer() {
+        tetrisGame = new TetrisGame(GameLevel.NORMAL, GameMode.ITEM, new TetrisServer() {
             @Override
             public void responseGameOver(int score, boolean isItemMode, String difficulty) {
 
@@ -258,72 +258,72 @@ public class TetrisGameTest {
     @Test
     @DisplayName("전반적인 테트리스 게임 테스트")
     void tetrisGameTest() {
-        assertEquals(0, defaultTetrisGame.getScore());
-        assertEquals("Normal", defaultTetrisGame.getDifficulty());
-        assertTrue(defaultTetrisGame.isItemMode());
+        assertEquals(0, tetrisGame.getScore());
+        assertEquals("Normal", tetrisGame.getDifficulty());
+        assertTrue(tetrisGame.isItemMode());
 
-        CurrentBlock currentBlock = defaultTetrisGame.getCurrentBlock();
+        CurrentBlock currentBlock = tetrisGame.getCurrentBlock();
 
         assertNotNull(currentBlock);
 
-        defaultTetrisGame.setCurrentBlock(new CurrentBlock(Block.IBlock)); // (0, 3)
+        tetrisGame.setCurrentBlock(new CurrentBlock(Block.IBlock)); // (0, 3)
 
-        defaultTetrisGame.moveBlockDown(); // (1, 3)
-        defaultTetrisGame.moveBlockDown(); // (2, 3)
-        defaultTetrisGame.moveBlockDown(); // (3, 3)
-        defaultTetrisGame.moveBlockLeft(); // (3, 2)
-        defaultTetrisGame.moveBlockRight(); // (3, 3)
+        tetrisGame.moveBlockDown(); // (1, 3)
+        tetrisGame.moveBlockDown(); // (2, 3)
+        tetrisGame.moveBlockDown(); // (3, 3)
+        tetrisGame.moveBlockLeft(); // (3, 2)
+        tetrisGame.moveBlockRight(); // (3, 3)
 
-        defaultTetrisGame.rotateBlockCW();
+        tetrisGame.rotateBlockCW();
 
-        defaultTetrisGame.drawBlockIntoGrid();
+        tetrisGame.drawBlockIntoGrid();
 
-        TetrisGrid tetrisGrid = defaultTetrisGame.getTetrisGrid();
+        TetrisGrid tetrisGrid = tetrisGame.getTetrisGrid();
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(3, 5));
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(4, 5));
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(5, 5));
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(6, 5));
-        defaultTetrisGame.deleteCurrentBlockFromGrid();
+        tetrisGame.deleteCurrentBlockFromGrid();
 
-        defaultTetrisGame.processUserInput(TetrisAction.MOVE_BLOCK_LEFT);
-        defaultTetrisGame.drawBlockIntoGrid();
+        tetrisGame.processUserInput(TetrisAction.MOVE_BLOCK_LEFT);
+        tetrisGame.drawBlockIntoGrid();
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(3, 4));
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(4, 4));
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(5, 4));
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(6, 4));
 
-        defaultTetrisGame.deleteCurrentBlockFromGrid();
+        tetrisGame.deleteCurrentBlockFromGrid();
         assertEquals(CellID.EMPTY, tetrisGrid.getCell(3, 4));
         assertEquals(CellID.EMPTY, tetrisGrid.getCell(4, 4));
         assertEquals(CellID.EMPTY, tetrisGrid.getCell(5, 4));
         assertEquals(CellID.EMPTY, tetrisGrid.getCell(6, 4));
 
-        defaultTetrisGame.immediateBlockPlace();
-        defaultTetrisGame.drawBlockIntoGrid();
+        tetrisGame.immediateBlockPlace();
+        tetrisGame.drawBlockIntoGrid();
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(18, 4));
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(19, 4));
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(20, 4));
         assertEquals(CellID.IBLOCK_ID, tetrisGrid.getCell(21, 4));
 
-        defaultTetrisGame.deleteCurrentBlockFromGrid();
+        tetrisGame.deleteCurrentBlockFromGrid();
 
         for (int i = 0; i < 9; i++) {
             tetrisGrid.setCell(0, i, CellID.IBLOCK_ID);
             tetrisGrid.setCell(1, i, CellID.IBLOCK_ID);
         }
 
-        assertTrue(defaultTetrisGame.isGameOver());
+        assertTrue(tetrisGame.isGameOver());
 
         for (int i = 0; i < 9; i++) {
             tetrisGrid.setCell(0, i, CellID.EMPTY);
             tetrisGrid.setCell(1, i, CellID.EMPTY);
         }
 
-        defaultTetrisGame.startGame();
-        defaultTetrisGame.togglePauseState();
-        assertTrue(defaultTetrisGame.isGamePaused());
+        tetrisGame.startGame();
+        tetrisGame.togglePauseState();
+        assertTrue(tetrisGame.isGamePaused());
 
-        defaultTetrisGame.togglePauseState();
+        tetrisGame.togglePauseState();
 
         for (int i = 0; i < 10; i++) {
             tetrisGrid.setCell(10, i, CellID.IBLOCK_ID);
@@ -340,31 +340,31 @@ public class TetrisGameTest {
         }
 
 
-        defaultTetrisGame.setBlockPlaced(true);
-        defaultTetrisGame.pulse(System.nanoTime());
-        defaultTetrisGame.update();
-        assertEquals(DefaultTetrisGame.BlockSpeed.DEFAULT, defaultTetrisGame.getBlockSpeed());
+        tetrisGame.setBlockPlaced(true);
+        tetrisGame.pulse(System.nanoTime());
+        tetrisGame.update();
+        assertEquals(TetrisGame.BlockSpeed.DEFAULT, tetrisGame.getBlockSpeed());
 
-        while (defaultTetrisGame.isAnimationTimerEnded() == true) {
-            defaultTetrisGame.update();
+        while (tetrisGame.isAnimationTimerEnded() == true) {
+            tetrisGame.update();
         }
 
-        defaultTetrisGame.update();
+        tetrisGame.update();
 
-        defaultTetrisGame.setClearedLines(11);
-        defaultTetrisGame.updateBlockSpeed();
+        tetrisGame.setClearedLines(11);
+        tetrisGame.updateBlockSpeed();
 
-        assertEquals(DefaultTetrisGame.BlockSpeed.FASTER, defaultTetrisGame.getBlockSpeed());
+        assertEquals(TetrisGame.BlockSpeed.FASTER, tetrisGame.getBlockSpeed());
 
-        defaultTetrisGame.setClearedLines(31);
-        defaultTetrisGame.updateBlockSpeed();
+        tetrisGame.setClearedLines(31);
+        tetrisGame.updateBlockSpeed();
 
-        assertEquals(DefaultTetrisGame.BlockSpeed.RAGE, defaultTetrisGame.getBlockSpeed());
+        assertEquals(TetrisGame.BlockSpeed.RAGE, tetrisGame.getBlockSpeed());
 
-        defaultTetrisGame.setClearedLines(101);
-        defaultTetrisGame.updateBlockSpeed();
+        tetrisGame.setClearedLines(101);
+        tetrisGame.updateBlockSpeed();
 
-        assertEquals(DefaultTetrisGame.BlockSpeed.IMPOSSIBLE, defaultTetrisGame.getBlockSpeed());
+        assertEquals(TetrisGame.BlockSpeed.IMPOSSIBLE, tetrisGame.getBlockSpeed());
     }
 
     @Test
@@ -386,71 +386,53 @@ public class TetrisGameTest {
     }
 
     @Test
-    @Disabled
-    @DisplayName("Memory Usage Test")
-    void memoryUsageTest() {
-        new Thread(() -> {
-            Runtime.getRuntime().gc();
-
-            while (true) {
-                long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-                assertTrue(usedMemory/1024/1024 < 1500);
-            }
-        }).start();
-
-
-        String[] temp = new String[] {"dummy1", "dummy2"};
-        SE13Application.main(temp);
-    }
-
-    @Test
     @DisplayName("피버_모드_아이템_발동_테스트")
     void feverItemTest() throws InterruptedException {
         FeverModeTimer.DEFAULT_DURATION = 500000000L;
 
-        defaultTetrisGame.startGame();
+        tetrisGame.startGame();
         for (int i = 0; i < 10; i++) {
-            defaultTetrisGame
+            tetrisGame
                 .getTetrisGrid()
                 .setCell(0, i, CellID.IBLOCK_ID);
         }
 
-        defaultTetrisGame
+        tetrisGame
             .getTetrisGrid()
             .setCell(0, 0, CellID.FEVER_ITEM_ID);
 
-        int currentWeight = defaultTetrisGame.getScoreWeight();
-        defaultTetrisGame.getTetrisGrid().clearFullRows();
-        int nextWeight = defaultTetrisGame.getScoreWeight();
+        int currentWeight = tetrisGame.getScoreWeight();
+        tetrisGame.getTetrisGrid().clearFullRows();
+        int nextWeight = tetrisGame.getScoreWeight();
 
         assertTrue(currentWeight < nextWeight);
 
         Thread.sleep(500);
 
-        defaultTetrisGame.pulse(System.nanoTime());
-        nextWeight = defaultTetrisGame.getScoreWeight();
+        tetrisGame.pulse(System.nanoTime());
+        nextWeight = tetrisGame.getScoreWeight();
         assertEquals(currentWeight, nextWeight);
     }
 
     @Test
     @DisplayName("속도_리셋_아이템_발동_테스트")
     void resetSpeedItemTest() {
-        defaultTetrisGame.startGame();
-        defaultTetrisGame.pulse(System.nanoTime());
+        tetrisGame.startGame();
+        tetrisGame.pulse(System.nanoTime());
 
         for (int i = 0; i < 10; i++) {
-            defaultTetrisGame
+            tetrisGame
                 .getTetrisGrid()
                 .setCell(0, i, CellID.IBLOCK_ID);
         }
 
-        defaultTetrisGame
+        tetrisGame
             .getTetrisGrid()
             .setCell(0, 0, CellID.RESET_ITEM_ID);
 
-        DefaultTetrisGame.BlockSpeed currentSpeed = defaultTetrisGame.getBlockSpeed();
-        defaultTetrisGame.getTetrisGrid().clearFullRows();
-        DefaultTetrisGame.BlockSpeed nextSpeed = defaultTetrisGame.getBlockSpeed();
+        TetrisGame.BlockSpeed currentSpeed = tetrisGame.getBlockSpeed();
+        tetrisGame.getTetrisGrid().clearFullRows();
+        TetrisGame.BlockSpeed nextSpeed = tetrisGame.getBlockSpeed();
 
         assertEquals(currentSpeed, nextSpeed);
     }
@@ -458,33 +440,33 @@ public class TetrisGameTest {
     @Test
     @DisplayName("보드_리셋_아이템_발동_테스트")
     void resetBoardItemTest() {
-        defaultTetrisGame.startGame();
-        defaultTetrisGame.pulse(System.nanoTime());
+        tetrisGame.startGame();
+        tetrisGame.pulse(System.nanoTime());
 
         for (int i = 0; i < 10; i++) {
-            defaultTetrisGame
+            tetrisGame
                 .getTetrisGrid()
                 .setCell(0, i, CellID.IBLOCK_ID);
         }
 
-        defaultTetrisGame
+        tetrisGame
             .getTetrisGrid()
             .setCell(0, 0, CellID.ALL_CLEAR_ITEM_ID);
 
-        defaultTetrisGame
+        tetrisGame
             .getTetrisGrid()
             .setCell(1, 1, CellID.IBLOCK_ID);
 
-        assertEquals(CellID.IBLOCK_ID, defaultTetrisGame.getTetrisGrid().getCell(1, 1));
-        defaultTetrisGame.getTetrisGrid().clearFullRows();
-        assertEquals(CellID.EMPTY, defaultTetrisGame.getTetrisGrid().getCell(1, 1));
+        assertEquals(CellID.IBLOCK_ID, tetrisGame.getTetrisGrid().getCell(1, 1));
+        tetrisGame.getTetrisGrid().clearFullRows();
+        assertEquals(CellID.EMPTY, tetrisGame.getTetrisGrid().getCell(1, 1));
     }
 
     @Test
     @DisplayName("아이템이_잘_생성되는지_테스트")
     void createItemBlockTest() {
         for (int i = 0; i < 100; i++) {
-            CurrentBlock block = defaultTetrisGame.nextItemBlock();
+            CurrentBlock block = tetrisGame.nextItemBlock();
             assertInstanceOf(TetrisItem.class, block.getItem());
         }
     }
