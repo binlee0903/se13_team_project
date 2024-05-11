@@ -82,7 +82,14 @@ public enum Block {
     }, new int[]{0, 3}, CellID.WEIGHT_BLOCK_ID, new BlockColor(
             Color.rgb(255, 255, 255),
             Color.rgb(255, 255, 255),
-            Color.rgb(255, 255, 255)));
+            Color.rgb(255, 255, 255))),
+
+    AttackedBlock(new int[][][]{
+            {{0, 0}},
+    }, new int[]{0, 1}, CellID.ATTACKED_BLOCK_ID, new BlockColor(
+            Color.rgb(100, 100, 100),
+            Color.rgb(100, 100, 100),
+            Color.rgb(100, 100, 100)));
 
     Block(int[][][] positions, int[] offset, CellID id, BlockColor blockColor) {
         int row = positions.length;
