@@ -201,9 +201,10 @@ public class TetrisGrid {
         }
     }
 
-    /*
-    attacked
-    move blocks up and insert attacked blocks on the bottom
+    /**
+     * attacked
+     * move blocks up and insert attacked blocks on the bottom
+     * @param blocks attacked blocks
      */
     public void attackedBlocks(AttackTetrisBlocks blocks) {
         int attackBlockRows = blocks.blocks().length;
