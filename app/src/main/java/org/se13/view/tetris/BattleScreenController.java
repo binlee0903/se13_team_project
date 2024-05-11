@@ -10,7 +10,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import org.se13.SE13Application;
 import org.se13.game.block.*;
 import org.se13.game.config.Config;
@@ -23,9 +22,9 @@ import org.se13.view.nav.AppScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TetrisScreenController extends BaseController {
+public class BattleScreenController extends BaseController {
 
-    private static final Logger log = LoggerFactory.getLogger(TetrisScreenController.class);
+    private static final Logger log = LoggerFactory.getLogger(BattleScreenController.class);
 
     public enum GameSize {
         SMALL,
@@ -41,14 +40,12 @@ public class TetrisScreenController extends BaseController {
     private BorderPane frame;
     @FXML
     private Canvas gameCanvas;
-    @FXML
-    public Text timeLimitPanel;
-    @FXML
-    public Text time;
 
     private TetrisScreenViewModel viewModel;
-    private TetrisActionRepository actionRepository;
-    private TetrisEventRepository stateRepository;
+    private TetrisActionRepository actionRepository1;
+    private TetrisActionRepository actionRepository2;
+    private TetrisEventRepository stateRepository1;
+    private TetrisEventRepository stateRepository2;
     private GraphicsContext tetrisGridView;
     private GraphicsContext nextBlockView;
 
@@ -67,7 +64,7 @@ public class TetrisScreenController extends BaseController {
     @Override
     public void onCreate() {
         Scene scene = gameCanvas.getScene();
-        viewModel = new TetrisScreenViewModel(actionRepository, stateRepository);
+        viewModel = new TetrisScreenViewModel(actionRepository1, stateRepository1);
         tetrisGridView = gameCanvas.getGraphicsContext2D();
         nextBlockView = nextBlockCanvas.getGraphicsContext2D();
 
@@ -83,11 +80,19 @@ public class TetrisScreenController extends BaseController {
         this.frame.setStyle("-fx-border-color: red;");
 
         viewModel.connect();
+        // TODO: 플레이어 별 ViewModel 관리 방법 생각하기
+        actionRepository2.connect();
     }
 
-    public void setArguments(TetrisActionRepository actionRepository, TetrisEventRepository stateRepository) {
-        this.actionRepository = actionRepository;
-        this.stateRepository = stateRepository;
+    public void setArguments(TetrisActionRepository actionRepository1,
+                             TetrisEventRepository stateRepository1,
+                             TetrisActionRepository actionRepository2,
+                             TetrisEventRepository stateRepository2) {
+
+        this.actionRepository1 = actionRepository1;
+        this.stateRepository1 = stateRepository1;
+        this.actionRepository2 = actionRepository2;
+        this.stateRepository2 = stateRepository2;
     }
 
     private void setInitState() {
@@ -107,7 +112,8 @@ public class TetrisScreenController extends BaseController {
                 switch (event) {
                     case UpdateTetrisState state -> handleUpdateState(state);
                     case ServerErrorEvent error -> handleServerError(error);
-                    default -> {}
+                    default -> {
+                    }
                 }
             });
         };
