@@ -47,7 +47,9 @@ public class LocalBattleTetrisServer implements TetrisServer {
         return packet -> {
             switch (packet.action()) {
                 case START -> handleStartGame(packet.userId());
-                case MOVE_BLOCK_LEFT,
+                case IMMEDIATE_BLOCK_PLACE,
+                     ROTATE_BLOCK_CW,
+                     MOVE_BLOCK_LEFT,
                      MOVE_BLOCK_DOWN,
                      MOVE_BLOCK_RIGHT -> handleInputAction(packet.userId(), packet.action());
             }
