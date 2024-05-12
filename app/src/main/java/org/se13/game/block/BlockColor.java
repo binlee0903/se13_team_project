@@ -26,6 +26,7 @@ public class BlockColor {
             case TBLOCK_ID -> Color.rgb(135, 206, 235);
             case ZBLOCK_ID -> Color.rgb(128, 0, 128);
             case WEIGHT_BLOCK_ID -> Color.rgb(255, 255, 255);
+            case ATTACKED_BLOCK_ID -> Color.rgb(100, 100, 100);
             default -> Color.rgb(255, 255, 255);
         };
     }
@@ -39,6 +40,7 @@ public class BlockColor {
             case TBLOCK_ID -> Color.rgb(173, 216, 230);
             case ZBLOCK_ID -> Color.rgb(255, 200, 100);
             case WEIGHT_BLOCK_ID -> Color.rgb(255, 255, 255);
+            case ATTACKED_BLOCK_ID -> Color.rgb(100, 100, 100);
             default -> Color.rgb(255, 255, 255);
         };
     }
@@ -52,6 +54,7 @@ public class BlockColor {
             case TBLOCK_ID -> Color.rgb(255, 255, 224);
             case ZBLOCK_ID -> Color.rgb(192, 192, 192);
             case WEIGHT_BLOCK_ID -> Color.rgb(255, 255, 255);
+            case ATTACKED_BLOCK_ID -> Color.rgb(100, 100, 100);
             default -> Color.rgb(255, 255, 255);
         };
     }
