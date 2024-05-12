@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -119,7 +120,17 @@ public class BattleScreenController extends BaseController {
     }
 
     private void handleServerError(ServerErrorEvent error) {
-        // TODO: 서버 에러 메시지를 보여주는 기능
+        // 서버 에러 메시지를 보여주고 시작 화면으로 이동
+        log.error("Server Error: {}", error.message());
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Server Error");
+            alert.setHeaderText("A server error has occurred");
+            alert.setContentText(error.message() + "\n" + "게임 시작 화면으로 이동합니다.");
+            alert.showAndWait();
+            // 오류창을 닫으면 시작 화면으로 이동
+            SE13Application.navController.navigate(AppScreen.START);
+        });
     }
 
     private void handleUpdateState(UpdateTetrisState state) {
