@@ -58,6 +58,7 @@ public class TetrisGame {
         this.isBlockPlaced = false;
         this.isBlockCollided = false;
         this.isAnimationEnded = true;
+        this.isAttacked = false;
 
         this.currentBlock = nextBlock();
         this.nextBlock = nextBlock();
@@ -290,6 +291,10 @@ public class TetrisGame {
         return this.gameStatus == GameStatus.PAUSED;
     }
 
+    void setAttacked() {
+        this.isAttacked = true;
+    }
+
     void setCurrentBlock(CurrentBlock currentBlock) {
         this.currentBlock = currentBlock;
     }
@@ -404,15 +409,16 @@ public class TetrisGame {
                     collideCheckingTimer.resumeTimer();
                     feverModeTimer.setResume();
 
-                    score += scoreWeight * fullRows;
+                    CellID[][] attackCells = tetrisGameGrid.getAttackBlocks(currentBlock, fullRows);
+
                     tetrisGameGrid.clearFullRows();
+                    score += scoreWeight * fullRows;
                     clearedLines += fullRows;
                     lineCounterForItem += fullRows;
                     lineClearAnimationTimer.resetFlags();
                     gameStatus = GameStatus.RUNNING;
                     isAnimationEnded = true;
-                    // TODO Attack Event 개발 (BattleTetrisGame 클래스 구조로 리팩토링 하기엔 어려워 보임)
-                    attackEvent(null);
+                    attackEvent(attackCells);
                 } else {
                     gameStatus = GameStatus.ANIMATION;
                     isAnimationEnded = false;
@@ -466,8 +472,8 @@ public class TetrisGame {
         events.setValue(new UpdateTetrisState(newTetrisGird.getGrid(), newNextBlock, newScore, newRemainingTime));
     }
 
-    private void attackEvent(BlockPosition[][] blocks) {
-        events.setValue(new AttackTetrisBlocks(blocks));
+    private void attackEvent(CellID[][] cells) {
+        events.setValue(new AttackTetrisBlocks(cells));
     }
 
     private final int ROW_SIZE = 22;
@@ -494,5 +500,6 @@ public class TetrisGame {
     private boolean isBlockPlaced;
     private boolean isBlockCollided;
     private boolean isAnimationEnded;
+    private boolean isAttacked;
     private Random random;
 }

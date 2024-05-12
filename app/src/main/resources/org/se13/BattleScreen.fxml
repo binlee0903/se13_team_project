@@ -6,46 +6,53 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" spacing="10.0" prefWidth="600" prefHeight="400" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.se13.view.tetris.BattleScreenController">
+<VBox alignment="CENTER" prefHeight="400" prefWidth="600" spacing="10.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.se13.view.tetris.BattleScreenController">
    <Text styleClass="gameTitle" text="TETRIS" />
-   <HBox alignment="CENTER">
-      <BorderPane prefHeight="400.0" prefWidth="300.0">
+   <HBox alignment="TOP_CENTER" nodeOrientation="LEFT_TO_RIGHT">
+      <BorderPane>
          <right>
-            <VBox prefHeight="200.0" prefWidth="50.0" BorderPane.alignment="CENTER">
+            <VBox prefHeight="200.0" prefWidth="50.0" BorderPane.alignment="CENTER_LEFT">
+               <padding>
+                  <Insets bottom="10" left="10" right="10" top="10" />
+               </padding>
                <VBox prefHeight="100.0" prefWidth="200.0">
-                  <Label prefHeight="18.0" prefWidth="53.0" text="Score" style="-fx-text-fill: white" />
-                  <Label fx:id="player1_score" text="Label" style="-fx-text-fill: yellow" />
+                  <Label prefHeight="18.0" prefWidth="53.0" style="-fx-text-fill: white" text="Score" />
+                  <Label fx:id="player1_score" style="-fx-text-fill: yellow" text="Label" />
                </VBox>
-               <Label text="next" style="-fx-text-fill: white" />
-               <Canvas fx:id="player1_nextBlockCanvas" height="200.0" width="50.0" />
+               <Label style="-fx-text-fill: white" text="next" />
+               <Canvas fx:id="player1_nextBlockCanvas" height="50.0" width="50.0" />
+               <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="ATTACKED" />
+               <Canvas fx:id="player1_attackedBlocks" height="50.0" width="50.0" />
             </VBox>
          </right>
          <center>
-            <BorderPane fx:id="player1_frame" prefHeight="100.0" prefWidth="100.0" BorderPane.alignment="CENTER">
-               <BorderPane.margin>
-                  <Insets bottom="10.0" left="75.0" right="75.0" top="25.0" />
-               </BorderPane.margin>
+            <BorderPane fx:id="player1_frame" prefHeight="100.0" prefWidth="50.0" BorderPane.alignment="CENTER">
                <center>
                   <Canvas fx:id="player1_gameCanvas" BorderPane.alignment="CENTER" />
                </center>
             </BorderPane>
          </center>
       </BorderPane>
-      <BorderPane prefHeight="400.0" prefWidth="300.0">
+      <BorderPane>
          <right>
-            <VBox prefHeight="200.0" prefWidth="50.0" BorderPane.alignment="CENTER">
+            <VBox prefHeight="200.0" prefWidth="50.0" BorderPane.alignment="CENTER_RIGHT">
+               <padding>
+                  <Insets bottom="10" left="10" right="10" top="10" />
+               </padding>
                <VBox prefHeight="100.0" prefWidth="200.0">
-                  <Label prefHeight="18.0" prefWidth="53.0" text="Score" style="-fx-text-fill: white" />
-                  <Label fx:id="player2_score" text="Label" style="-fx-text-fill: yellow" />
+                  <Label prefHeight="18.0" prefWidth="53.0" style="-fx-text-fill: white" text="Score" />
+                  <Label fx:id="player2_score" style="-fx-text-fill: yellow" text="Label" />
                </VBox>
-               <Label text="next" style="-fx-text-fill: white" />
-               <Canvas fx:id="player2_nextBlockCanvas" height="200.0" width="50.0" />
+               <Label style="-fx-text-fill: white" text="next" />
+               <Canvas fx:id="player2_nextBlockCanvas" height="50.0" width="50.0" />
+               <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="ATTACKED" />
+               <Canvas fx:id="player2_attackedBlocks" height="50.0" width="50.0" />
             </VBox>
          </right>
          <center>
-            <BorderPane fx:id="player2_frame" prefHeight="100.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+            <BorderPane fx:id="player2_frame" prefHeight="100.0" prefWidth="50.0" BorderPane.alignment="CENTER_LEFT">
                <BorderPane.margin>
-                  <Insets bottom="10.0" left="75.0" right="75.0" top="25.0" />
+                  <Insets bottom="10.0" top="25.0" />
                </BorderPane.margin>
                <center>
                   <Canvas fx:id="player2_gameCanvas" BorderPane.alignment="CENTER" />

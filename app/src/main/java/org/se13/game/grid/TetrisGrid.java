@@ -1,11 +1,12 @@
 package org.se13.game.grid;
 
-import org.se13.game.block.CellID;
+import org.se13.game.block.*;
 import org.se13.game.event.AttackTetrisBlocks;
 import org.se13.game.item.CellClearedListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -97,23 +98,70 @@ public class TetrisGrid {
     }
 
     /**
-     * clears full rows
+     * Returns a 2D array representing the attack blocks for the given current block and full row count.
      *
-     * @return cleared row count
+     * @param currentBlock The current block in the Tetris game.
+     * @param fullRowCount The count of rows that are full in the Tetris grid.
+     * @return A 2D array of CellID representing the attack blocks.
+     */
+    public CellID[][] getAttackBlocks(CurrentBlock currentBlock, int fullRowCount) {
+        BlockPosition[] currentBlockShapes = currentBlock.shape();
+        BlockPosition[] realCurrentBlockPositions = new BlockPosition[currentBlockShapes.length];
+        List<BlockPosition> clearedCurrentBlockPositions = new LinkedList<>();
+
+        for (int i = 0; i < realCurrentBlockPositions.length; i++) {
+            realCurrentBlockPositions[i] = new BlockPosition(currentBlockShapes[i].getRowIndex() + currentBlock.getPosition().getRowIndex(),
+                    currentBlockShapes[i].getColIndex()+ currentBlock.getPosition().getColIndex());
+        }
+
+        CellID[][] ret = new CellID[fullRowCount][colSize];
+        int index = 0;
+        int rowIndex = 0;
+
+        for (int i = rowSize - 1; i >= 0; i--) {
+            if (isRowFull(i)) {
+                for (int j = 0; j < 4; j++) {
+                    if (realCurrentBlockPositions[j].getRowIndex() == i) {
+                        clearedCurrentBlockPositions.add(new BlockPosition(rowIndex, realCurrentBlockPositions[j].getColIndex()));
+                        index++;
+                    }
+                }
+
+                rowIndex++;
+            }
+        }
+
+        for (int i = 0; i < fullRowCount; i++) {
+            for (int j = 0; j < colSize; j++) {
+                if (isClearedBlockPosition(clearedCurrentBlockPositions, i, j) == true) {
+                    ret[i][j] = CellID.EMPTY;
+                } else {
+                    ret[i][j] = CellID.ATTACKED_BLOCK_ID;
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Clears all full rows in the Tetris grid.
+     *
+     * @return The number of rows cleared.
      */
     public int clearFullRows() {
-        int cleared = 0;
+        int clearedRows = 0;
 
         for (int i = rowSize - 1; i >= 0; i--) {
             if (isRowFull(i)) {
                 clearRow(i);
                 moveDownRows(i);
                 i++;
-                cleared++;
+                clearedRows++;
             }
         }
 
-        return cleared;
+        return clearedRows;
     }
 
     /**
@@ -187,6 +235,16 @@ public class TetrisGrid {
         setCell(rowSize - 1, colIndex, CellID.WEIGHT_BLOCK_ID);
     }
 
+    private boolean isClearedBlockPosition(List<BlockPosition> blockPositions, int rowIndex, int colIndex) {
+        for (BlockPosition blockPosition : blockPositions) {
+            if (blockPosition.getRowIndex() == rowIndex && blockPosition.getColIndex() == colIndex) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void triggerLineClearItem() {
         for (int i = 0; i < rowSize; i++) {
             for (int j = 0; j < colSize; j++) {
@@ -207,7 +265,7 @@ public class TetrisGrid {
      * @param blocks attacked blocks
      */
     public void attackedBlocks(AttackTetrisBlocks blocks) {
-        int attackBlockRows = blocks.blocks().length;
+        int attackBlockRows = blocks.cellIDs().length;
         for (int i = 0; i < rowSize - attackBlockRows; i++) {
             for (int j = 0; j < colSize; j++) {
                 setCell(i, j, getGrid()[i + attackBlockRows][j]);
@@ -215,7 +273,7 @@ public class TetrisGrid {
         }
 
         for (int i = 0; i < attackBlockRows; i++) {
-            for (int j = 0; j < blocks.blocks()[i].length; j++) {
+            for (int j = 0; j < blocks.cellIDs()[i].length; j++) {
                 setCell(rowSize - attackBlockRows + i, j, CellID.ATTACKED_BLOCK_ID);
             }
         }
@@ -232,4 +290,5 @@ public class TetrisGrid {
      */
     private final CellID[][] gridCells;
     private final List<CellClearedListener> listeners;
+    private CellID[][] attackCells;
 }
