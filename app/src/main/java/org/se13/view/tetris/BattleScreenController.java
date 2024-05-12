@@ -34,21 +34,35 @@ public class BattleScreenController extends BaseController {
     }
 
     @FXML
-    private Canvas nextBlockCanvas;
+    public Label player1_score;
     @FXML
-    private Label score;
+    public Canvas player1_nextBlockCanvas;
     @FXML
-    private BorderPane frame;
+    public BorderPane player1_frame;
     @FXML
-    private Canvas gameCanvas;
+    public Canvas player1_gameCanvas;
 
-    private TetrisScreenViewModel viewModel;
+    @FXML
+    public Label player2_score;
+    @FXML
+    public Canvas player2_nextBlockCanvas;
+    @FXML
+    public BorderPane player2_frame;
+    @FXML
+    public Canvas player2_gameCanvas;
+
+    private TetrisScreenViewModel player1_viewModel;
+    private TetrisScreenViewModel player2_viewModel;
     private TetrisActionRepository actionRepository1;
     private TetrisActionRepository actionRepository2;
     private TetrisEventRepository stateRepository1;
     private TetrisEventRepository stateRepository2;
-    private GraphicsContext tetrisGridView;
-    private GraphicsContext nextBlockView;
+
+    private GraphicsContext player1_tetrisGridView;
+    private GraphicsContext player1_nextBlockView;
+
+    private GraphicsContext player2_tetrisGridView;
+    private GraphicsContext player2_nextBlockView;
 
     private GameSize gameSize;
     private double width;
@@ -64,25 +78,32 @@ public class BattleScreenController extends BaseController {
 
     @Override
     public void onCreate() {
-        Scene scene = gameCanvas.getScene();
-        viewModel = new TetrisScreenViewModel(actionRepository1, stateRepository1);
-        tetrisGridView = gameCanvas.getGraphicsContext2D();
-        nextBlockView = nextBlockCanvas.getGraphicsContext2D();
+        Scene scene = player1_gameCanvas.getScene();
+
+        player1_viewModel = new TetrisScreenViewModel(actionRepository1, stateRepository1);
+        player1_tetrisGridView = player1_gameCanvas.getGraphicsContext2D();
+        player1_nextBlockView = player1_nextBlockCanvas.getGraphicsContext2D();
+
+        player2_viewModel = new TetrisScreenViewModel(actionRepository2, stateRepository2);
+        player2_tetrisGridView = player2_gameCanvas.getGraphicsContext2D();
+        player2_nextBlockView = player2_nextBlockCanvas.getGraphicsContext2D();
 
         setInitState();
 
-        viewModel.observe(observeEvent(), bindGameEnd());
+        player1_viewModel.observe(observeEvent(), bindGameEnd());
+        player2_viewModel.observe(observeEvent(), bindGameEnd());
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
             String keyCode = key.getCode().getName().toLowerCase();
             handleKeyEvent(keyCode);
         });
 
-        this.frame.setStyle("-fx-border-color: red;");
+        this.player1_frame.setStyle("-fx-border-color: red;");
+        this.player2_frame.setStyle("-fx-border-color: red;");
 
-        viewModel.connect();
+        player1_viewModel.connect();
         // TODO: 플레이어 별 ViewModel 관리 방법 생각하기
-        actionRepository2.connect();
+        player2_viewModel.connect();
     }
 
     public void setArguments(TetrisActionRepository actionRepository1,
@@ -101,10 +122,15 @@ public class BattleScreenController extends BaseController {
         else if (Config.SCREEN_WIDTH == 600) setMediumScreen();
         else if (Config.SCREEN_WIDTH == 1920) setLargeScreen();
 
-        frame.setMaxWidth(width);
-        frame.setMaxHeight(height);
-        gameCanvas.setWidth(width);
-        gameCanvas.setHeight(height);
+        player1_frame.setMaxWidth(width);
+        player1_frame.setMaxHeight(height);
+        player1_gameCanvas.setWidth(width);
+        player1_gameCanvas.setHeight(height);
+
+        player2_frame.setMaxWidth(width);
+        player2_frame.setMaxHeight(height);
+        player2_gameCanvas.setWidth(width);
+        player2_gameCanvas.setHeight(height);
     }
 
     private Subscriber<TetrisEvent> observeEvent() {
@@ -136,7 +162,7 @@ public class BattleScreenController extends BaseController {
     private void handleUpdateState(UpdateTetrisState state) {
         drawNextBlock(state.nextBlock());
         setTetrisState(state.tetrisGrid());
-        score.setText(String.valueOf(state.score()));
+        player1_score.setText(String.valueOf(state.score()));
     }
 
     private Subscriber<TetrisGameEndData> bindGameEnd() {
@@ -161,9 +187,14 @@ public class BattleScreenController extends BaseController {
         width = 150;
         height = 315;
         interval = 15;
-        tetrisGridView.setFont(new Font("Arial", 20));
-        nextBlockView.setFont(new Font("Arial", 20));
-        nextBlockCanvas.setWidth(100);
+        player1_tetrisGridView.setFont(new Font("Arial", 20));
+        player1_nextBlockView.setFont(new Font("Arial", 20));
+
+        player2_tetrisGridView.setFont(new Font("Arial", 20));
+        player2_nextBlockView.setFont(new Font("Arial", 20));
+
+        player1_nextBlockCanvas.setWidth(100);
+        player2_nextBlockCanvas.setWidth(100);
     }
 
     private void setLargeScreen() {
@@ -171,27 +202,32 @@ public class BattleScreenController extends BaseController {
         width = 250;
         height = 530;
         interval = 25;
-        tetrisGridView.setFont(new Font("Arial", 30));
-        nextBlockView.setFont(new Font("Arial", 30));
-        nextBlockCanvas.setWidth(100);
+        player1_tetrisGridView.setFont(new Font("Arial", 30));
+        player1_nextBlockView.setFont(new Font("Arial", 30));
+
+        player2_tetrisGridView.setFont(new Font("Arial", 30));
+        player2_nextBlockView.setFont(new Font("Arial", 30));
+
+        player1_nextBlockCanvas.setWidth(100);
+        player2_nextBlockCanvas.setWidth(100);
     }
 
     private void setTetrisState(CellID[][] cells) {
-        tetrisGridView.setFill(new Color(0, 0, 0, 1.0));
-        tetrisGridView.fillRect(0, 0, width, height);
-        tetrisGridView.clearRect(0, 0, width, height);
+        player1_tetrisGridView.setFill(new Color(0, 0, 0, 1.0));
+        player1_tetrisGridView.fillRect(0, 0, width, height);
+        player1_tetrisGridView.clearRect(0, 0, width, height);
 
         for (int i = 0; i < cells.length; i++) {
             for (int j = 0; j < cells[i].length; j++) {
                 CellID cellID = cells[i][j];
-                tetrisGridView.setFill(getCellColor(cellID));
-                tetrisGridView.fillText(String.valueOf(getCellCharacter(cellID)), j * interval, i * interval);
+                player1_tetrisGridView.setFill(getCellColor(cellID));
+                player1_tetrisGridView.fillText(String.valueOf(getCellCharacter(cellID)), j * interval, i * interval);
             }
         }
     }
 
     private void drawNextBlock(CurrentBlock block) {
-        nextBlockView.clearRect(0, 0, width, height);
+        player1_nextBlockView.clearRect(0, 0, width, height);
 
         BlockPosition[] nextBlockPositions = block.shape();
 
@@ -202,9 +238,9 @@ public class BattleScreenController extends BaseController {
             colIndex = nextBlockPositions[i].getColIndex();
             rowIndex = nextBlockPositions[i].getRowIndex() + 1;
 
-            nextBlockView.setFill(block.getColor());
-            nextBlockView.setFill(getCellColor(cells[i].cellID()));
-            nextBlockView.fillText(String.valueOf(getCellCharacter(cells[i].cellID())), colIndex * interval, rowIndex * interval);
+            player1_nextBlockView.setFill(block.getColor());
+            player1_nextBlockView.setFill(getCellColor(cells[i].cellID()));
+            player1_nextBlockView.fillText(String.valueOf(getCellCharacter(cells[i].cellID())), colIndex * interval, rowIndex * interval);
         }
     }
 
@@ -251,19 +287,19 @@ public class BattleScreenController extends BaseController {
 
     private void handleKeyEvent(String keyCode) {
         if (keyCode.compareToIgnoreCase(Config.DROP) == 0) {
-            viewModel.immediateBlockPlace();
+            player1_viewModel.immediateBlockPlace();
         } else if (keyCode.compareToIgnoreCase(Config.DOWN) == 0) {
-            viewModel.moveBlockDown();
+            player1_viewModel.moveBlockDown();
         } else if (keyCode.compareToIgnoreCase(Config.LEFT) == 0) {
-            viewModel.moveBlockLeft();
+            player1_viewModel.moveBlockLeft();
         } else if (keyCode.compareToIgnoreCase(Config.RIGHT) == 0) {
-            viewModel.moveBlockRight();
+            player1_viewModel.moveBlockRight();
         } else if (keyCode.compareToIgnoreCase(Config.CW_SPIN) == 0) {
-            viewModel.rotateBlockCW();
+            player1_viewModel.rotateBlockCW();
         } else if (keyCode.compareToIgnoreCase(Config.PAUSE) == 0) {
-            viewModel.togglePauseState();
+            player1_viewModel.togglePauseState();
         } else if (keyCode.compareToIgnoreCase(Config.EXIT) == 0) {
-            viewModel.exitGame();
+            player1_viewModel.exitGame();
             System.exit(0);
         }
     }
