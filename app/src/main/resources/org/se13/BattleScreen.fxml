@@ -6,18 +6,16 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" spacing="10.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.se13.view.tetris.TetrisScreenController">
+<VBox alignment="CENTER" spacing="10.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.se13.view.tetris.BattleScreenController">
     <Text styleClass="gameTitle" text="TETRIS" />
    <BorderPane prefHeight="400.0" prefWidth="300.0">
       <right>
          <VBox prefHeight="200.0" prefWidth="50.0" BorderPane.alignment="CENTER">
             <VBox prefHeight="100.0" prefWidth="200.0">
-               <Label prefHeight="18.0" prefWidth="53.0" style="-fx-text-fill: white" text="Score" />
-               <Label fx:id="score" style="-fx-text-fill: yellow" text="Label" />
-               <Text fx:id="timeLimitPanel" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Time" />
-               <Text fx:id="time" strokeType="OUTSIDE" strokeWidth="0.0" fill="YELLOW" text="999" />
+               <Label prefHeight="18.0" prefWidth="53.0" text="Score" style="-fx-text-fill: white" />
+               <Label fx:id="score" text="Label" style="-fx-text-fill: yellow" />
             </VBox>
-            <Label style="-fx-text-fill: white" text="next" />
+            <Label text="next" style="-fx-text-fill: white" />
             <Canvas fx:id="nextBlockCanvas" height="200.0" width="50.0" />
          </VBox>
       </right>

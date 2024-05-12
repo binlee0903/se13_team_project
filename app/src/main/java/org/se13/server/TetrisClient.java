@@ -1,20 +1,20 @@
 package org.se13.server;
 
+import org.se13.game.event.TetrisEvent;
 import org.se13.view.tetris.TetrisGameEndData;
-import org.se13.view.tetris.TetrisState;
-import org.se13.view.tetris.TetrisStateRepository;
+import org.se13.view.tetris.TetrisEventRepository;
 
 public class TetrisClient {
 
     private int userId;
-    private TetrisStateRepository repository;
+    private TetrisEventRepository repository;
 
-    public TetrisClient(int userId, TetrisStateRepository repository) {
+    public TetrisClient(int userId, TetrisEventRepository repository) {
         this.userId = userId;
         this.repository = repository;
     }
 
-    public void response(TetrisState state) {
+    public void response(TetrisEvent state) {
         repository.response(state);
     }
 

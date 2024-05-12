@@ -15,4 +15,9 @@
             <FXCollections fx:factory="observableArrayList" />
         </items>
     </ChoiceBox>
+    <ChoiceBox fx:id="typeChoiceBox" styleClass="choiceBox">
+        <items>
+            <FXCollections fx:factory="observableArrayList" />
+        </items>
+    </ChoiceBox>
 </VBox>

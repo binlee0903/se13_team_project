@@ -3,31 +3,32 @@ package org.se13.server;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.se13.game.action.TetrisAction;
+import org.se13.game.event.TetrisEvent;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.view.tetris.TetrisGameEndData;
-import org.se13.view.tetris.TetrisState;
-import org.se13.view.tetris.TetrisStateRepository;
-import org.se13.view.tetris.TetrisStateRepositoryImpl;
+import org.se13.game.event.UpdateTetrisState;
+import org.se13.view.tetris.TetrisEventRepository;
+import org.se13.view.tetris.TetrisEventRepositoryImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class LocalTetrisServerTest {
 
-    TetrisStateRepository repository;
+    TetrisEventRepository repository;
     TetrisClient client;
     LocalTetrisServer server;
     TetrisActionHandler handler;
 
-    TetrisState stateTest;
+    TetrisEvent stateTest;
     TetrisGameEndData endDataTest;
 
     @BeforeEach
     void setUp() {
-        repository = new TetrisStateRepositoryImpl() {
+        repository = new TetrisEventRepositoryImpl() {
             @Override
-            public void response(TetrisState state) {
-                stateTest = state;
+            public void response(TetrisEvent event) {
+                stateTest = event;
             }
 
             @Override
@@ -42,13 +43,13 @@ class LocalTetrisServerTest {
 
     @Test
     void baseTest() throws InterruptedException {
-        repository = new TetrisStateRepositoryImpl() {
-            private TetrisState before = null;
+        repository = new TetrisEventRepositoryImpl() {
+            private TetrisEvent before = null;
 
             @Override
-            public void response(TetrisState state) {
-                assertNotSame(before, state);
-                before = state;
+            public void response(TetrisEvent event) {
+                assertNotSame(before, event);
+                before = event;
             }
 
             @Override

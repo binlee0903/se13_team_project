@@ -1,18 +1,19 @@
 package org.se13.view.tetris;
 
+import org.se13.game.event.TetrisEvent;
 import org.se13.utils.Subscriber;
 
 public class TetrisScreenViewModel implements TetrisActionRepository {
     private TetrisActionRepository actionRepository;
-    private TetrisStateRepository stateRepository;
+    private TetrisEventRepository eventRepository;
 
-    public TetrisScreenViewModel(TetrisActionRepository actionRepository, TetrisStateRepository stateRepository) {
+    public TetrisScreenViewModel(TetrisActionRepository actionRepository, TetrisEventRepository stateRepository) {
         this.actionRepository = actionRepository;
-        this.stateRepository = stateRepository;
+        this.eventRepository = stateRepository;
     }
 
-    public void observe(Subscriber<TetrisState> subscriber, Subscriber<TetrisGameEndData> isGameOver) {
-        stateRepository.subscribe(subscriber, isGameOver);
+    public void observe(Subscriber<TetrisEvent> subscriber, Subscriber<TetrisGameEndData> isGameOver) {
+        eventRepository.subscribe(subscriber, isGameOver);
     }
 
     @Override
