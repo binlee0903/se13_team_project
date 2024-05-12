@@ -7,10 +7,6 @@ import javafx.scene.control.ChoiceBox;
 import org.se13.SE13Application;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
-import org.se13.server.LocalBattleTetrisServer;
-import org.se13.server.LocalTetrisServer;
-import org.se13.server.TetrisActionHandler;
-import org.se13.server.TetrisClient;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
 import org.se13.view.tetris.*;
@@ -48,33 +44,20 @@ public class LevelSelectScreenController extends BaseController {
     }
 
     private void startLocalTetrisGame(GameLevel level, GameMode mode) {
-        TetrisEventRepository eventRepository = new TetrisEventRepositoryImpl();
-        TetrisClient client = new TetrisClient(-1, eventRepository);
-        LocalTetrisServer server = new LocalTetrisServer(level, mode);
-        TetrisActionHandler handler = server.connect(client);
-        TetrisActionRepository actionRepository = new TetrisActionRepositoryImpl(client.getUserId(), handler);
-
+        Player player = new Player(-1, level, mode);
+        player.connectToServer();
         SE13Application.navController.navigate(AppScreen.TETRIS, (controller) -> {
-            ((TetrisScreenController) controller).setArguments(actionRepository, eventRepository);
+            ((TetrisScreenController) controller).setArguments(player);
         });
     }
 
     private void startLocalBattleTetrisGame(GameLevel level, GameMode mode) {
-        TetrisEventRepository eventRepository1 = new TetrisEventRepositoryImpl();
-        TetrisClient client1 = new TetrisClient(1, eventRepository1);
-
-        TetrisEventRepository eventRepository2 = new TetrisEventRepositoryImpl();
-        TetrisClient client2 = new TetrisClient(2, eventRepository2);
-
-        LocalBattleTetrisServer server = new LocalBattleTetrisServer(level, mode);
-        TetrisActionHandler handler1 = server.connect(client1);
-        TetrisActionHandler handler2 = server.connect(client2);
-
-        TetrisActionRepository actionRepository1 = new TetrisActionRepositoryImpl(client1.getUserId(), handler1);
-        TetrisActionRepository actionRepository2 = new TetrisActionRepositoryImpl(client2.getUserId(), handler2);
-
+        Player player1 = new Player(1, level, mode);
+        Player player2 = new Player(2, level, mode);
+        player1.connectToServer();
+        player2.connectToServer();
         SE13Application.navController.navigate(AppScreen.BATTLE, (controller) -> {
-            ((BattleScreenController) controller).setArguments(actionRepository1, eventRepository1, actionRepository2, eventRepository2);
+            ((BattleScreenController) controller).setArguments(player1, player2);
         });
     }
 
