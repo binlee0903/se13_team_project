@@ -121,6 +121,10 @@ public class TetrisGame {
         collideCheckingTimer = new BlockCollideTimer(startTime);
         lineClearAnimationTimer = new LineClearAnimationTimer(startTime);
         timeLimitModeTimer = new TimeLimitModeTimer(startTime);
+
+        if (gameMode != GameMode.TIME_LIMIT) {
+            timeLimitModeTimer.disableTimer();
+        }
     }
 
     public void stopGame() {
