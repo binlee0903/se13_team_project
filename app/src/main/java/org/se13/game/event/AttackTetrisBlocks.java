@@ -1,6 +1,6 @@
 package org.se13.game.event;
 
-import org.se13.game.block.BlockPosition;
+import org.se13.game.block.CellID;
 
-public record AttackTetrisBlocks(BlockPosition[][] blocks) implements TetrisEvent {
+public record AttackTetrisBlocks(CellID[][] cellIDs) implements TetrisEvent {
 }
