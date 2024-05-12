@@ -86,9 +86,9 @@ public class TetrisScreenController extends BaseController {
         viewModel.connect();
     }
 
-    public void setArguments(TetrisActionRepository actionRepository, TetrisEventRepository stateRepository) {
-        this.actionRepository = actionRepository;
-        this.stateRepository = stateRepository;
+    public void setArguments(Player player) {
+        this.actionRepository = player.getActionRepository();
+        this.stateRepository = player.getEventRepository();
     }
 
     private void setInitState() {
