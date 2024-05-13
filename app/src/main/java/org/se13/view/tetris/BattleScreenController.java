@@ -113,15 +113,12 @@ public class BattleScreenController extends BaseController {
         player2_viewModel.connect();
     }
 
-    public void setArguments(TetrisActionRepository actionRepository1,
-                             TetrisEventRepository stateRepository1,
-                             TetrisActionRepository actionRepository2,
-                             TetrisEventRepository stateRepository2) {
+    public void setArguments(Player player1, Player player2) {
 
-        this.actionRepository1 = actionRepository1;
-        this.stateRepository1 = stateRepository1;
-        this.actionRepository2 = actionRepository2;
-        this.stateRepository2 = stateRepository2;
+        this.actionRepository1 = player1.getActionRepository();
+        this.stateRepository1 = player1.getEventRepository();
+        this.actionRepository2 = player2.getActionRepository();
+        this.stateRepository2 = player2.getEventRepository();
     }
 
     private void setInitState() {
