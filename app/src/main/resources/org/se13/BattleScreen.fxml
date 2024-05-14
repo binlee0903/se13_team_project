@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -11,7 +12,7 @@
    <HBox alignment="TOP_CENTER" nodeOrientation="LEFT_TO_RIGHT">
       <BorderPane>
          <right>
-            <VBox prefHeight="200.0" prefWidth="50.0" BorderPane.alignment="CENTER_LEFT">
+            <VBox prefHeight="200.0" prefWidth="50.0" spacing="10" BorderPane.alignment="CENTER_LEFT">
                <padding>
                   <Insets bottom="10" left="10" right="10" top="10" />
                </padding>
@@ -22,7 +23,11 @@
                <Label style="-fx-text-fill: white" text="next" />
                <Canvas fx:id="player1_nextBlockCanvas" height="50.0" width="50.0" />
                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="ATTACKED" />
-               <Canvas fx:id="player1_attackedBlocks" height="50.0" width="50.0" />
+               <BorderPane fx:id="player1_attackedBlocksFrame" prefHeight="150.0" prefWidth="100.0">
+                  <center>
+                     <Canvas fx:id="player1_attackedBlocks" height="150.0" width="100.0" BorderPane.alignment="CENTER"/>
+                  </center>
+               </BorderPane>
             </VBox>
          </right>
          <center>
@@ -35,7 +40,7 @@
       </BorderPane>
       <BorderPane>
          <right>
-            <VBox prefHeight="200.0" prefWidth="50.0" BorderPane.alignment="CENTER_RIGHT">
+            <VBox prefHeight="200.0" prefWidth="50.0" spacing="10" BorderPane.alignment="CENTER_RIGHT">
                <padding>
                   <Insets bottom="10" left="10" right="10" top="10" />
                </padding>
@@ -46,14 +51,15 @@
                <Label style="-fx-text-fill: white" text="next" />
                <Canvas fx:id="player2_nextBlockCanvas" height="50.0" width="50.0" />
                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="ATTACKED" />
-               <Canvas fx:id="player2_attackedBlocks" height="50.0" width="50.0" />
+               <BorderPane fx:id="player2_attackedBlocksFrame" prefHeight="150.0" prefWidth="100.0">
+                  <center>
+                     <Canvas fx:id="player2_attackedBlocks" height="150.0" width="100.0" BorderPane.alignment="CENTER"/>
+                  </center>
+               </BorderPane>
             </VBox>
          </right>
          <center>
             <BorderPane fx:id="player2_frame" prefHeight="100.0" prefWidth="50.0" BorderPane.alignment="CENTER_LEFT">
-               <BorderPane.margin>
-                  <Insets bottom="10.0" top="25.0" />
-               </BorderPane.margin>
                <center>
                   <Canvas fx:id="player2_gameCanvas" BorderPane.alignment="CENTER" />
                </center>

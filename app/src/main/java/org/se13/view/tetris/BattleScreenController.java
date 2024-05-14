@@ -14,10 +14,7 @@ import javafx.scene.text.Font;
 import org.se13.SE13Application;
 import org.se13.game.block.*;
 import org.se13.game.config.Config;
-import org.se13.game.event.AttackTetrisBlocks;
-import org.se13.game.event.ServerErrorEvent;
-import org.se13.game.event.TetrisEvent;
-import org.se13.game.event.UpdateTetrisState;
+import org.se13.game.event.*;
 import org.se13.utils.Subscriber;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
@@ -46,6 +43,8 @@ public class BattleScreenController extends BaseController {
     public Canvas player1_gameCanvas;
     @FXML
     public Canvas player1_attackedBlocks;
+    @FXML
+    public BorderPane player1_attackedBlocksFrame;
 
     @FXML
     public Label player2_score;
@@ -57,6 +56,8 @@ public class BattleScreenController extends BaseController {
     public Canvas player2_gameCanvas;
     @FXML
     public Canvas player2_attackedBlocks;
+    @FXML
+    public BorderPane player2_attackedBlocksFrame;
 
     private TetrisScreenViewModel player1_viewModel;
     private TetrisScreenViewModel player2_viewModel;
@@ -71,10 +72,14 @@ public class BattleScreenController extends BaseController {
     private GraphicsContext player2_tetrisGridView;
     private GraphicsContext player2_nextBlockView;
 
+    private GraphicsContext player1_attackedBlocksView;
+    private GraphicsContext player2_attackedBlocksView;
+
     private GameSize gameSize;
     private double width;
     private double height;
-    private int interval;
+    private int tetrisGameScreenInterval;
+    private int attackedScreenInterval;
 
     private final char DEFAULT_BLOCK_TEXT = '0';
     private final char FEVER_BLOCK_TEXT = 'F';
@@ -95,10 +100,13 @@ public class BattleScreenController extends BaseController {
         player2_tetrisGridView = player2_gameCanvas.getGraphicsContext2D();
         player2_nextBlockView = player2_nextBlockCanvas.getGraphicsContext2D();
 
+        player1_attackedBlocksView = player1_attackedBlocks.getGraphicsContext2D();
+        player2_attackedBlocksView = player2_attackedBlocks.getGraphicsContext2D();
+
         setInitState();
 
         player1_viewModel.observe(observePlayer1Event(), bindGameEnd());
-        player2_viewModel.observe(observePlayer2Event(), bindGameEnd());
+        player2_viewModel.observe(observePlayer2Event(), null);
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
             String keyCode = key.getCode().getName().toLowerCase();
@@ -107,6 +115,8 @@ public class BattleScreenController extends BaseController {
 
         this.player1_frame.setStyle("-fx-border-color: red;");
         this.player2_frame.setStyle("-fx-border-color: red;");
+        player1_attackedBlocksFrame.setStyle("-fx-border-color: red;");
+        player2_attackedBlocksFrame.setStyle("-fx-border-color: red;");
 
         player1_viewModel.connect();
         // TODO: 플레이어 별 ViewModel 관리 방법 생각하기
@@ -142,7 +152,8 @@ public class BattleScreenController extends BaseController {
             Platform.runLater(() -> {
                 switch (event) {
                     case UpdateTetrisState state -> handleUpdateState(state, PLAYER1);
-                    case AttackTetrisBlocks attack -> handleAttackState(attack, PLAYER1);
+                    case InsertAttackBlocksEvent events -> handleAttackedState(null, PLAYER1);
+                    case AttackedTetrisBlocks state -> handleAttackedState(state, PLAYER1);
                     case ServerErrorEvent error -> handleServerError(error);
                     default -> {}
                 }
@@ -155,12 +166,21 @@ public class BattleScreenController extends BaseController {
             Platform.runLater(() -> {
                 switch (event) {
                     case UpdateTetrisState state -> handleUpdateState(state, PLAYER2);
-                    case AttackTetrisBlocks attack -> handleAttackState(attack, PLAYER2);
+                    case AttackedTetrisBlocks state -> handleAttackedState(state, PLAYER2);
+                    case InsertAttackBlocksEvent events -> handleAttackedState(null, PLAYER2);
                     case ServerErrorEvent error -> handleServerError(error);
                     default -> {}
                 }
             });
         };
+    }
+
+    private void handleAttackedState(AttackedTetrisBlocks state, int userID) {
+        if (state == null) {
+            drawAttackedBlock(null, userID);
+        } else {
+            drawAttackedBlock(state.blocks(), userID);
+        }
     }
 
     private void handleServerError(ServerErrorEvent error) {
@@ -175,11 +195,6 @@ public class BattleScreenController extends BaseController {
             // 오류창을 닫으면 시작 화면으로 이동
             SE13Application.navController.navigate(AppScreen.START);
         });
-    }
-
-    private void handleAttackState(AttackTetrisBlocks blocks, int userID) {
-        drawAttackedBlock(blocks, userID);
-
     }
 
     private void handleUpdateState(UpdateTetrisState state, int userID) {
@@ -210,14 +225,19 @@ public class BattleScreenController extends BaseController {
         gameSize = GameSize.SMALL;
         width = 100;
         height = 210;
-        interval = 10;
+        tetrisGameScreenInterval = 10;
+        attackedScreenInterval = 5;
+        player1_attackedBlocksView.setFont(new Font("Arial", 5));
+        player2_attackedBlocksView.setFont(new Font("Arial", 5));
+
     }
 
     private void setMediumScreen() {
         gameSize = GameSize.MEDIUM;
         width = 150;
         height = 315;
-        interval = 15;
+        tetrisGameScreenInterval = 15;
+        attackedScreenInterval = 5;
         player1_tetrisGridView.setFont(new Font("Arial", 20));
         player1_nextBlockView.setFont(new Font("Arial", 20));
 
@@ -226,13 +246,17 @@ public class BattleScreenController extends BaseController {
 
         player1_nextBlockCanvas.setWidth(100);
         player2_nextBlockCanvas.setWidth(100);
+
+        player1_attackedBlocksView.setFont(new Font("Arial", 10));
+        player2_attackedBlocksView.setFont(new Font("Arial", 10));
     }
 
     private void setLargeScreen() {
         gameSize = GameSize.LARGE;
         width = 250;
         height = 530;
-        interval = 25;
+        tetrisGameScreenInterval = 25;
+        attackedScreenInterval = 10;
         player1_tetrisGridView.setFont(new Font("Arial", 30));
         player1_nextBlockView.setFont(new Font("Arial", 30));
 
@@ -241,6 +265,9 @@ public class BattleScreenController extends BaseController {
 
         player1_nextBlockCanvas.setWidth(100);
         player2_nextBlockCanvas.setWidth(100);
+
+        player1_attackedBlocksView.setFont(new Font("Arial", 15));
+        player2_attackedBlocksView.setFont(new Font("Arial", 15));
     }
 
     private void setTetrisState(CellID[][] cells, int userID) {
@@ -259,27 +286,28 @@ public class BattleScreenController extends BaseController {
             for (int j = 0; j < cells[i].length; j++) {
                 CellID cellID = cells[i][j];
                 gc.setFill(getCellColor(cellID));
-                gc.fillText(String.valueOf(getCellCharacter(cellID)), j * interval, i * interval);
+                gc.fillText(String.valueOf(getCellCharacter(cellID)), j * tetrisGameScreenInterval, i * tetrisGameScreenInterval);
             }
         }
     }
 
-    private void drawAttackedBlock(AttackTetrisBlocks blocks, int userID) {
+    private void drawAttackedBlock(CellID[][] blocks, int userID) {
         GraphicsContext gc = null;
 
         switch (userID) {
-            case PLAYER1 -> gc = player1_attackedBlocks.getGraphicsContext2D();
-            case PLAYER2 -> gc = player2_attackedBlocks.getGraphicsContext2D();
+            case PLAYER1 -> gc = player1_attackedBlocksView;
+            case PLAYER2 -> gc = player2_attackedBlocksView;
         }
 
-        CellID[][] cells = blocks.cellIDs();
-        gc.setFill(getCellColor(CellID.ATTACKED_BLOCK_ID));
         gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
 
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells[i].length; j++) {
-                CellID cellID = cells[i][j];
-                gc.fillText(String.valueOf(getCellCharacter(cellID)), j * interval, i * interval);
+        gc.setFill(getCellColor(CellID.ATTACKED_BLOCK_ID));
+
+        if (blocks != null) {
+            for (int i = 0; i < blocks.length; i++) {
+                for (int j = 0; j < blocks[i].length; j++) {
+                    gc.fillText(String.valueOf(getCellCharacter(blocks[i][j])), j * attackedScreenInterval, i * (attackedScreenInterval + 2));
+                }
             }
         }
     }
@@ -303,8 +331,7 @@ public class BattleScreenController extends BaseController {
             rowIndex = nextBlockPositions[i].getRowIndex() + 1;
 
             gc.setFill(block.getColor());
-            gc.setFill(getCellColor(cells[i].cellID()));
-            gc.fillText(String.valueOf(getCellCharacter(cells[i].cellID())), colIndex * interval, rowIndex * interval);
+            gc.fillText(String.valueOf(getCellCharacter(cells[i].cellID())), colIndex * tetrisGameScreenInterval, rowIndex * tetrisGameScreenInterval);
         }
     }
 

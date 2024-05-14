@@ -1,9 +1,12 @@
 package org.se13.server;
 
 import org.se13.game.action.TetrisAction;
-import org.se13.game.event.AttackTetrisBlocks;
+import org.se13.game.event.AttackedTetrisBlocks;
+import org.se13.game.event.AttackingTetrisBlocks;
+import org.se13.game.event.InsertAttackBlocksEvent;
 import org.se13.game.event.TetrisEvent;
 import org.se13.game.tetris.TetrisGame;
+import org.se13.view.tetris.TetrisGameEndData;
 
 public class TetrisSession {
 
@@ -22,6 +25,15 @@ public class TetrisSession {
         playerGame.startGame();
     }
 
+    public void stopGame(int score, boolean isItemMode, String difficulty) {
+        player.gameOver(score, isItemMode, difficulty);
+    }
+
+    public TetrisGameEndData stopBattleGame() {
+        playerGame.stopBattleGame();
+        return new TetrisGameEndData(player.getUserId(), playerGame.getScore(), false, "");
+    }
+
     public void response(TetrisEvent event) {
         player.response(event);
     }
@@ -34,8 +46,16 @@ public class TetrisSession {
         return isPlayerReady;
     }
 
-    public void attack(AttackTetrisBlocks blocks) {
+    public void attackedByPlayer(AttackingTetrisBlocks blocks) {
         playerGame.attacked(blocks);
+    }
+
+    public void attacked(AttackedTetrisBlocks state) {
+        player.response(state);
+    }
+
+    public void insertAttackedBlocks(InsertAttackBlocksEvent event) {
+        player.response(event);
     }
 
     public void requestInput(TetrisAction action) {

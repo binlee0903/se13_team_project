@@ -1,22 +1,16 @@
 package org.se13.server;
 
 import org.se13.game.action.TetrisAction;
-import org.se13.game.event.AttackTetrisBlocks;
-import org.se13.game.event.ServerErrorEvent;
-import org.se13.game.event.TetrisEvent;
-import org.se13.game.event.UpdateTetrisState;
+import org.se13.game.event.*;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.game.tetris.TetrisGame;
+import org.se13.view.tetris.TetrisGameEndData;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LocalBattleTetrisServer implements TetrisServer {
-
     private final int maxUser = 2;
 
     private GameLevel level;
@@ -25,6 +19,8 @@ public class LocalBattleTetrisServer implements TetrisServer {
     private Timer tetrisTimer;
     private Map<Integer, TetrisSession> sessions;
     private Map<Integer, TetrisEventHandler> handlers;
+
+    private List<TetrisGameEndData> endData;
 
     public LocalBattleTetrisServer(GameLevel level, GameMode mode) {
         this.level = level;
@@ -36,7 +32,11 @@ public class LocalBattleTetrisServer implements TetrisServer {
 
     @Override
     public void responseGameOver(int score, boolean isItemMode, String difficulty) {
-
+        endData = new LinkedList<>();
+        sessions.forEach((playerId, session) -> {
+            endData.add(session.stopBattleGame());
+        });
+        tetrisTimer.cancel();
     }
 
     @Override
@@ -108,17 +108,35 @@ public class LocalBattleTetrisServer implements TetrisServer {
         return (userId, event) -> {
             switch (event) {
                 case UpdateTetrisState state -> broadcast(state, userId);
-                case AttackTetrisBlocks blocks -> handleAttacks(userId, blocks);
+                case AttackedTetrisBlocks state -> handleAttacked(userId, state);
+                case AttackingTetrisBlocks blocks -> handleAttacking(userId, blocks);
+                case InsertAttackBlocksEvent insertEvent -> handleInsertEvent(userId, insertEvent);
                 default -> {
                 }
             }
         };
     }
 
-    private void handleAttacks(int userId, AttackTetrisBlocks blocks) {
+    private void handleInsertEvent(int userID, InsertAttackBlocksEvent insertEvent) {
         sessions.forEach((playerId, session) -> {
-            if (playerId != userId) {
-                session.attack(blocks);
+            if (playerId == userID) {
+                session.insertAttackedBlocks(insertEvent);
+            }
+        });
+    }
+
+    private void handleAttacked(int userID, AttackedTetrisBlocks state) {
+        sessions.forEach((playerId, session) -> {
+            if (playerId == userID) {
+                session.attacked(state);
+            }
+        });
+    }
+
+    private void handleAttacking(int userID, AttackingTetrisBlocks blocks) {
+        sessions.forEach((playerId, session) -> {
+            if (playerId != userID) {
+                session.attackedByPlayer(blocks);
             }
         });
     }

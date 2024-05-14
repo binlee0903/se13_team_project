@@ -2,9 +2,7 @@ package org.se13.game.tetris;
 
 import org.se13.game.action.TetrisAction;
 import org.se13.game.block.*;
-import org.se13.game.event.AttackTetrisBlocks;
-import org.se13.game.event.TetrisEvent;
-import org.se13.game.event.UpdateTetrisState;
+import org.se13.game.event.*;
 import org.se13.game.grid.TetrisGrid;
 import org.se13.game.input.InputManager;
 import org.se13.game.item.*;
@@ -134,6 +132,11 @@ public class TetrisGame {
         server.responseGameOver(getScore(), isItemMode(), getDifficulty());
     }
 
+    public void stopBattleGame() {
+        this.gameStatus = GameStatus.GAMEOVER;
+        this.inputManager.reset();
+    }
+
     public boolean togglePauseState() {
         if (this.gameStatus != GameStatus.PAUSED) {
             this.gameStatus = GameStatus.PAUSED;
@@ -156,7 +159,7 @@ public class TetrisGame {
         }
     }
 
-    int getScore() {
+    public int getScore() {
         return this.score;
     }
 
@@ -354,9 +357,10 @@ public class TetrisGame {
         }
     }
 
-    public void attacked(AttackTetrisBlocks blocks) {
+    public void attacked(AttackingTetrisBlocks blocks) {
         // 기존 테트리스 블럭을 위로 올리고 blocks를 하단에 넣어주기
-        tetrisGameGrid.attackedBlocks(blocks);
+        tetrisGameGrid.addToAttackedBlocks(blocks);
+        events.setValue(new AttackedTetrisBlocks(tetrisGameGrid.getAttackedBlocks()));
     }
 
     void tick(long l) {
@@ -398,6 +402,10 @@ public class TetrisGame {
         }
 
         if (isBlockPlaced == true) {
+            if (tetrisGameGrid.isAttackedBlockExists() == true) {
+                tetrisGameGrid.insertAttackedBlocksToGrid();
+                events.setValue(new InsertAttackBlocksEvent());
+            }
             tetrisGameGrid.triggerLineClearItem();
             int fullRows = tetrisGameGrid.animateFullRows();
 
@@ -409,7 +417,7 @@ public class TetrisGame {
                     collideCheckingTimer.resumeTimer();
                     feverModeTimer.setResume();
 
-                    CellID[][] attackCells = tetrisGameGrid.getAttackBlocks(currentBlock, fullRows);
+                    attackingEvent(tetrisGameGrid.getAttackingBlocks(currentBlock, fullRows));
 
                     tetrisGameGrid.clearFullRows();
                     score += scoreWeight * fullRows;
@@ -418,7 +426,6 @@ public class TetrisGame {
                     lineClearAnimationTimer.resetFlags();
                     gameStatus = GameStatus.RUNNING;
                     isAnimationEnded = true;
-                    attackEvent(attackCells);
                 } else {
                     gameStatus = GameStatus.ANIMATION;
                     isAnimationEnded = false;
@@ -430,10 +437,7 @@ public class TetrisGame {
                 currentBlock = nextBlock;
                 nextBlock = nextBlock();
                 isBlockPlaced = false;
-
-                if (isGameOver() == true) {
-                    stopGame();
-                }
+                checkGameIsOver();
             }
         }
     }
@@ -472,8 +476,14 @@ public class TetrisGame {
         events.setValue(new UpdateTetrisState(newTetrisGird.getGrid(), newNextBlock, newScore, newRemainingTime));
     }
 
-    private void attackEvent(CellID[][] cells) {
-        events.setValue(new AttackTetrisBlocks(cells));
+    private void attackingEvent(CellID[][] cells) {
+        events.setValue(new AttackingTetrisBlocks(cells));
+    }
+
+    private void checkGameIsOver() {
+        if (isGameOver() == true) {
+            stopGame();
+        }
     }
 
     private final int ROW_SIZE = 22;

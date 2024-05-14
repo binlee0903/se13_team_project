@@ -7,6 +7,8 @@ import javafx.scene.control.ChoiceBox;
 import org.se13.SE13Application;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
+import org.se13.server.LocalBattleTetrisServer;
+import org.se13.server.LocalTetrisServer;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
 import org.se13.view.tetris.*;
@@ -14,7 +16,7 @@ import org.se13.view.tetris.*;
 public class LevelSelectScreenController extends BaseController {
 
     @FXML
-    private void initialize() {
+    public void initialize() {
         modeChoiceBox.setItems(FXCollections.observableArrayList("default","item","timeLimit"));
         modeChoiceBox.setValue("default");
         typeChoiceBox.setItems(FXCollections.observableArrayList("single", "battle"));
@@ -45,17 +47,19 @@ public class LevelSelectScreenController extends BaseController {
 
     private void startLocalTetrisGame(GameLevel level, GameMode mode) {
         Player player = new Player(-1, level, mode);
-        player.connectToServer();
+        LocalTetrisServer server = new LocalTetrisServer(level, mode);
+        player.connectToServer(server);
         SE13Application.navController.navigate(AppScreen.TETRIS, (controller) -> {
             ((TetrisScreenController) controller).setArguments(player);
         });
     }
 
     private void startLocalBattleTetrisGame(GameLevel level, GameMode mode) {
+        LocalBattleTetrisServer server = new LocalBattleTetrisServer(level, mode);
         Player player1 = new Player(1, level, mode);
         Player player2 = new Player(2, level, mode);
-        player1.connectToServer();
-        player2.connectToServer();
+        player1.connectToServer(server);
+        player2.connectToServer(server);
         SE13Application.navController.navigate(AppScreen.BATTLE, (controller) -> {
             ((BattleScreenController) controller).setArguments(player1, player2);
         });
