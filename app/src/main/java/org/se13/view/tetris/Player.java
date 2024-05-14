@@ -1,15 +1,10 @@
 package org.se13.view.tetris;
 
-import org.se13.game.event.TetrisEvent;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
-import org.se13.server.LocalTetrisServer;
-import org.se13.server.TetrisClient;
-import org.se13.utils.Subscriber;
-import org.se13.server.TetrisActionHandler;
+import org.se13.server.*;
 
 public class Player {
-
     public Player(int userId, GameLevel gameLevel, GameMode gameMode) {
         this.userId = userId;
         this.gameLevel = gameLevel;
@@ -17,8 +12,10 @@ public class Player {
         this.eventRepository = new TetrisEventRepositoryImpl();
         this.client = new TetrisClient(userId, eventRepository);
     }
-    public void connectToServer(){
-        this.server = new LocalTetrisServer(this.gameLevel, this.gameMode);
+
+    public void connectToServer(TetrisServer server) {
+        this.server = server;
+
         this.actionHandler = server.connect(this.client);
         this.actionRepository = new TetrisActionRepositoryImpl(this.userId, this.actionHandler);
     }
@@ -49,6 +46,6 @@ public class Player {
     private TetrisEventRepositoryImpl eventRepository;
     private TetrisActionRepositoryImpl actionRepository;
     private TetrisClient client;
-    private LocalTetrisServer server;
+    private TetrisServer server;
     private TetrisActionHandler actionHandler;
 }

@@ -9,19 +9,42 @@ import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
 import org.se13.view.ranking.RankingScreenController;
 
+import java.util.List;
+
 public class GameOverScreenController extends BaseController {
     @Override
     public void onStart() {
         super.onStart();
-        score.setText(String.valueOf(endData.score()));
-        rankingRepository = new RankingRepositoryImpl();
-        rankingRepository.createNewTableRanking();
+
+        if (endData.winnerUserId() == -1) {
+            score.setText(String.valueOf(endData.score()));
+            rankingRepository = new RankingRepositoryImpl();
+            rankingRepository.createNewTableRanking();
+            winnerPrompt.setVisible(false);
+            winnerUser.setVisible(false);
+            homeButton.setVisible(false);
+        } else {
+            score.setVisible(false);
+            scorePrompt.setVisible(false);
+            rankingButton.setVisible(false);
+            score.setText(String.valueOf(endData.score()));
+
+            if (endData.winnerUserId() == 1) {
+                winnerUser.setText("player1");
+            } else {
+                winnerUser.setText("player2");
+            }
+        }
     }
 
     public void handleRankingButtonAction() {
         SE13Application.navController.navigate(AppScreen.RANKING, (RankingScreenController controller) -> {
             controller.setArguments(endData.score(), endData.isItemMode(), endData.difficulty());
         });
+    }
+
+    public void handleHomeButtonAction() {
+        SE13Application.navController.navigate(AppScreen.START);
     }
 
     public void setArguments(TetrisGameEndData endData) {
@@ -34,6 +57,14 @@ public class GameOverScreenController extends BaseController {
     private Text score;
     @FXML
     public Button rankingButton;
+    @FXML
+    public Text scorePrompt;
+    @FXML
+    public Text winnerPrompt;
+    @FXML
+    public Text winnerUser;
+    @FXML
+    public Button homeButton;
 
     private TetrisGameEndData endData;
 }
