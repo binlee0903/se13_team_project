@@ -8,15 +8,16 @@ import org.se13.sqlite.ranking.RankingRepositoryImpl;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
 import org.se13.view.ranking.RankingScreenController;
-import org.se13.view.start.StartScreenController;
+
+import java.util.List;
 
 public class GameOverScreenController extends BaseController {
     @Override
     public void onStart() {
         super.onStart();
 
-        if (endData[0].userId() == -1) {
-            score.setText(String.valueOf(endData[0].score()));
+        if (endData.winnerUserId() == -1) {
+            score.setText(String.valueOf(endData.score()));
             rankingRepository = new RankingRepositoryImpl();
             rankingRepository.createNewTableRanking();
             winnerPrompt.setVisible(false);
@@ -26,18 +27,19 @@ public class GameOverScreenController extends BaseController {
             score.setVisible(false);
             scorePrompt.setVisible(false);
             rankingButton.setVisible(false);
+            score.setText(String.valueOf(endData.score()));
 
-            if (endData[0].score() < endData[1].score()) {
-                winnerUser.setText("player2");
-            } else {
+            if (endData.winnerUserId() == 1) {
                 winnerUser.setText("player1");
+            } else {
+                winnerUser.setText("player2");
             }
         }
     }
 
     public void handleRankingButtonAction() {
         SE13Application.navController.navigate(AppScreen.RANKING, (RankingScreenController controller) -> {
-            controller.setArguments(endData[0].score(), endData[0].isItemMode(), endData[0].difficulty());
+            controller.setArguments(endData.score(), endData.isItemMode(), endData.difficulty());
         });
     }
 
@@ -46,11 +48,7 @@ public class GameOverScreenController extends BaseController {
     }
 
     public void setArguments(TetrisGameEndData endData) {
-        if (this.endData == null) {
-            this.endData = new TetrisGameEndData[2];
-        }
-
-        this.endData[0] = endData;
+        this.endData = endData;
     }
 
     private RankingRepositoryImpl rankingRepository;
@@ -68,5 +66,5 @@ public class GameOverScreenController extends BaseController {
     @FXML
     public Button homeButton;
 
-    private TetrisGameEndData[] endData;
+    private TetrisGameEndData endData;
 }

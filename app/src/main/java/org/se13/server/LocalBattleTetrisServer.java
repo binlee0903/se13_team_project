@@ -35,8 +35,13 @@ public class LocalBattleTetrisServer implements TetrisServer {
         endData = new LinkedList<>();
         sessions.forEach((playerId, session) -> {
             endData.add(session.stopBattleGame());
+            session.stopGame();
         });
         tetrisTimer.cancel();
+    }
+
+    public List<TetrisGameEndData> getEndData() {
+        return this.endData;
     }
 
     @Override

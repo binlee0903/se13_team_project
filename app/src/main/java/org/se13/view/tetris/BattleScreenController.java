@@ -15,11 +15,14 @@ import org.se13.SE13Application;
 import org.se13.game.block.*;
 import org.se13.game.config.Config;
 import org.se13.game.event.*;
+import org.se13.server.LocalBattleTetrisServer;
 import org.se13.utils.Subscriber;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class BattleScreenController extends BaseController {
 
@@ -58,6 +61,8 @@ public class BattleScreenController extends BaseController {
     public Canvas player2_attackedBlocks;
     @FXML
     public BorderPane player2_attackedBlocksFrame;
+
+    private LocalBattleTetrisServer server;
 
     private TetrisScreenViewModel player1_viewModel;
     private TetrisScreenViewModel player2_viewModel;
@@ -105,8 +110,8 @@ public class BattleScreenController extends BaseController {
 
         setInitState();
 
-        player1_viewModel.observe(observePlayer1Event(), bindGameEnd());
-        player2_viewModel.observe(observePlayer2Event(), null);
+        player1_viewModel.observe(observePlayerEvent(PLAYER1), null);
+        player2_viewModel.observe(observePlayerEvent(PLAYER2), null);
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
             String keyCode = key.getCode().getName().toLowerCase();
@@ -123,12 +128,12 @@ public class BattleScreenController extends BaseController {
         player2_viewModel.connect();
     }
 
-    public void setArguments(Player player1, Player player2) {
-
+    public void setArguments(Player player1, Player player2, LocalBattleTetrisServer server) {
         this.actionRepository1 = player1.getActionRepository();
         this.stateRepository1 = player1.getEventRepository();
         this.actionRepository2 = player2.getActionRepository();
         this.stateRepository2 = player2.getEventRepository();
+        this.server = server;
     }
 
     private void setInitState() {
@@ -147,28 +152,15 @@ public class BattleScreenController extends BaseController {
         player2_gameCanvas.setHeight(height);
     }
 
-    private Subscriber<TetrisEvent> observePlayer1Event() {
+    private Subscriber<TetrisEvent> observePlayerEvent(int userID) {
         return (event) -> {
             Platform.runLater(() -> {
                 switch (event) {
-                    case UpdateTetrisState state -> handleUpdateState(state, PLAYER1);
-                    case InsertAttackBlocksEvent events -> handleAttackedState(null, PLAYER1);
-                    case AttackedTetrisBlocks state -> handleAttackedState(state, PLAYER1);
+                    case UpdateTetrisState state -> handleUpdateState(state, userID);
+                    case InsertAttackBlocksEvent events -> handleAttackedState(null, userID);
+                    case AttackedTetrisBlocks state -> handleAttackedState(state, userID);
                     case ServerErrorEvent error -> handleServerError(error);
-                    default -> {}
-                }
-            });
-        };
-    }
-
-    private Subscriber<TetrisEvent> observePlayer2Event() {
-        return (event) -> {
-            Platform.runLater(() -> {
-                switch (event) {
-                    case UpdateTetrisState state -> handleUpdateState(state, PLAYER2);
-                    case AttackedTetrisBlocks state -> handleAttackedState(state, PLAYER2);
-                    case InsertAttackBlocksEvent events -> handleAttackedState(null, PLAYER2);
-                    case ServerErrorEvent error -> handleServerError(error);
+                    case GameEndEvent gameEndEvent -> gameEnd();
                     default -> {}
                 }
             });
@@ -211,14 +203,16 @@ public class BattleScreenController extends BaseController {
         }
     }
 
-    private Subscriber<TetrisGameEndData> bindGameEnd() {
-        return (endData) -> {
-            Platform.runLater(() -> {
-                SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
-                    controller.setArguments(endData);
-                });
-            });
-        };
+    private void gameEnd() {
+        SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
+            List<TetrisGameEndData> endDatas = server.getEndData();
+
+            if (endDatas.getFirst().score() > endDatas.getLast().score()) {
+                controller.setArguments(new TetrisGameEndData(PLAYER1, endDatas.getFirst().score(), false, ""));
+            } else {
+                controller.setArguments(new TetrisGameEndData(PLAYER2, endDatas.getLast().score(), false, ""));
+            }
+        });
     }
 
     private void setSmallScreen() {

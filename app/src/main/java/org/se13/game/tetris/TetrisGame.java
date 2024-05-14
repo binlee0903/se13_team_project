@@ -13,6 +13,7 @@ import org.se13.game.timer.*;
 import org.se13.server.TetrisServer;
 import org.se13.utils.Observer;
 import org.se13.utils.Subscriber;
+import org.se13.view.tetris.TetrisGameEndData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
