@@ -20,7 +20,7 @@ public class SE13Application extends Application {
     public void start(Stage stage) {
         if (isTestMode != true) {
             stage.setResizable(false);
-            navController = new StackNavGraph(stage, ConfigRepositoryImpl.getInstance());
+            navController = new StackNavGraph(stage, new ConfigRepositoryImpl(0));
             navController.navigate(AppScreen.START);
         }
     }

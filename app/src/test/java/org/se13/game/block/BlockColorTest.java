@@ -12,7 +12,7 @@ class BlockColorTest {
 
     @Test
     void colorTest() {
-        ConfigRepositoryImpl configRepository = ConfigRepositoryImpl.getInstance();
+        ConfigRepositoryImpl configRepository = new ConfigRepositoryImpl(0);
         BlockColor blockColor = new BlockColor(configRepository);
 
         Color color1 = Color.rgb(255,255,255);

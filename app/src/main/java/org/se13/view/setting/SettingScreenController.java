@@ -37,7 +37,7 @@ public class SettingScreenController extends BaseController {
 
     @Override
     public void onCreate() {
-        this.configRepository = ConfigRepositoryImpl.getInstance();
+        this.configRepository = new ConfigRepositoryImpl(0);
         resetSettingButtons();
     }
 

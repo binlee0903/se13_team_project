@@ -8,19 +8,14 @@ import java.util.Map;
 
 
 public class ConfigRepositoryImpl implements ConfigRepository {
-    public ConfigRepositoryImpl() {
+    private int userId;
+
+    public ConfigRepositoryImpl(int userId) {
         super();
 
+        this.userId = userId;
         this.createNewTableConfig();
         this.insertDefaultConfig();
-    }
-
-    public static ConfigRepositoryImpl getInstance() {
-        if (configRepositoryImpl == null) {
-            configRepositoryImpl = new ConfigRepositoryImpl();
-        }
-
-        return configRepositoryImpl;
     }
 
     // DB connection
@@ -40,14 +35,14 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         //String dropSql = "DROP TABLE IF EXISTS config;";
 
         String sql = "CREATE TABLE IF NOT EXISTS config ("
-                + "	id integer PRIMARY KEY CHECK (id=0),"
+                + "	id integer PRIMARY KEY CHECK (id=?),"
                 + "	settings text NOT NULL" // JSON 형식의 설정 값
                 + ");";
 
         try (Connection conn = this.connect();
-             Statement stmt = conn.createStatement()) {
-            //stmt.execute(dropSql);
-            stmt.execute(sql);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            pstmt.execute();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -68,10 +63,11 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("keyDrop", "w");
         json.put("keyExit", "q");
 
-        String sql = "INSERT INTO config (id, settings) VALUES(0,?)";
+        String sql = "INSERT INTO config (id, settings) VALUES(?,?)";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, json.toString());
+            pstmt.setInt(1, userId);
+            pstmt.setString(2, json.toString());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error inserting default config: "+ e.getMessage());
@@ -92,10 +88,11 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("keyDrop", keyDrop);
         json.put("keyExit", keyExit);
 
-        String sql = "UPDATE config SET settings = ? WHERE id = 0";
+        String sql = "UPDATE config SET settings = ? WHERE id = ?";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, json.toString());
+            pstmt.setInt(2, userId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error updating config: " + e.getMessage());
@@ -104,9 +101,10 @@ public class ConfigRepositoryImpl implements ConfigRepository {
 
     @Override
     public Map<String, Object> getConfig() {
-        String sql = "SELECT settings FROM config WHERE id = 0";
+        String sql = "SELECT settings FROM config WHERE id = ?";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
@@ -135,9 +133,10 @@ public class ConfigRepositoryImpl implements ConfigRepository {
 
     @Override
     public void clearConfig() {
-        String sql = "DELETE FROM config WHERE id = 0";
+        String sql = "DELETE FROM config WHERE id = ?";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
