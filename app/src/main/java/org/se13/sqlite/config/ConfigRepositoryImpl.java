@@ -1,6 +1,7 @@
 package org.se13.sqlite.config;
 
 import org.json.JSONObject;
+import org.se13.game.config.Config;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -168,5 +169,15 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         return (String) config.get("mode");
     }
 
-    private static ConfigRepositoryImpl configRepositoryImpl;
+    /**
+     * TODO: 플레이어의 키 정보 값을 userId로 가져오는 쿼리를 작성하세요.
+     */
+    @Override
+    public PlayerKeycode getPlayerKeyCode() {
+        if (userId == 0) {
+            return new PlayerKeycode(Config.LEFT, Config.RIGHT, Config.DOWN, Config.DROP, Config.CW_SPIN, Config.PAUSE, Config.EXIT);
+        }
+
+        return new PlayerKeycode("j", "l", "k", "i", "o", null, null);
+    }
 }
