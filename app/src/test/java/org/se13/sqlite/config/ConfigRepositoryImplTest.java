@@ -12,7 +12,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 public class ConfigRepositoryImplTest {
 
     private int userId = 0;

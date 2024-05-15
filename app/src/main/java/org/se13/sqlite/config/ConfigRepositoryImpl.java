@@ -35,14 +35,11 @@ public class ConfigRepositoryImpl implements ConfigRepository {
     public void createNewTableConfig() {
         //String dropSql = "DROP TABLE IF EXISTS config;";
 
-        String sql = "CREATE TABLE IF NOT EXISTS config ("
-                + "	id integer PRIMARY KEY CHECK (id=?),"
-                + "	settings text NOT NULL" // JSON 형식의 설정 값
-                + ");";
+        // JSON 형식의 설정 값
+        String sql = "CREATE TABLE IF NOT EXISTS config (id integer PRIMARY KEY CHECK (id = " + userId + "), settings text NOT NULL);";
 
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, userId);
             pstmt.execute();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
