@@ -3,12 +3,14 @@ package org.se13.view.tetris;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.server.*;
+import org.se13.sqlite.config.PlayerKeycode;
 
 public class Player {
-    public Player(int userId, GameLevel gameLevel, GameMode gameMode) {
+    public Player(int userId, GameLevel gameLevel, GameMode gameMode, PlayerKeycode playerKeycode) {
         this.userId = userId;
         this.gameLevel = gameLevel;
         this.gameMode = gameMode;
+        this.playerKeycode = playerKeycode;
         this.eventRepository = new TetrisEventRepositoryImpl();
         this.client = new TetrisClient(userId, eventRepository);
     }
@@ -32,6 +34,10 @@ public class Player {
         return gameMode;
     }
 
+    public PlayerKeycode getPlayerKeycode() {
+        return playerKeycode;
+    }
+
     public TetrisEventRepositoryImpl getEventRepository() {
         return eventRepository;
     }
@@ -48,4 +54,5 @@ public class Player {
     private TetrisClient client;
     private TetrisServer server;
     private TetrisActionHandler actionHandler;
+    private PlayerKeycode playerKeycode;
 }

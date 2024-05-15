@@ -67,7 +67,7 @@ public enum Block {
         cellId = cellID;
         cells = new BlockPosition[row][];
         startOffset = new BlockPosition(offset[0], offset[1]);
-        blockColorManager = new BlockColor(ConfigRepositoryImpl.getInstance());
+        blockColorManager = new BlockColor(new ConfigRepositoryImpl(0));
         this.blockColor = blockColorManager.getBlockColor(cellID);
 
         for (int r = 0; r < row; r++) {

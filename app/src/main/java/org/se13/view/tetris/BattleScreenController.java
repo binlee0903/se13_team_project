@@ -16,6 +16,7 @@ import org.se13.game.block.*;
 import org.se13.game.config.Config;
 import org.se13.game.event.*;
 import org.se13.server.LocalBattleTetrisServer;
+import org.se13.sqlite.config.PlayerKeycode;
 import org.se13.utils.Subscriber;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
@@ -71,6 +72,9 @@ public class BattleScreenController extends BaseController {
     private TetrisEventRepository stateRepository1;
     private TetrisEventRepository stateRepository2;
 
+    private PlayerKeycode player1_keycode;
+    private PlayerKeycode player2_keycode;
+
     private GraphicsContext player1_tetrisGridView;
     private GraphicsContext player1_nextBlockView;
 
@@ -115,7 +119,8 @@ public class BattleScreenController extends BaseController {
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
             String keyCode = key.getCode().getName().toLowerCase();
-            handleKeyEvent(keyCode);
+            handleKeyEvent(keyCode, player1_viewModel, player1_keycode);
+            handleKeyEvent(keyCode, player2_viewModel, player2_keycode);
         });
 
         this.player1_frame.setStyle("-fx-border-color: red;");
@@ -133,6 +138,8 @@ public class BattleScreenController extends BaseController {
         this.stateRepository1 = player1.getEventRepository();
         this.actionRepository2 = player2.getActionRepository();
         this.stateRepository2 = player2.getEventRepository();
+        this.player1_keycode = player1.getPlayerKeycode();
+        this.player2_keycode = player2.getPlayerKeycode();
         this.server = server;
     }
 
@@ -370,21 +377,21 @@ public class BattleScreenController extends BaseController {
         };
     }
 
-    private void handleKeyEvent(String keyCode) {
-        if (keyCode.compareToIgnoreCase(Config.DROP) == 0) {
-            player1_viewModel.immediateBlockPlace();
-        } else if (keyCode.compareToIgnoreCase(Config.DOWN) == 0) {
-            player1_viewModel.moveBlockDown();
-        } else if (keyCode.compareToIgnoreCase(Config.LEFT) == 0) {
-            player1_viewModel.moveBlockLeft();
-        } else if (keyCode.compareToIgnoreCase(Config.RIGHT) == 0) {
-            player1_viewModel.moveBlockRight();
-        } else if (keyCode.compareToIgnoreCase(Config.CW_SPIN) == 0) {
-            player1_viewModel.rotateBlockCW();
+    private void handleKeyEvent(String keyCode, TetrisScreenViewModel viewModel, PlayerKeycode playerKeycode) {
+        if (keyCode.compareToIgnoreCase(playerKeycode.drop()) == 0) {
+            viewModel.immediateBlockPlace();
+        } else if (keyCode.compareToIgnoreCase(playerKeycode.down()) == 0) {
+            viewModel.moveBlockDown();
+        } else if (keyCode.compareToIgnoreCase(playerKeycode.left()) == 0) {
+            viewModel.moveBlockLeft();
+        } else if (keyCode.compareToIgnoreCase(playerKeycode.right()) == 0) {
+            viewModel.moveBlockRight();
+        } else if (keyCode.compareToIgnoreCase(playerKeycode.spin()) == 0) {
+            viewModel.rotateBlockCW();
         } else if (keyCode.compareToIgnoreCase(Config.PAUSE) == 0) {
-            player1_viewModel.togglePauseState();
+            viewModel.togglePauseState();
         } else if (keyCode.compareToIgnoreCase(Config.EXIT) == 0) {
-            player1_viewModel.exitGame();
+            viewModel.exitGame();
             System.exit(0);
         }
     }

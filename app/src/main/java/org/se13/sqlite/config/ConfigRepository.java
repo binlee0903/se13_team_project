@@ -9,4 +9,6 @@ public interface ConfigRepository {
     void clearConfig();
     int[] getScreenSize();
     String getBlockColorMode();
+
+    PlayerKeycode getPlayerKeyCode();
 }
