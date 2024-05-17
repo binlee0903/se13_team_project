@@ -284,7 +284,6 @@ public class TetrisGrid {
             }
         }
 
-
         int k = DEFAULT_ATTACKED_ROW_SIZE - 1;
         int count = 0;
 
@@ -318,7 +317,7 @@ public class TetrisGrid {
         int count = 0;
 
         for (int i = 0; i < cells.length; i++) {
-            if (attackedCellsRowCount == DEFAULT_ATTACKED_ROW_SIZE) {
+            if (attackedCellsRowCount == DEFAULT_ATTACKED_ROW_SIZE - 1) {
                 break;
             }
 
@@ -328,7 +327,7 @@ public class TetrisGrid {
                 break;
             }
 
-            for (int j = DEFAULT_ATTACKED_ROW_SIZE - attackedCellsRowCount; j < DEFAULT_ATTACKED_ROW_SIZE; j++) {
+            for (int j = DEFAULT_ATTACKED_ROW_SIZE - attackedCellsRowCount - 1; j < DEFAULT_ATTACKED_ROW_SIZE - 1; j++) {
                 for (int k = 0; k < colSize; k++) {
                     attackedCells[j - 1][k] = attackedCells[j][k];
                 }
@@ -352,7 +351,7 @@ public class TetrisGrid {
     // row size of tetris board
     private final int rowSize;
 
-    private final int DEFAULT_ATTACKED_ROW_SIZE = 10;
+    private final int DEFAULT_ATTACKED_ROW_SIZE = 11;
 
     /**
      * abstracted 10*22 tetris grid. originally, tetris's grid size
