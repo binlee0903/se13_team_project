@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -19,15 +18,13 @@
                <VBox prefHeight="100.0" prefWidth="200.0">
                   <Label prefHeight="18.0" prefWidth="53.0" style="-fx-text-fill: white" text="Score" />
                   <Label fx:id="player1_score" style="-fx-text-fill: yellow" text="Label" />
+                  <Text fx:id="player1_timeLimitPanel" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Time" />
+                  <Text fx:id="player1_time" strokeType="OUTSIDE" strokeWidth="0.0" fill="YELLOW" text="999" />
                </VBox>
                <Label style="-fx-text-fill: white" text="next" />
                <Canvas fx:id="player1_nextBlockCanvas" height="50.0" width="50.0" />
                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="ATTACKED" />
-               <BorderPane fx:id="player1_attackedBlocksFrame" prefHeight="150.0" prefWidth="100.0">
-                  <center>
-                     <Canvas fx:id="player1_attackedBlocks" height="150.0" width="100.0" BorderPane.alignment="CENTER"/>
-                  </center>
-               </BorderPane>
+               <Canvas fx:id="player1_attackedBlocks" height="75.0" width="80.0"/>
             </VBox>
          </right>
          <center>
@@ -47,15 +44,13 @@
                <VBox prefHeight="100.0" prefWidth="200.0">
                   <Label prefHeight="18.0" prefWidth="53.0" style="-fx-text-fill: white" text="Score" />
                   <Label fx:id="player2_score" style="-fx-text-fill: yellow" text="Label" />
+                  <Text fx:id="player2_timeLimitPanel" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Time" />
+                  <Text fx:id="player2_time" strokeType="OUTSIDE" strokeWidth="0.0" fill="YELLOW" text="999" />
                </VBox>
                <Label style="-fx-text-fill: white" text="next" />
-               <Canvas fx:id="player2_nextBlockCanvas" height="50.0" width="50.0" />
+               <Canvas fx:id="player2_nextBlockCanvas" height="50.0" width="25.0" />
                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="ATTACKED" />
-               <BorderPane fx:id="player2_attackedBlocksFrame" prefHeight="150.0" prefWidth="100.0">
-                  <center>
-                     <Canvas fx:id="player2_attackedBlocks" height="150.0" width="100.0" BorderPane.alignment="CENTER"/>
-                  </center>
-               </BorderPane>
+               <Canvas fx:id="player2_attackedBlocks" height="75.0" width="80.0"/>
             </VBox>
          </right>
          <center>
