@@ -1,8 +1,14 @@
 package org.se13.ai;
 
+import org.json.JSONObject;
 import org.se13.game.action.TetrisAction;
+import org.se13.game.block.CellID;
+import org.se13.game.event.GameEndEvent;
+import org.se13.game.event.TetrisEvent;
+import org.se13.game.event.UpdateTetrisState;
 import org.se13.server.TetrisServer;
 import org.se13.sqlite.config.PlayerKeycode;
+import org.se13.utils.JsonUtils;
 import org.se13.utils.Matrix;
 import org.se13.view.tetris.Player;
 import org.se13.view.tetris.TetrisEventRepository;
@@ -11,31 +17,55 @@ import org.slf4j.LoggerFactory;
 
 public class Computer extends Player {
     private static final Logger log = LoggerFactory.getLogger(Computer.class);
+
     private TetrisAction[] available = new TetrisAction[]{TetrisAction.MOVE_BLOCK_LEFT, TetrisAction.MOVE_BLOCK_RIGHT, TetrisAction.ROTATE_BLOCK_CW, TetrisAction.IMMEDIATE_BLOCK_PLACE};
-    private Thread thinking;
-    private int fitness;
-    private int layer = 10;
+    private double fitness = 10000;
+    private int layer1 = 10;
+    private int layer2 = 20;
     private double[][] w1;
     private double[][] w2;
     private double[][] w3;
     private double[][] w4;
 
-    public Computer(int userId, PlayerKeycode playerKeycode, TetrisEventRepository repository) {
-        super(userId, playerKeycode, new ComputerEventRepository(repository));
+    private boolean isEnd;
 
-        w1 = Matrix.randn(10, layer);
-        w2 = Matrix.randn(layer, 20);
-        w3 = Matrix.randn(20, layer);
-        w4 = Matrix.randn(layer, 4);
+    private final SaveComputer saver;
+
+    public interface SaveComputer {
+        void save(int computerId, double[][] w1, double[][] w2, double[][] w3, double[][] w4, double fitness);
+    }
+
+    public Computer(int userId, PlayerKeycode playerKeycode, TetrisEventRepository repository, JSONObject content, SaveComputer saver) {
+        super(userId, playerKeycode, new ComputerEventRepository(repository));
+        this.saver = saver;
+
+        w1 = Matrix.randn(10, layer1);
+        w2 = Matrix.randn(layer1, layer2);
+        w3 = Matrix.randn(layer2, layer1);
+        w4 = Matrix.randn(layer1, 4);
+
+        if (content != null) {
+            load(content);
+        }
+    }
+
+    private void load(JSONObject content) {
+        w1 = JsonUtils.getDoubleArray(content, "w1");
+        w2 = JsonUtils.getDoubleArray(content, "w2");
+        w3 = JsonUtils.getDoubleArray(content, "w3");
+        w4 = JsonUtils.getDoubleArray(content, "w4");
     }
 
     @Override
     public void connectToServer(TetrisServer server) {
         super.connectToServer(server);
         ((ComputerEventRepository) eventRepository).subscribe(this::choose);
+        ((ComputerEventRepository) eventRepository).subscribeEvent(this::onEvent);
     }
 
     private void choose(ComputerInput input) {
+        if (isEnd) return;
+
         int choose = input.inputs(w1, w2, w3, w4);
 
         switch (available[choose]) {
@@ -45,4 +75,39 @@ public class Computer extends Player {
             case ROTATE_BLOCK_CW -> actionRepository.rotateBlockCW();
         }
     }
+
+    private int previous = 0;
+
+    private void onEvent(TetrisEvent event) {
+        if (isEnd) return;
+        if (event instanceof GameEndEvent) {
+            isEnd = true;
+            saver.save(userId, w1, w2, w3, w4, fitness);
+            return;
+        }
+
+        fitness -= 1;
+        int count = 0;
+
+        if (event instanceof UpdateTetrisState) {
+            CellID[][] cells = ((UpdateTetrisState) event).tetrisGrid();
+            for (int i = 0; i < cells.length; i++) {
+                for (int j = 0; j < cells[i].length; j++) {
+                    if (cells[i][j] != CellID.EMPTY) {
+                        count++;
+                    }
+                }
+            }
+
+            int sub = count - previous;
+            if (previous < count) {
+                fitness -= sub;
+            } else {
+                fitness += sub + sub;
+            }
+
+            previous = count;
+        }
+    }
+
 }

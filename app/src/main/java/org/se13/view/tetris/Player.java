@@ -31,7 +31,7 @@ public class Player {
         return actionRepository;
     }
 
-    private int userId;
+    protected int userId;
     protected TetrisEventRepository eventRepository;
     protected TetrisActionRepository actionRepository;
     private TetrisClient client;

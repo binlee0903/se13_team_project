@@ -10,6 +10,7 @@ import org.se13.view.tetris.TetrisGameEndData;
 
 public class ComputerEventRepository implements TetrisEventRepository {
     private TetrisEventRepository delegate;
+    private Observer<TetrisEvent> forComputer = new Observer<>();
     private Observer<ComputerInput> observer = new Observer<>();
 
     public ComputerEventRepository(TetrisEventRepository repository) {
@@ -25,6 +26,7 @@ public class ComputerEventRepository implements TetrisEventRepository {
     @Override
     public void response(TetrisEvent event) {
         delegate.response(event);
+        forComputer.setValue(event);
 
         ComputerInput current = observer.getValue();
         switch (event) {
@@ -46,5 +48,9 @@ public class ComputerEventRepository implements TetrisEventRepository {
 
     public void subscribe(Subscriber<ComputerInput> subscriber) {
         observer.subscribe(subscriber);
+    }
+
+    public void subscribeEvent(Subscriber<TetrisEvent> subscriber) {
+        forComputer.subscribe(subscriber);
     }
 }

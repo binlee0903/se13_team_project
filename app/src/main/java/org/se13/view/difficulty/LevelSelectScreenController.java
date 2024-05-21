@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import org.json.JSONObject;
 import org.se13.SE13Application;
 import org.se13.ai.Computer;
 import org.se13.game.rule.GameLevel;
@@ -19,6 +20,11 @@ import org.se13.view.tetris.Player;
 import org.se13.view.tetris.TetrisEventRepositoryImpl;
 import org.se13.view.tetris.TetrisScreenController;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 public class LevelSelectScreenController extends BaseController {
 
 
@@ -27,7 +33,7 @@ public class LevelSelectScreenController extends BaseController {
         modeChoiceBox.setItems(FXCollections.observableArrayList("default","item","timeLimit"));
         modeChoiceBox.setValue("default");
         typeChoiceBox.setItems(FXCollections.observableArrayList("single", "battle", "computer"));
-        typeChoiceBox.setValue("single");
+        typeChoiceBox.setValue("computer");
     }
 
     @FXML
@@ -77,12 +83,22 @@ public class LevelSelectScreenController extends BaseController {
         LocalBattleTetrisServer server = new LocalBattleTetrisServer(level, mode);
         Player player = new Player(1, new ConfigRepositoryImpl(0).getPlayerKeyCode(), new TetrisEventRepositoryImpl());
         PlayerKeycode emptyCode = new PlayerKeycode("", "", "", "", "", "", "");
-        Player computer = new Computer(-1, emptyCode, new TetrisEventRepositoryImpl());
+        JSONObject data = readJson();
+        Player computer = new Computer(-1, emptyCode, new TetrisEventRepositoryImpl(), data.getJSONObject("-1"), saver);
         player.connectToServer(server);
         computer.connectToServer(server);
         SE13Application.navController.navigate(AppScreen.BATTLE, (controller) -> {
             ((BattleScreenController) controller).setArguments(player, computer, server);
         });
+    }
+
+    private JSONObject readJson() {
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(path)));
+            return new JSONObject(content);
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
     }
 
     private GameMode setGameMode(String gameMode) {
@@ -97,8 +113,27 @@ public class LevelSelectScreenController extends BaseController {
         };
     }
 
-    public static GameMode gameMode;
-    public static GameLevel gameLevel;
+    private final String path = "C:/Users/someh/Downloads/computer.json";
+
+    private Computer.SaveComputer saver = (computerId, w1, w2, w3, w4, fitness) ->
+        new Thread(() -> {
+            try {
+                JSONObject parent = new JSONObject();
+                JSONObject object = new JSONObject();
+                object.put("w1", w1);
+                object.put("w2", w2);
+                object.put("w3", w3);
+                object.put("w4", w4);
+                object.put("fitness", fitness);
+                parent.put(String.valueOf(computerId), object);
+                FileWriter fs = new FileWriter(path);
+                BufferedWriter writer = new BufferedWriter(fs);
+                parent.write(writer);
+                writer.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
 
     @FXML
     Button easyButton;
