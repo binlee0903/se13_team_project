@@ -1,0 +1,50 @@
+package org.se13.ai;
+
+import org.se13.game.event.AttackedTetrisBlocks;
+import org.se13.game.event.TetrisEvent;
+import org.se13.game.event.UpdateTetrisState;
+import org.se13.utils.Observer;
+import org.se13.utils.Subscriber;
+import org.se13.view.tetris.TetrisEventRepository;
+import org.se13.view.tetris.TetrisGameEndData;
+
+public class ComputerEventRepository implements TetrisEventRepository {
+    private TetrisEventRepository delegate;
+    private Observer<ComputerInput> observer = new Observer<>();
+
+    public ComputerEventRepository(TetrisEventRepository repository) {
+        this.delegate = repository;
+        observer.setValue(new ComputerInput());
+    }
+
+    @Override
+    public void gameOver(TetrisGameEndData endData) {
+        delegate.gameOver(endData);
+    }
+
+    @Override
+    public void response(TetrisEvent event) {
+        delegate.response(event);
+
+        ComputerInput current = observer.getValue();
+        switch (event) {
+            case UpdateTetrisState state -> {
+                current.nextBlock = state.nextBlock();
+                current.tetrisGrid = state.tetrisGrid();
+            }
+            case AttackedTetrisBlocks blocks -> current.attacked = blocks.blocks();
+            default -> {
+            }
+        }
+        observer.setValue(current);
+    }
+
+    @Override
+    public void subscribe(Subscriber<TetrisEvent> subscriber, Subscriber<TetrisGameEndData> isGameOver) {
+        delegate.subscribe(subscriber, isGameOver);
+    }
+
+    public void subscribe(Subscriber<ComputerInput> subscriber) {
+        observer.subscribe(subscriber);
+    }
+}

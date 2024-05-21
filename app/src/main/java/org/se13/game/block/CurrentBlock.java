@@ -87,4 +87,8 @@ public class CurrentBlock {
         original[mutate] = new Cell(original[mutate].position(), item.getId());
         return original;
     }
+
+    public Block getBlock() {
+        return block;
+    }
 }
