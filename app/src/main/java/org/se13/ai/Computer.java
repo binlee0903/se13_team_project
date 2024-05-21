@@ -3,7 +3,6 @@ package org.se13.ai;
 import org.json.JSONObject;
 import org.se13.game.action.TetrisAction;
 import org.se13.game.block.CellID;
-import org.se13.game.event.GameEndEvent;
 import org.se13.game.event.TetrisEvent;
 import org.se13.game.event.UpdateTetrisState;
 import org.se13.server.TetrisServer;
@@ -20,7 +19,7 @@ public class Computer extends Player {
     private static final Logger log = LoggerFactory.getLogger(Computer.class);
 
     private TetrisAction[] available = new TetrisAction[]{TetrisAction.MOVE_BLOCK_LEFT, TetrisAction.MOVE_BLOCK_RIGHT, TetrisAction.ROTATE_BLOCK_CW, TetrisAction.IMMEDIATE_BLOCK_PLACE};
-    private double fitness = 10000;
+    private double fitness = 0;
     private int layer1 = 10;
     private int layer2 = 20;
     private double[][] w1;
@@ -88,10 +87,6 @@ public class Computer extends Player {
         if (isEnd) return;
         int choose = input.inputs(w1, w2, w3, w4);
 
-        if (userId == 0) {
-            log.info(String.valueOf(available[choose]));
-        }
-
         switch (available[choose]) {
             case IMMEDIATE_BLOCK_PLACE -> actionRepository.immediateBlockPlace();
             case MOVE_BLOCK_LEFT -> actionRepository.moveBlockLeft();
@@ -104,7 +99,6 @@ public class Computer extends Player {
 
     private void onEvent(TetrisEvent event) {
         if (isEnd) return;
-        fitness -= 1;
         int count = 0;
 
         if (event instanceof UpdateTetrisState) {
@@ -119,9 +113,9 @@ public class Computer extends Player {
 
             int sub = count - previous;
             if (previous < count) {
-                fitness -= sub;
+
             } else {
-                fitness += sub + sub;
+                fitness += sub * sub;
             }
 
             previous = count;

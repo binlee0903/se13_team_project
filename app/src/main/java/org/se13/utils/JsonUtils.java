@@ -60,10 +60,10 @@ public class JsonUtils {
 
     public static JSONObject createObject(double[][] w1, double[][] w2, double[][] w3, double[][] w4, double fitness) {
         JSONObject object = new JSONObject();
-        object.put("w1", w1);
-        object.put("w2", w2);
-        object.put("w3", w3);
-        object.put("w4", w4);
+        object.put("w1", new JSONArray(w1));
+        object.put("w2", new JSONArray(w2));
+        object.put("w3", new JSONArray(w3));
+        object.put("w4", new JSONArray(w4));
         object.put("fitness", fitness);
 
         return object;

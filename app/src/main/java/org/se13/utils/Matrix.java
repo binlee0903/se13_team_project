@@ -83,4 +83,29 @@ public class Matrix {
 
         return max;
     }
+
+    public static double[][] crossOver(double[][] w1, double[][] w2) {
+        assert w1.length == w2.length;
+
+        Random random = new Random();
+        double[][] cross = new double[w1.length][];
+        int length = w1.length;
+
+        for (int i = 0; i < length; i++) {
+            assert w1[i].length == w2[i].length;
+            double[] over = new double[w1[i].length];
+
+            for (int j = 0; j < w1[i].length; j++) {
+                if (random.nextBoolean()) {
+                    over[j] = w1[i][j];
+                } else {
+                    over[j] = w2[i][j];
+                }
+            }
+
+            cross[i] = over;
+        }
+
+        return cross;
+    }
 }
