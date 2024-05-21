@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 <VBox alignment="CENTER"
@@ -10,6 +10,7 @@
       fx:controller="org.se13.view.start.StartScreenController">
     <Text text="Tetris" styleClass="gameTitle"/>
     <Button fx:id="startButton" text="Start" styleClass="menuButton" onAction="#handleTetrisButtonAction"/>
+    <Button fx:id="trainingButton" text="Training" styleClass="menuButton" onAction="#handleTrainingButtonAction"/>
     <Button fx:id="settingsButton" text="SETTINGS" styleClass="menuButton" onAction="#handleSettingsButtonAction"/>
     <Button fx:id="scoreButton" text="SCORE" styleClass="menuButton" onAction="#handleScoreButtonAction"/>
     <Button fx:id="quitButton" text="QUIT" styleClass="menuButton" onAction="#handleQuitButtonAction"/>

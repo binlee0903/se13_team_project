@@ -12,7 +12,11 @@ public class Matrix {
         for (int r = 0; r < row; r++) {
             double[] array = new double[col];
             for (int c = 0; c < col; c++) {
-                array[c] = random.nextDouble();
+                if (random.nextBoolean()) {
+                    array[c] = -random.nextDouble();
+                } else {
+                    array[c] = random.nextDouble();
+                }
             }
 
             result[r] = array;

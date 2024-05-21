@@ -12,6 +12,7 @@ import org.se13.utils.JsonUtils;
 import org.se13.utils.Matrix;
 import org.se13.view.tetris.Player;
 import org.se13.view.tetris.TetrisEventRepository;
+import org.se13.view.tetris.TetrisGameEndData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,12 +62,35 @@ public class Computer extends Player {
         super.connectToServer(server);
         ((ComputerEventRepository) eventRepository).subscribe(this::choose);
         ((ComputerEventRepository) eventRepository).subscribeEvent(this::onEvent);
+        ((ComputerEventRepository) eventRepository).subscribeEnd(this::onEnd);
+
+        new Thread(() -> {
+            long timeOut = 500;
+            while (!isEnd) {
+                try {
+                    Thread.sleep(timeOut);
+                    actionRepository.immediateBlockPlace();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+        }).start();
+    }
+
+    private void onEnd(TetrisGameEndData endData) {
+        isEnd = true;
+        log.info("Computer{} End, Fitness: {}", userId, fitness);
+        saver.save(userId, w1, w2, w3, w4, fitness);
     }
 
     private void choose(ComputerInput input) {
         if (isEnd) return;
-
         int choose = input.inputs(w1, w2, w3, w4);
+
+        if (userId == 0) {
+            log.info(String.valueOf(available[choose]));
+        }
 
         switch (available[choose]) {
             case IMMEDIATE_BLOCK_PLACE -> actionRepository.immediateBlockPlace();
@@ -80,12 +104,6 @@ public class Computer extends Player {
 
     private void onEvent(TetrisEvent event) {
         if (isEnd) return;
-        if (event instanceof GameEndEvent) {
-            isEnd = true;
-            saver.save(userId, w1, w2, w3, w4, fitness);
-            return;
-        }
-
         fitness -= 1;
         int count = 0;
 

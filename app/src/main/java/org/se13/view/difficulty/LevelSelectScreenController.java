@@ -25,6 +25,9 @@ import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static org.se13.utils.JsonUtils.readJson;
+import static org.se13.utils.JsonUtils.saver;
+
 public class LevelSelectScreenController extends BaseController {
 
 
@@ -91,16 +94,6 @@ public class LevelSelectScreenController extends BaseController {
             ((BattleScreenController) controller).setArguments(player, computer, server);
         });
     }
-
-    private JSONObject readJson() {
-        try {
-            String content = new String(Files.readAllBytes(Paths.get(path)));
-            return new JSONObject(content);
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
-    }
-
     private GameMode setGameMode(String gameMode) {
         return switch (gameMode) {
             case "default" -> GameMode.DEFAULT;
@@ -112,28 +105,6 @@ public class LevelSelectScreenController extends BaseController {
             }
         };
     }
-
-    private final String path = "C:/Users/someh/Downloads/computer.json";
-
-    private Computer.SaveComputer saver = (computerId, w1, w2, w3, w4, fitness) ->
-        new Thread(() -> {
-            try {
-                JSONObject parent = new JSONObject();
-                JSONObject object = new JSONObject();
-                object.put("w1", w1);
-                object.put("w2", w2);
-                object.put("w3", w3);
-                object.put("w4", w4);
-                object.put("fitness", fitness);
-                parent.put(String.valueOf(computerId), object);
-                FileWriter fs = new FileWriter(path);
-                BufferedWriter writer = new BufferedWriter(fs);
-                parent.write(writer);
-                writer.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
 
     @FXML
     Button easyButton;
