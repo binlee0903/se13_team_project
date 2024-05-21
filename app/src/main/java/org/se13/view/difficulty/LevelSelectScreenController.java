@@ -10,7 +10,6 @@ import org.se13.game.rule.GameMode;
 import org.se13.server.LocalBattleTetrisServer;
 import org.se13.server.LocalTetrisServer;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
-import org.se13.sqlite.config.PlayerKeycode;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
 import org.se13.view.tetris.*;
@@ -48,7 +47,7 @@ public class LevelSelectScreenController extends BaseController {
     }
 
     private void startLocalTetrisGame(GameLevel level, GameMode mode) {
-        Player player = new Player(-1, level, mode, new ConfigRepositoryImpl(0).getPlayerKeyCode());
+        Player player = new Player(-1, new ConfigRepositoryImpl(0).getPlayerKeyCode());
         LocalTetrisServer server = new LocalTetrisServer(level, mode);
         player.connectToServer(server);
         SE13Application.navController.navigate(AppScreen.TETRIS, (controller) -> {
@@ -58,8 +57,8 @@ public class LevelSelectScreenController extends BaseController {
 
     private void startLocalBattleTetrisGame(GameLevel level, GameMode mode) {
         LocalBattleTetrisServer server = new LocalBattleTetrisServer(level, mode);
-        Player player1 = new Player(1, level, mode, new ConfigRepositoryImpl(0).getPlayerKeyCode());
-        Player player2 = new Player(2, level, mode, new ConfigRepositoryImpl(1).getPlayerKeyCode());
+        Player player1 = new Player(1, new ConfigRepositoryImpl(0).getPlayerKeyCode());
+        Player player2 = new Player(2, new ConfigRepositoryImpl(1).getPlayerKeyCode());
         player1.connectToServer(server);
         player2.connectToServer(server);
         SE13Application.navController.navigate(AppScreen.BATTLE, (controller) -> {
