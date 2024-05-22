@@ -5,6 +5,7 @@ import org.se13.game.action.TetrisAction;
 import org.se13.game.block.CellID;
 import org.se13.game.event.TetrisEvent;
 import org.se13.game.event.UpdateTetrisState;
+import org.se13.game.grid.TetrisGrid;
 import org.se13.server.TetrisServer;
 import org.se13.sqlite.config.PlayerKeycode;
 import org.se13.utils.JsonUtils;
@@ -19,20 +20,20 @@ public class Computer extends Player {
     private static final Logger log = LoggerFactory.getLogger(Computer.class);
 
     private TetrisAction[] available = new TetrisAction[]{TetrisAction.MOVE_BLOCK_LEFT, TetrisAction.MOVE_BLOCK_RIGHT, TetrisAction.ROTATE_BLOCK_CW, TetrisAction.IMMEDIATE_BLOCK_PLACE};
-    private double fitness = 0;
+    private long fitness = 0;
     private int layer1 = 10;
     private int layer2 = 20;
-    private double[][] w1;
-    private double[][] w2;
-    private double[][] w3;
-    private double[][] w4;
+    private float[][] w1;
+    private float[][] w2;
+    private float[][] w3;
+    private float[][] w4;
 
     private boolean isEnd;
 
     private final SaveComputer saver;
 
     public interface SaveComputer {
-        void save(int computerId, double[][] w1, double[][] w2, double[][] w3, double[][] w4, double fitness);
+        void save(int computerId, float[][] w1, float[][] w2, float[][] w3, float[][] w4, float fitness);
     }
 
     public Computer(int userId, PlayerKeycode playerKeycode, TetrisEventRepository repository, JSONObject content, SaveComputer saver) {
@@ -50,10 +51,10 @@ public class Computer extends Player {
     }
 
     private void load(JSONObject content) {
-        w1 = JsonUtils.getDoubleArray(content, "w1");
-        w2 = JsonUtils.getDoubleArray(content, "w2");
-        w3 = JsonUtils.getDoubleArray(content, "w3");
-        w4 = JsonUtils.getDoubleArray(content, "w4");
+        w1 = JsonUtils.getFloatArray(content, "w1");
+        w2 = JsonUtils.getFloatArray(content, "w2");
+        w3 = JsonUtils.getFloatArray(content, "w3");
+        w4 = JsonUtils.getFloatArray(content, "w4");
     }
 
     @Override
@@ -79,7 +80,8 @@ public class Computer extends Player {
 
     private void onEnd(TetrisGameEndData endData) {
         isEnd = true;
-        log.info("Computer{} End, Fitness: {}", userId, fitness);
+        fitness += endData.score() * 100L; // 점수 가산점
+        log.info("Computer{} End, Fitness: {}, w1: {}", userId, fitness, w1);
         saver.save(userId, w1, w2, w3, w4, fitness);
     }
 
@@ -95,11 +97,13 @@ public class Computer extends Player {
         }
     }
 
+    private CellID[][] previousBoard = new TetrisGrid(22, 10).getGrid();
     private int previous = 0;
 
     private void onEvent(TetrisEvent event) {
         if (isEnd) return;
         int count = 0;
+        int notSame = 0;
 
         if (event instanceof UpdateTetrisState) {
             CellID[][] cells = ((UpdateTetrisState) event).tetrisGrid();
@@ -108,18 +112,26 @@ public class Computer extends Player {
                     if (cells[i][j] != CellID.EMPTY) {
                         count++;
                     }
+
+                    if (previousBoard[i][j] != cells[i][j]) {
+                        notSame++;
+                    }
                 }
             }
 
             int sub = count - previous;
-            if (previous < count) {
+            fitness++; // 오래 버틸수록 가산점
 
-            } else {
-                fitness += sub * sub;
+            if (count > previous) {
+                fitness += (long) sub * sub * sub; // 블럭을 제거할 경우 가산점
             }
 
+            if (notSame == 0) {
+                fitness -= 10L; // 무동작을 계속할 경우 감점
+            }
+
+            previousBoard = cells;
             previous = count;
         }
     }
-
 }

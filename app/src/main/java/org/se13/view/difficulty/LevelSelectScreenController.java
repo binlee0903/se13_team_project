@@ -87,7 +87,7 @@ public class LevelSelectScreenController extends BaseController {
         Player player = new Player(1, new ConfigRepositoryImpl(0).getPlayerKeyCode(), new TetrisEventRepositoryImpl());
         PlayerKeycode emptyCode = new PlayerKeycode("", "", "", "", "", "", "");
         JSONObject data = readJson();
-        Player computer = new Computer(-1, emptyCode, new TetrisEventRepositoryImpl(), data.getJSONObject("-1"), saver);
+        Player computer = new Computer(0, emptyCode, new TetrisEventRepositoryImpl(), data.getJSONObject("0"), saver);
         player.connectToServer(server);
         computer.connectToServer(server);
         SE13Application.navController.navigate(AppScreen.BATTLE, (controller) -> {

@@ -12,16 +12,16 @@ import java.nio.file.Paths;
 
 public class JsonUtils {
 
-    public static double[][] getDoubleArray(JSONObject jsonObject, String key) {
+    public static float[][] getFloatArray(JSONObject jsonObject, String key) {
         JSONArray jsonArray = jsonObject.getJSONArray(key);
         int rows = jsonArray.length();
         int cols = jsonArray.getJSONArray(0).length();
-        double[][] result = new double[rows][cols];
+        float[][] result = new float[rows][cols];
 
         for (int i = 0; i < rows; i++) {
             JSONArray row = jsonArray.getJSONArray(i);
             for (int j = 0; j < cols; j++) {
-                result[i][j] = row.getDouble(j);
+                result[i][j] = row.getFloat(j);
             }
         }
 
@@ -33,6 +33,7 @@ public class JsonUtils {
             String content = new String(Files.readAllBytes(Paths.get(path)));
             return new JSONObject(content);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException();
         }
     }
@@ -58,7 +59,7 @@ public class JsonUtils {
             }
         }).start();
 
-    public static JSONObject createObject(double[][] w1, double[][] w2, double[][] w3, double[][] w4, double fitness) {
+    public static JSONObject createObject(float[][] w1, float[][] w2, float[][] w3, float[][] w4, float fitness) {
         JSONObject object = new JSONObject();
         object.put("w1", new JSONArray(w1));
         object.put("w2", new JSONArray(w2));

@@ -21,7 +21,6 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class StartScreenController extends BaseController {
 
@@ -37,6 +36,27 @@ public class StartScreenController extends BaseController {
     @FXML
     private Button quitButton;
 
+
+    private int batch = 100;
+    private ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
+    private AtomicInteger integer = new AtomicInteger(0);
+    private Map<Integer, JSONObject> cached = new HashMap<>();
+    private Computer.SaveComputer saver = (computerId, w1, w2, w3, w4, fitness) -> {
+        cached.put(computerId, JsonUtils.createObject(w1, w2, w3, w4, fitness));
+        log.info("{} Computers finished", integer.get());
+        if (integer.incrementAndGet() == batch) {
+            try {
+                JsonUtils.saveJson(evolution(cached));
+                log.info("Data is saved");
+                integer.set(0);
+                handleTrainingButtonAction();
+                log.info("Restarted Traning");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
     @FXML
     private void handleTetrisButtonAction() {
         SE13Application.navController.navigate(AppScreen.LEVEL_SELECT);
@@ -50,41 +70,28 @@ public class StartScreenController extends BaseController {
 
     @FXML
     private void handleTrainingButtonAction() {
-        new Thread(() -> {
-            int batch = 100;
-            AtomicReference<ExecutorService> service = new AtomicReference<>(Executors.newVirtualThreadPerTaskExecutor());
-            JSONObject data = JsonUtils.readJson();
-            AtomicInteger integer = new AtomicInteger(0);
-            Map<Integer, JSONObject> cached = new HashMap<>();
+        startTrainingInBackground();
+    }
 
-            Computer.SaveComputer saver = (computerId, w1, w2, w3, w4, fitness) -> {
-                cached.put(computerId, JsonUtils.createObject(w1, w2, w3, w4, fitness));
-                if (integer.incrementAndGet() == batch) {
-                    try {
-                        JsonUtils.saveJson(evolution(cached));
-                        handleTrainingButtonAction();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+    private void startTrainingInBackground() {
+        new Thread(this::startTraining).start();
+    }
 
-                    log.info("Data is saved");
-                    service.set(null);
-                    throw new RuntimeException();
-                }
-            };
+    private void startTraining() {
+        JSONObject data = JsonUtils.readJson();
 
-            for (int i = 0; i < batch; i++) {
-                final int computerId = i;
-                service.get().execute(() -> {
-                    JSONObject object = getData(computerId, data);
-                    log.info("Computer{} Loaded: {}", computerId, object);
-                    Computer computer = new Computer(computerId, null, new ComputerEventRepository(new TetrisEventRepositoryImpl()), object, saver);
-                    LocalTetrisServer server = new LocalTetrisServer(GameLevel.NORMAL, GameMode.DEFAULT);
-                    computer.connectToServer(server);
-                    computer.getActionRepository().connect();
-                });
-            }
-        }).start();
+        for (int i = 0; i < batch; i++) {
+            final int computerId = i;
+            JSONObject object = getData(computerId, data);
+            log.info("Computer{} Loaded: {}", computerId, object);
+
+            service.execute(() -> {
+                Computer computer = new Computer(computerId, null, new ComputerEventRepository(new TetrisEventRepositoryImpl()), object, saver);
+                LocalTetrisServer server = new LocalTetrisServer(GameLevel.NORMAL, GameMode.DEFAULT);
+                computer.connectToServer(server);
+                computer.getActionRepository().connect();
+            });
+        }
     }
 
     /**
@@ -121,10 +128,10 @@ public class StartScreenController extends BaseController {
     }
 
     private JSONObject crossOver(JSONObject left, JSONObject right) {
-        double[][] w1 = Matrix.crossOver(JsonUtils.getDoubleArray(left, "w1"), JsonUtils.getDoubleArray(right, "w1"));
-        double[][] w2 = Matrix.crossOver(JsonUtils.getDoubleArray(left, "w2"), JsonUtils.getDoubleArray(right, "w2"));
-        double[][] w3 = Matrix.crossOver(JsonUtils.getDoubleArray(left, "w3"), JsonUtils.getDoubleArray(right, "w3"));
-        double[][] w4 = Matrix.crossOver(JsonUtils.getDoubleArray(left, "w4"), JsonUtils.getDoubleArray(right, "w4"));
+        float[][] w1 = Matrix.crossOver(JsonUtils.getFloatArray(left, "w1"), JsonUtils.getFloatArray(right, "w1"));
+        float[][] w2 = Matrix.crossOver(JsonUtils.getFloatArray(left, "w2"), JsonUtils.getFloatArray(right, "w2"));
+        float[][] w3 = Matrix.crossOver(JsonUtils.getFloatArray(left, "w3"), JsonUtils.getFloatArray(right, "w3"));
+        float[][] w4 = Matrix.crossOver(JsonUtils.getFloatArray(left, "w4"), JsonUtils.getFloatArray(right, "w4"));
 
         return JsonUtils.createObject(w1, w2, w3, w4, 0);
     }

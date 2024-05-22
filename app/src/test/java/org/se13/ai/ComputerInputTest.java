@@ -14,10 +14,10 @@ class ComputerInputTest {
         for (int i = 0; i < 22; i++) {
             for (int j = 0; j < 10; j++) {
                 for (Block block : Block.values()) {
-                    double[][] w1 = Matrix.randn(10, 10);
-                    double[][] w2 = Matrix.randn(10, 20);
-                    double[][] w3 = Matrix.randn(20, 10);
-                    double[][] w4 = Matrix.randn(10, 4);
+                    float[][] w1 = Matrix.randn(10, 10);
+                    float[][] w2 = Matrix.randn(10, 20);
+                    float[][] w3 = Matrix.randn(20, 10);
+                    float[][] w4 = Matrix.randn(10, 4);
 
                     ComputerInput input = new ComputerInput();
                     input.tetrisGrid = new TetrisGrid(22, 20).getGrid();

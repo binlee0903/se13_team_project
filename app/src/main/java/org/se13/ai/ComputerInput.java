@@ -1,6 +1,5 @@
 package org.se13.ai;
 
-import org.se13.game.block.Block;
 import org.se13.game.block.CellID;
 import org.se13.game.block.CurrentBlock;
 import org.se13.game.grid.TetrisGrid;
@@ -18,8 +17,8 @@ public class ComputerInput {
         attacked = new TetrisGrid(22, 10).getGrid();
     }
 
-    public int inputs(double[][] w1, double[][] w2, double[][] w3, double[][] w4) {
-        double[][] input = new double[46][10];
+    public int inputs(float[][] w1, float[][] w2, float[][] w3, float[][] w4) {
+        float[][] input = new float[46][10];
 
         for (int i = 0; i < 22; i++) {
             for (int j = 0; j < 10; j++) {
@@ -33,18 +32,18 @@ public class ComputerInput {
             }
         }
 
-        List<double[]> convert = Arrays.stream(nextBlock.cells()).map((cell) -> {
+        List<float[]> convert = Arrays.stream(nextBlock.cells()).map((cell) -> {
             int r = cell.position().getRowIndex();
             int c = cell.position().getColIndex();
             int id = cell.cellID().id;
 
-            return new double[]{r, c, id};
+            return new float[]{r, c, id};
         }).toList();
 
-        double[] next = new double[convert.size() * 3];
+        float[] next = new float[convert.size() * 3];
 
         for (int i = 0; i < convert.size(); i++) {
-            double[] in = convert.get(i);
+            float[] in = convert.get(i);
             for (int j = 0; j < 3; j++) {
                 next[3 * i + j] = in[j];
             }
@@ -58,7 +57,7 @@ public class ComputerInput {
             }
         }
 
-        double[][] net;
+        float[][] net;
 
         net = Matrix.matmul(input, w1);
         net = Matrix.relu(net);
