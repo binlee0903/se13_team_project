@@ -36,7 +36,6 @@ public class ComputerEventRepository implements TetrisEventRepository {
                 current.nextBlock = state.nextBlock();
                 current.tetrisGrid = state.tetrisGrid();
             }
-            case AttackedTetrisBlocks blocks -> current.attacked = blocks.blocks();
             default -> {
             }
         }

@@ -68,7 +68,7 @@ public class ConfigRepositoryImpl implements ConfigRepository {
             pstmt.setString(2, json.toString());
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Error inserting default config: "+ e.getMessage());
+//            System.out.println("Error inserting default config: "+ e.getMessage());
         }
     }
 

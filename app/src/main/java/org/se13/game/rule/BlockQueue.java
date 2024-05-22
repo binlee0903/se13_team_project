@@ -10,6 +10,17 @@ public class BlockQueue {
     protected GameLevel level;
     protected BlockWeight weight;
 
+    private Block[] sample = new Block[]{
+        Block.IBlock,
+        Block.JBlock,
+        Block.LBlock,
+        Block.OBlock,
+        Block.SBlock,
+        Block.TBlock,
+        Block.ZBlock,
+    };
+    private Queue<Block> queue = new ArrayDeque<>(20);
+
     public BlockQueue(Random random) {
         this(random, GameLevel.NORMAL);
     }
@@ -40,9 +51,15 @@ public class BlockQueue {
             }).toList();
     }
 
+    // 너무 랜덤 요소가 심해서 학습이 잘 안되가지고 수정
     public Block nextBlock() {
-        List<Block> next = nextBlocks();
-        return next.get(random.nextInt(next.size()));
+        if (queue.isEmpty()) {
+            List<Block> blocks = Arrays.asList(sample);
+            Collections.shuffle(blocks);
+            queue.addAll(blocks);
+        }
+
+        return queue.poll();
     }
 
     private Map<Block, Integer> blocks() {

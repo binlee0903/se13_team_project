@@ -13,13 +13,11 @@ import org.se13.utils.Matrix;
 import org.se13.view.tetris.Player;
 import org.se13.view.tetris.TetrisEventRepository;
 import org.se13.view.tetris.TetrisGameEndData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
 
 public class Computer extends Player {
-    private static final Logger log = LoggerFactory.getLogger(Computer.class);
-
-    private TetrisAction[] available = new TetrisAction[]{TetrisAction.MOVE_BLOCK_LEFT, TetrisAction.MOVE_BLOCK_RIGHT, TetrisAction.ROTATE_BLOCK_CW, TetrisAction.IMMEDIATE_BLOCK_PLACE};
+    private TetrisAction[] available = new TetrisAction[]{TetrisAction.MOVE_BLOCK_LEFT, TetrisAction.MOVE_BLOCK_RIGHT, TetrisAction.IMMEDIATE_BLOCK_PLACE, TetrisAction.ROTATE_BLOCK_CW};
     private long fitness = 0;
     private int layer1 = 10;
     private int layer2 = 20;
@@ -28,7 +26,19 @@ public class Computer extends Player {
     private float[][] w3;
     private float[][] w4;
 
+    private boolean canChoose = true;
+    private long delay;
+    private boolean isTraining;
     private boolean isEnd;
+
+    private long isTrainingEndScore = -10000;
+    private long isNotImmediate = -8;
+    private CellID[][] previousBoard = new TetrisGrid(22, 10).getGrid();
+    private long previousCleared = 0;
+    private long previousCount = 0;
+    private long previousFilled = 0;
+    private TetrisAction currentAction;
+    private TetrisAction previousAction;
 
     private final SaveComputer saver;
 
@@ -37,16 +47,35 @@ public class Computer extends Player {
     }
 
     public Computer(int userId, PlayerKeycode playerKeycode, TetrisEventRepository repository, JSONObject content, SaveComputer saver) {
+        this(userId, playerKeycode, repository, content, saver, 0);
+    }
+
+    public Computer(int userId, PlayerKeycode playerKeycode, TetrisEventRepository repository, JSONObject content, SaveComputer saver, long delay) {
         super(userId, playerKeycode, new ComputerEventRepository(repository));
         this.saver = saver;
+        this.delay = delay;
+        this.isTraining = delay == 0;
 
-        w1 = Matrix.randn(10, layer1);
+        w1 = Matrix.randn(22, layer1);
         w2 = Matrix.randn(layer1, layer2);
         w3 = Matrix.randn(layer2, layer1);
         w4 = Matrix.randn(layer1, 4);
 
         if (content != null) {
             load(content);
+        }
+
+        if (delay != 0) {
+            new Thread(() -> {
+                try {
+                    while (true) {
+                        canChoose = true;
+                        Thread.sleep(delay);
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
         }
     }
 
@@ -63,75 +92,106 @@ public class Computer extends Player {
         ((ComputerEventRepository) eventRepository).subscribe(this::choose);
         ((ComputerEventRepository) eventRepository).subscribeEvent(this::onEvent);
         ((ComputerEventRepository) eventRepository).subscribeEnd(this::onEnd);
-
-        new Thread(() -> {
-            long timeOut = 500;
-            while (!isEnd) {
-                try {
-                    Thread.sleep(timeOut);
-                    actionRepository.immediateBlockPlace();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-        }).start();
     }
 
     private void onEnd(TetrisGameEndData endData) {
         isEnd = true;
-        fitness += endData.score() * 100L; // 점수 가산점
-        log.info("Computer{} End, Fitness: {}, w1: {}", userId, fitness, w1);
+        // 죽었을 때 블럭이 많이 남아있을 수록 가산점
+        fitness += previousCount * previousCount;
         saver.save(userId, w1, w2, w3, w4, fitness);
     }
 
+
     private void choose(ComputerInput input) {
+        // 만약 점수가 너무 낮으면 종료시키기
+        if (fitness < isTrainingEndScore) {
+            actionRepository.immediateBlockPlace();
+            return;
+        }
+        if (!canChoose) return;
+        if (!isTraining) {
+            canChoose = false;
+        }
         if (isEnd) return;
         int choose = input.inputs(w1, w2, w3, w4);
+
+        // 블록 드롭을 하지 않으면 감점 (5개까지 다른 동작을 하면 가산점)
+        isNotImmediate++;
+        if (isNotImmediate == 0) { // 동작을 정하지 못하고 있으면 강제 제거
+            fitness += isTrainingEndScore;
+        }
+
+        if (available[choose] == TetrisAction.IMMEDIATE_BLOCK_PLACE) {
+            isNotImmediate = -8;
+        }
 
         switch (available[choose]) {
             case IMMEDIATE_BLOCK_PLACE -> actionRepository.immediateBlockPlace();
             case MOVE_BLOCK_LEFT -> actionRepository.moveBlockLeft();
             case MOVE_BLOCK_RIGHT -> actionRepository.moveBlockRight();
             case ROTATE_BLOCK_CW -> actionRepository.rotateBlockCW();
+            default -> throw new IllegalStateException("Unexpected value: " + available[choose]);
         }
+
+        currentAction = available[choose];
     }
 
-    private CellID[][] previousBoard = new TetrisGrid(22, 10).getGrid();
-    private int previous = 0;
 
     private void onEvent(TetrisEvent event) {
         if (isEnd) return;
-        int count = 0;
-        int notSame = 0;
+        long count = 0;
+        long cleared = 0;
+        long filled = 0;
 
         if (event instanceof UpdateTetrisState) {
             CellID[][] cells = ((UpdateTetrisState) event).tetrisGrid();
-            for (int i = 0; i < cells.length; i++) {
-                for (int j = 0; j < cells[i].length; j++) {
-                    if (cells[i][j] != CellID.EMPTY) {
+            for (CellID[] cell : cells) {
+                long lineFilled = 0;
+
+                for (int i = 0; i < cell.length; i++) {
+                    // 클리어 시킨 블럭 개수 체크
+                    if (cell[i] == CellID.CBLOCK_ID) {
+                        cleared++;
+                    }
+
+                    if (cell[i] != CellID.EMPTY) {
                         count++;
                     }
 
-                    if (previousBoard[i][j] != cells[i][j]) {
-                        notSame++;
+                    if (cell[i] != CellID.EMPTY && cell[i] != CellID.CBLOCK_ID) {
+                        lineFilled++;
                     }
                 }
+
+                // lineFilled가 0이라면 가중치는 없을거고, 1이라면 2, 9라면 90으로 더 가중해서 들어가게 됨.
+                long multiple = lineFilled + 1;
+                filled += lineFilled * multiple;
             }
 
-            int sub = count - previous;
-            fitness++; // 오래 버틸수록 가산점
-
-            if (count > previous) {
-                fitness += (long) sub * sub * sub; // 블럭을 제거할 경우 가산점
+            if (cleared > 0 && previousAction == null) {
+                previousAction = currentAction;
             }
 
-            if (notSame == 0) {
-                fitness -= 10L; // 무동작을 계속할 경우 감점
+            // 블록이 변경됐을 때
+            if (!Arrays.deepEquals(cells, previousBoard)) {
+                // 블록이 제거되었을 때
+                if (previousCleared > 0) {
+                    if (previousAction == TetrisAction.ROTATE_BLOCK_CW) {
+                        fitness += 100;
+                    }
+                }
+                fitness++; // 오래 버틸수록 가산점
+                fitness += previousFilled; // 라인을 촘촘하게 채웠을 수록 가산점
+
+                // 제거한 블럭 가산점, 증폭해서 넣어줌
+                long multiplier = previousCleared + 1;
+                fitness += previousCleared * multiplier * 1000;
             }
 
             previousBoard = cells;
-            previous = count;
+            previousCleared = cleared;
+            previousCount = count;
+            previousFilled = filled;
         }
     }
 }

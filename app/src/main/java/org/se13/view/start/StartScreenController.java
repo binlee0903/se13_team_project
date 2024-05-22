@@ -38,13 +38,19 @@ public class StartScreenController extends BaseController {
 
 
     private int batch = 100;
+    private int hold = 20;
+    private int mutate = 20;
+    private int crossed = 40;
     private ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
     private AtomicInteger integer = new AtomicInteger(0);
     private Map<Integer, JSONObject> cached = new HashMap<>();
     private Computer.SaveComputer saver = (computerId, w1, w2, w3, w4, fitness) -> {
         cached.put(computerId, JsonUtils.createObject(w1, w2, w3, w4, fitness));
-        log.info("{} Computers finished", integer.get());
-        if (integer.incrementAndGet() == batch) {
+        int order = integer.incrementAndGet();
+        if (order % 25 == 0) {
+            log.info("{} Computers finished", order);
+        }
+        if (order == batch) {
             try {
                 JsonUtils.saveJson(evolution(cached));
                 log.info("Data is saved");
@@ -83,7 +89,9 @@ public class StartScreenController extends BaseController {
         for (int i = 0; i < batch; i++) {
             final int computerId = i;
             JSONObject object = getData(computerId, data);
-            log.info("Computer{} Loaded: {}", computerId, object);
+            if (i < hold) {
+                log.info("Computer{} Loaded: {}", computerId, object);
+            }
 
             service.execute(() -> {
                 Computer computer = new Computer(computerId, null, new ComputerEventRepository(new TetrisEventRepositoryImpl()), object, saver);
@@ -96,9 +104,10 @@ public class StartScreenController extends BaseController {
 
     /**
      * Batch 100개 기준
-     * 상위 10위는 그대로
-     * 상위 10개끼리 교배해서 60개 추가
-     * 나머지 30개는 버림 (데이터가 없으면 돌연변이가 됨)
+     * 상위 20개는 유지
+     * 상위 20개끼리 교배해서 40개 추가
+     * 상위 20개 데이터에서 부분적으로 돌연변이 추가
+     * 나머지 20개는 버림 (데이터가 없으면 돌연변이가 됨)
      */
     private JSONObject evolution(Map<Integer, JSONObject> result) {
         Map<Integer, JSONObject> nextGeneration = new HashMap<>();
@@ -108,7 +117,7 @@ public class StartScreenController extends BaseController {
 
         AtomicInteger integer = new AtomicInteger(0);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < hold; i++) {
             Map.Entry<Integer, JSONObject> alive = list.get(list.size() - i - 1);
             nextGeneration.put(integer.getAndIncrement(), alive.getValue());
         }
@@ -116,10 +125,21 @@ public class StartScreenController extends BaseController {
         JSONObject parent = new JSONObject();
 
         List<JSONObject> cross = new ArrayList<>(100);
-        nextGeneration.forEach((k1, v1) -> nextGeneration.forEach((k2, v2) -> cross.add(crossOver(v1, v2))));
+        nextGeneration.forEach((k1, v1) ->
+            nextGeneration.forEach((k2, v2) -> {
+                JSONObject crossResult = crossOver(v1, v2);
+                cross.add(crossResult);
+            }));
 
-        for (int i = 0; i < 60; i++) {
+        Collections.shuffle(cross);
+
+        for (int i = 0; i < crossed; i++) {
             nextGeneration.put(integer.getAndIncrement(), cross.get(i));
+        }
+
+        for (int i = 0; i < mutate; i++) {
+            JSONObject mutate = nextGeneration.get(i);
+            nextGeneration.put(integer.getAndIncrement(), mutation(mutate));
         }
 
         nextGeneration.forEach((key, value) -> parent.put(String.valueOf(key), value));
@@ -134,6 +154,33 @@ public class StartScreenController extends BaseController {
         float[][] w4 = Matrix.crossOver(JsonUtils.getFloatArray(left, "w4"), JsonUtils.getFloatArray(right, "w4"));
 
         return JsonUtils.createObject(w1, w2, w3, w4, 0);
+    }
+
+    private JSONObject mutation(JSONObject object) {
+        float[][] w1 = JsonUtils.getFloatArray(object, "w1");
+        float[][] w2 = JsonUtils.getFloatArray(object, "w2");
+        float[][] w3 = JsonUtils.getFloatArray(object, "w3");
+        float[][] w4 = JsonUtils.getFloatArray(object, "w4");
+
+        mutation(w1);
+        mutation(w2);
+        mutation(w3);
+        mutation(w4);
+
+        return JsonUtils.createObject(w1, w2, w3, w4, 0);
+    }
+
+    private void mutation(float[][] original) {
+        Random random = new Random();
+        float percent = random.nextFloat();
+
+        for (int i = 0; i < original.length; i++) {
+            for (int j = 0; j < original[i].length; j++) {
+                if (percent < 0.1f) {
+                    original[i][j] = random.nextFloat();
+                }
+            }
+        }
     }
 
     private JSONObject getData(int computerId, JSONObject object) {

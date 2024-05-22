@@ -93,10 +93,14 @@ public class Matrix {
 
         for (int i = 0; i < length; i++) {
             assert w1[i].length == w2[i].length;
+
             float[] over = new float[w1[i].length];
 
+            float mutate = random.nextFloat();
             for (int j = 0; j < w1[i].length; j++) {
-                if (random.nextBoolean()) {
+                if (mutate < 0.33f) {
+                    over[j] = (w1[i][j] + w2[i][j]) / 2f;
+                } else if (mutate < 0.66f) {
                     over[j] = w1[i][j];
                 } else {
                     over[j] = w2[i][j];

@@ -3,6 +3,8 @@ package org.se13.utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 class MatrixTest {
 
     @Test
@@ -56,6 +58,16 @@ class MatrixTest {
         Assertions.assertEquals(result[0][1], 0.5f);
         Assertions.assertEquals(result[1][0], 0.5f);
         Assertions.assertEquals(result[1][1], 0f);
+    }
+
+    @Test
+    void crossOverTest() {
+        float[][] w1 = Matrix.randn(3, 2);
+        float[][] w2 = Matrix.randn(3, 2);
+        float[][] result = Matrix.crossOver(w1, w2);
+
+        Assertions.assertFalse(Arrays.deepEquals(w1, result));
+        Assertions.assertFalse(Arrays.deepEquals(w2, result));
     }
 
     @Test
