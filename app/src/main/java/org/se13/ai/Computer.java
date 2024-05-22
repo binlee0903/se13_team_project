@@ -117,7 +117,7 @@ public class Computer extends Player {
 
         // 블록 드롭을 하지 않으면 감점 (5개까지 다른 동작을 하면 가산점)
         isNotImmediate++;
-        if (isNotImmediate == 0) { // 동작을 정하지 못하고 있으면 강제 제거
+        if (isNotImmediate > 0) { // 동작을 정하지 못하고 있으면 강제 제거
             fitness += isTrainingEndScore;
         }
 

@@ -96,10 +96,11 @@ public class Matrix {
 
             float[] over = new float[w1[i].length];
 
-            float mutate = random.nextFloat();
             for (int j = 0; j < w1[i].length; j++) {
+                float mutate = random.nextFloat();
+
                 if (mutate < 0.33f) {
-                    over[j] = (w1[i][j] + w2[i][j]) / 2f;
+                    over[j] = (w1[i][j] * 0.5f + w2[i][j] * 0.5f);
                 } else if (mutate < 0.66f) {
                     over[j] = w1[i][j];
                 } else {

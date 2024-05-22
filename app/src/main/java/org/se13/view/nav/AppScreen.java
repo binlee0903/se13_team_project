@@ -7,7 +7,8 @@ public enum AppScreen {
     BATTLE("BattleScreen.fxml"),
     SETTING("SettingScreen.fxml"),
     RANKING("RankingScreen.fxml"),
-    GAMEOVER("GameOverScreen.fxml");
+    GAMEOVER("GameOverScreen.fxml"),
+    TRAINING("TrainingScreenController.fxml");
 
     AppScreen(String fxml) {
         resource = fxml;
