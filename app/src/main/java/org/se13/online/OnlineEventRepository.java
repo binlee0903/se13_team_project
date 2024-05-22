@@ -18,9 +18,10 @@ public class OnlineEventRepository implements TetrisEventRepository {
 
     @Override
     public void gameOver(TetrisGameEndData endData) {
+        OnlineEventPacket packet = new OnlineEventPacket(null, endData);
         service.execute(() -> {
             try {
-                out.writeObject(endData);
+                out.writeObject(packet);
                 out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -30,9 +31,10 @@ public class OnlineEventRepository implements TetrisEventRepository {
 
     @Override
     public void response(TetrisEvent event) {
+        OnlineEventPacket packet = new OnlineEventPacket(event, null);
         service.execute(() -> {
             try {
-                out.writeObject(event);
+                out.writeObject(packet);
                 out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
