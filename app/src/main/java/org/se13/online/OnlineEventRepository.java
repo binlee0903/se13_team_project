@@ -22,6 +22,7 @@ public class OnlineEventRepository implements TetrisEventRepository {
         service.execute(() -> {
             try {
                 out.writeObject(endData);
+                out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -33,6 +34,7 @@ public class OnlineEventRepository implements TetrisEventRepository {
         service.execute(() -> {
             try {
                 out.writeObject(event);
+                out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
