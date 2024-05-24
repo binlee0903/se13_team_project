@@ -145,7 +145,7 @@ public class BattleScreenController extends BaseController {
         player2_viewModel.connect();
     }
 
-    public void setArguments(Player player1, Player player2, LocalBattleTetrisServer server) {
+    public void setArguments(Player player1, Player player2, TetrisServer server) {
         this.actionRepository1 = player1.getActionRepository();
         this.stateRepository1 = player1.getEventRepository();
         this.actionRepository2 = player2.getActionRepository();
