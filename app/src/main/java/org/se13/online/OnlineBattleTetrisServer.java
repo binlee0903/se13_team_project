@@ -77,6 +77,11 @@ public class OnlineBattleTetrisServer implements TetrisServer {
         tetrisTimer.cancel();
     }
 
+    @Override
+    public List<TetrisGameEndData> getEndData() {
+        return List.of();
+    }
+
     public void responseGameOver(TetrisGameEndData endData) {
         this.endData = endData;
         sessions.forEach((playerId, session) -> {
