@@ -3,7 +3,9 @@ package org.se13.server;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.game.tetris.TetrisGame;
+import org.se13.view.tetris.TetrisGameEndData;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -52,6 +54,11 @@ public class LocalTetrisServer implements TetrisServer {
         playerGame.stopGame();
         player = null;
         playerGame = null;
+    }
+
+    @Override
+    public List<TetrisGameEndData> getEndData() {
+        return null;
     }
 
     private void startGame() {
