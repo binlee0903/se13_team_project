@@ -17,6 +17,7 @@ import org.se13.game.block.*;
 import org.se13.game.config.Config;
 import org.se13.game.event.*;
 import org.se13.server.LocalBattleTetrisServer;
+import org.se13.server.TetrisServer;
 import org.se13.sqlite.config.PlayerKeycode;
 import org.se13.utils.Subscriber;
 import org.se13.view.base.BaseController;
@@ -73,7 +74,7 @@ public class BattleScreenController extends BaseController {
     @FXML
     public Text player2_time;
 
-    private LocalBattleTetrisServer server;
+    private TetrisServer server;
 
     private TetrisScreenViewModel player1_viewModel;
     private TetrisScreenViewModel player2_viewModel;
