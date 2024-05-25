@@ -124,18 +124,26 @@ public class TetrisGrid {
         return true;
     }
 
-    public boolean isAttackedBlockExists() {
-        return attackedCellsRowCount > 0;
-    }
+    public boolean isFirstRowEmpty(CurrentBlock currentBlock) {
+        BlockPosition[] calcBlockPositions = currentBlock.getPositions();
 
-    public int getNonEmptyRowsCount() {
-        int count = 0;
-        for (int i = 0; i < rowSize; i++) {
-            if (!isRowEmpty(i)) {
-                count++;
+        for (int i = 0; i < colSize; i++) {
+            if (getCell(0, i) != CellID.EMPTY) {
+                for (int j = 0; j < calcBlockPositions.length; j++) {
+                    if (calcBlockPositions[j].getRowIndex() == 0 && calcBlockPositions[j].getColIndex() == i) {
+                        break;
+                    } else {
+                        return false;
+                    }
+                }
             }
         }
-        return count;
+
+        return true;
+    }
+
+    public boolean isAttackedBlockExists() {
+        return attackedCellsRowCount > 0;
     }
 
     public int animateFullRows() {
