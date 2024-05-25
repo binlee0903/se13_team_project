@@ -53,8 +53,8 @@ public class ConfigRepositoryImpl implements ConfigRepository {
     public void insertDefaultConfig() {
         JSONObject json = new JSONObject();
         json.put("mode", "default");
-        json.put("screenWidth", 300);
-        json.put("screenHeight", 400);
+        json.put("screenWidth", 450);
+        json.put("screenHeight", 600);
 
         if (userId == PLAYER1) {
             json.put("keyLeft", "a");

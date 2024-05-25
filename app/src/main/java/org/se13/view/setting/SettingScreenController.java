@@ -187,7 +187,7 @@ public class SettingScreenController extends BaseController {
         int screenHeight = (Integer) configs.get("screenHeight");
         String selectedScreenSize = screenWidth + "x" + screenHeight;
 
-        screenSizeChoiceBox.setItems(FXCollections.observableArrayList("300x400", "600x800", "1920x1080"));
+        screenSizeChoiceBox.setItems(FXCollections.observableArrayList("450x600", "600x800", "1920x1080"));
         screenSizeChoiceBox.setValue(selectedScreenSize);
         // Add options in ChoiceBox for the choice among color mode
         String colorMode = (String) configs.get("mode");
