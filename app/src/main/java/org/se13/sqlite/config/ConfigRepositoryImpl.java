@@ -10,6 +10,8 @@ import java.util.Map;
 
 public class ConfigRepositoryImpl implements ConfigRepository {
     private int userId;
+    private final int PLAYER1 = 0;
+    private final int PLAYER2 = 1;
 
     public ConfigRepositoryImpl(int userId) {
         super();
@@ -36,7 +38,7 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         //String dropSql = "DROP TABLE IF EXISTS config;";
 
         // JSON 형식의 설정 값
-        String sql = "CREATE TABLE IF NOT EXISTS config (id integer PRIMARY KEY CHECK (id = " + userId + "), settings text NOT NULL);";
+        String sql = "CREATE TABLE IF NOT EXISTS config (id integer PRIMARY KEY, settings text NOT NULL);";
 
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -53,12 +55,22 @@ public class ConfigRepositoryImpl implements ConfigRepository {
         json.put("mode", "default");
         json.put("screenWidth", 300);
         json.put("screenHeight", 400);
-        json.put("keyLeft", "a");
-        json.put("keyRight", "d");
-        json.put("keyDown", "s");
-        json.put("keyRotate", "e");
+
+        if (userId == PLAYER1) {
+            json.put("keyLeft", "a");
+            json.put("keyRight", "d");
+            json.put("keyDown", "s");
+            json.put("keyDrop", "w");
+            json.put("keyRotate", "e");
+        } else {
+            json.put("keyLeft", "j");
+            json.put("keyRight", "l");
+            json.put("keyDown", "k");
+            json.put("keyDrop", "i");
+            json.put("keyRotate", "o");
+        }
+
         json.put("keyPause", "p");
-        json.put("keyDrop", "w");
         json.put("keyExit", "q");
 
         String sql = "INSERT INTO config (id, settings) VALUES(?,?)";
