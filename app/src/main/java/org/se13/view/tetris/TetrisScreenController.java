@@ -92,7 +92,7 @@ public class TetrisScreenController extends BaseController {
     }
 
     private void setInitState() {
-        if (Config.SCREEN_WIDTH == 300) setSmallScreen();
+        if (Config.SCREEN_WIDTH == 450) setSmallScreen();
         else if (Config.SCREEN_WIDTH == 600) setMediumScreen();
         else if (Config.SCREEN_WIDTH == 1920) setLargeScreen();
 
@@ -147,9 +147,11 @@ public class TetrisScreenController extends BaseController {
 
     private void setSmallScreen() {
         gameSize = GameSize.SMALL;
-        width = 100;
-        height = 210;
-        interval = 10;
+        width = 150;
+        height = 315;
+        interval = 15;
+        tetrisGridView.setFont(new Font("Arial", 20));
+        nextBlockView.setFont(new Font("Arial", 20));
     }
 
     private void setMediumScreen() {

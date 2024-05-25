@@ -156,7 +156,7 @@ public class BattleScreenController extends BaseController {
     }
 
     private void setInitState() {
-        if (Config.SCREEN_WIDTH == 300) setSmallScreen();
+        if (Config.SCREEN_WIDTH == 450) setSmallScreen();
         else if (Config.SCREEN_WIDTH == 600) setMediumScreen();
         else if (Config.SCREEN_WIDTH == 1920) setLargeScreen();
 
@@ -241,17 +241,23 @@ public class BattleScreenController extends BaseController {
 
     private void setSmallScreen() {
         gameSize = GameSize.SMALL;
-        width = 25;
-        height = 43;
-        tetrisGameScreenInterval = 2;
-        attackedScreenInterval = 2;
-        player1_tetrisGridView.setFont(new Font("Arial", 2));
-        player1_nextBlockView.setFont(new Font("Arial", 2));
-        player2_tetrisGridView.setFont(new Font("Arial", 2));
-        player2_nextBlockView.setFont(new Font("Arial", 2));
-        player1_attackedBlocksView.setFont(new Font("Arial", 2));
-        player2_attackedBlocksView.setFont(new Font("Arial", 2));
-
+        width = 100;
+        height = 210;
+        tetrisGameScreenInterval = 10;
+        attackedScreenInterval = 10;
+        player1_tetrisGridView.setFont(new Font("Arial", 12));
+        player1_nextBlockView.setFont(new Font("Arial",  12));
+        player2_tetrisGridView.setFont(new Font("Arial", 12));
+        player2_nextBlockView.setFont(new Font("Arial", 12));
+        player1_attackedBlocksView.setFont(new Font("Arial", 10));
+        player2_attackedBlocksView.setFont(new Font("Arial", 10));
+        attackedScreenWidth = 80;
+        attackedScreenHeight = 100;
+        attackedScreenStartPoint = 25;
+        player1_attackedBlocks.setWidth(attackedScreenWidth);
+        player2_attackedBlocks.setWidth(attackedScreenWidth);
+        player1_attackedBlocks.setHeight(attackedScreenHeight);
+        player2_attackedBlocks.setHeight(attackedScreenHeight);
     }
 
     private void setMediumScreen() {
