@@ -4,9 +4,9 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import org.json.JSONObject;
 import org.se13.SE13Application;
 import org.se13.ai.Computer;
+import org.se13.ai.SaveData;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.server.LocalBattleTetrisServer;
@@ -20,13 +20,7 @@ import org.se13.view.tetris.Player;
 import org.se13.view.tetris.TetrisEventRepositoryImpl;
 import org.se13.view.tetris.TetrisScreenController;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import static org.se13.utils.JsonUtils.readJson;
-import static org.se13.utils.JsonUtils.saver;
 
 public class LevelSelectScreenController extends BaseController {
 
@@ -86,8 +80,8 @@ public class LevelSelectScreenController extends BaseController {
         LocalBattleTetrisServer server = new LocalBattleTetrisServer(level, mode);
         Player player = new Player(1, new ConfigRepositoryImpl(0).getPlayerKeyCode(), new TetrisEventRepositoryImpl());
         PlayerKeycode emptyCode = new PlayerKeycode("", "", "", "", "", "", "");
-        JSONObject data = readJson();
-        Player computer = new Computer(0, emptyCode, new TetrisEventRepositoryImpl(), data.getJSONObject("0"), saver, 200);
+        SaveData data = readJson();
+        Player computer = new Computer(0, emptyCode, new TetrisEventRepositoryImpl(), data.get(0).neural(), null, true);
         player.connectToServer(server);
         computer.connectToServer(server);
         SE13Application.navController.navigate(AppScreen.BATTLE, (controller) -> {

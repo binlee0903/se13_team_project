@@ -35,6 +35,11 @@ public class CurrentBlock {
 
     public TetrisItem getItem() { return item; }
 
+
+    public int currentRotate() {
+        return rotate;
+    }
+
     public void rotateCW() {
         rotate = (rotate + 1) % 4;
     }

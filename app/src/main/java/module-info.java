@@ -4,6 +4,7 @@ module org.se13 {
     requires java.sql;
     requires org.json;
     requires org.slf4j;
+    requires com.google.gson;
 
     opens org.se13 to javafx.fxml;
     exports org.se13;
@@ -11,6 +12,7 @@ module org.se13 {
     exports org.se13.view.lifecycle;
     exports org.se13.view.ranking;
     exports org.se13.view.difficulty;
+    exports org.se13.ai;
     opens org.se13.view.difficulty to javafx.fxml;
     opens org.se13.view.ranking to javafx.fxml;
     exports org.se13.view.setting;
@@ -25,4 +27,5 @@ module org.se13 {
     opens org.se13.sqlite.ranking to javafx.fxml;
     exports org.se13.game.event;
     opens org.se13.game.event to javafx.fxml;
+    opens org.se13.ai;
 }

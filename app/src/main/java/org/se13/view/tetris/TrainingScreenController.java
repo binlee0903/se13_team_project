@@ -5,23 +5,20 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import org.json.JSONObject;
 import org.se13.SE13Application;
-import org.se13.ai.Computer;
-import org.se13.ai.ComputerEventRepository;
+import org.se13.ai.*;
 import org.se13.game.block.Block;
 import org.se13.game.block.CellID;
-import org.se13.game.config.Config;
 import org.se13.game.event.TetrisEvent;
 import org.se13.game.event.UpdateTetrisState;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.server.LocalTetrisServer;
 import org.se13.utils.JsonUtils;
-import org.se13.utils.Matrix;
 import org.se13.utils.Subscriber;
 import org.se13.view.base.BaseController;
 import org.slf4j.Logger;
@@ -34,22 +31,26 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class TrainingScreenController extends BaseController {
     private static final Logger log = LoggerFactory.getLogger(TetrisScreenController.class);
+    public Label score;
 
     private boolean isEnd = false;
 
     private int batch = 100;
-    private int hold = 20;
-    private int mutate = 20;
+    private int hold = 10;
+    private int mutate = 30;
     private int crossed = 40;
     private ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
     private AtomicInteger integer = new AtomicInteger(0);
-    private Map<Integer, JSONObject> cached = new HashMap<>();
-    private Computer.SaveComputer saver = (computerId, w1, w2, w3, w4, fitness) -> {
-        cached.put(computerId, JsonUtils.createObject(w1, w2, w3, w4, fitness));
+    private List<NeuralResult> cached = new ArrayList<>(100);
+    private Computer.SaveComputer saver = (result) -> {
+        cached.add(result);
         int order = integer.incrementAndGet();
+        // log.info("computer {} finished, fitness: {}, {} computers finish", result.computerId(), result.fitness(), integer.get());
+
         if (order == batch) {
             try {
-                JsonUtils.saveJson(evolution(cached));
+                List<NeuralResult> neuralList = evolution(cached);
+                JsonUtils.saveJson(new SaveData(neuralList));
                 integer.set(0);
                 startTrainingInBackground();
             } catch (Exception e) {
@@ -110,11 +111,17 @@ public class TrainingScreenController extends BaseController {
         return (event) -> {
             Platform.runLater(() -> {
                 if (event instanceof UpdateTetrisState) {
-                    CellID[][] cells = ((UpdateTetrisState) event).tetrisGrid();
+                    UpdateTetrisState state = ((UpdateTetrisState) event);
+                    CellID[][] cells = state.tetrisGrid();
                     setTetrisState(cells);
+                    setTetrisScore(state.score());
                 }
             });
         };
+    }
+
+    private void setTetrisScore(int score) {
+        this.score.setText(String.valueOf(score));
     }
 
     private void setTetrisState(CellID[][] cells) {
@@ -143,12 +150,12 @@ public class TrainingScreenController extends BaseController {
             case ZBLOCK_ID -> Block.ZBlock.blockColor;
             case ATTACKED_BLOCK_ID -> Block.AttackedBlock.blockColor;
             case CBLOCK_ID,
-                 WEIGHT_ITEM_ID,
-                 FEVER_ITEM_ID,
-                 WEIGHT_BLOCK_ID,
-                 RESET_ITEM_ID,
-                 LINE_CLEAR_ITEM_ID,
-                 ALL_CLEAR_ITEM_ID -> Color.WHITE;
+                    WEIGHT_ITEM_ID,
+                    FEVER_ITEM_ID,
+                    WEIGHT_BLOCK_ID,
+                    RESET_ITEM_ID,
+                    LINE_CLEAR_ITEM_ID,
+                    ALL_CLEAR_ITEM_ID -> Color.WHITE;
         };
     }
 
@@ -161,14 +168,14 @@ public class TrainingScreenController extends BaseController {
             case LINE_CLEAR_ITEM_ID -> LINE_CLEAR_BLOCK_TEXT;
             case ALL_CLEAR_ITEM_ID -> ALL_CLEAR_BLOCK_TEXT;
             case IBLOCK_ID,
-                 JBLOCK_ID,
-                 LBLOCK_ID,
-                 OBLOCK_ID,
-                 SBLOCK_ID,
-                 TBLOCK_ID,
-                 ZBLOCK_ID,
-                 CBLOCK_ID,
-                 ATTACKED_BLOCK_ID -> DEFAULT_BLOCK_TEXT;
+                    JBLOCK_ID,
+                    LBLOCK_ID,
+                    OBLOCK_ID,
+                    SBLOCK_ID,
+                    TBLOCK_ID,
+                    ZBLOCK_ID,
+                    CBLOCK_ID,
+                    ATTACKED_BLOCK_ID -> DEFAULT_BLOCK_TEXT;
         };
     }
 
@@ -181,20 +188,21 @@ public class TrainingScreenController extends BaseController {
         new Thread(this::startTraining).start();
     }
 
+    private SaveData data;
     private void startTraining() {
-        JSONObject data = JsonUtils.readJson();
+        data = JsonUtils.readJson();
 
         for (int i = 0; i < batch; i++) {
             final int computerId = i;
-            JSONObject object = getData(computerId, data);
+            final NeuralResult result = getData(computerId, data);
 
-            if (i < hold) {
-                log.info("Computer{} Loaded: {}", computerId, object);
+            if (computerId < hold) {
+                log.info("computer{} fitness: {}, neural: {}", computerId, result.fitness(), result.neural());
             }
 
             service.execute(() -> {
                 TetrisEventRepository eventRepository = new TetrisEventRepositoryImpl();
-                Computer computer = new Computer(computerId, null, new ComputerEventRepository(eventRepository), object, saver);
+                Computer computer = new Computer(computerId, null, new ComputerEventRepository(eventRepository), result.neural(), saver);
                 LocalTetrisServer server = new LocalTetrisServer(GameLevel.NORMAL, GameMode.DEFAULT);
                 observe(computer.eventRepository, computerId);
                 computer.connectToServer(server);
@@ -208,86 +216,45 @@ public class TrainingScreenController extends BaseController {
      * 상위 20개는 유지
      * 상위 20개끼리 교배해서 40개 추가
      * 상위 20개 데이터에서 부분적으로 돌연변이 추가
-     * 나머지 20개는 버림 (데이터가 없으면 돌연변이가 됨)
+     * 나머지 20개는 버림 (데이터가 없으면 새로 만들어짐)
      */
-    private JSONObject evolution(Map<Integer, JSONObject> result) {
-        Map<Integer, JSONObject> nextGeneration = new HashMap<>();
-        List<Map.Entry<Integer, JSONObject>> list = new ArrayList<>(result.entrySet());
-        String fitness = "fitness";
-        list.sort(Comparator.comparingInt(v -> v.getValue().getInt(fitness)));
+    private List<NeuralResult> evolution(List<NeuralResult> results) {
+        ArrayList<NeuralResult> next = new ArrayList(200);
+        next.addAll(data.neuralList());
 
-        AtomicInteger integer = new AtomicInteger(0);
-
+        // 상위 20개는 유지
+        results.sort((r1, r2) -> -Integer.compare(r1.fitness(), r2.fitness()));
         for (int i = 0; i < hold; i++) {
-            Map.Entry<Integer, JSONObject> alive = list.get(list.size() - i - 1);
-            nextGeneration.put(integer.getAndIncrement(), alive.getValue());
+            next.add(results.get(i));
         }
 
-        JSONObject parent = new JSONObject();
-
-        List<JSONObject> cross = new ArrayList<>(100);
-        nextGeneration.forEach((k1, v1) ->
-            nextGeneration.forEach((k2, v2) -> {
-                JSONObject crossResult = crossOver(v1, v2);
-                cross.add(crossResult);
-            }));
-
+        // 상위 20개끼리 교배해서 40개 추가
+        ArrayList<NeuralResult> cross = new ArrayList<>(400);
+        for (NeuralResult father: next) {
+            for (NeuralResult mother: next) {
+                if (father == mother) continue;
+                cross.add(new NeuralResult(father.neural().crossover(mother.neural())));
+            }
+        }
         Collections.shuffle(cross);
 
         for (int i = 0; i < crossed; i++) {
-            nextGeneration.put(integer.getAndIncrement(), cross.get(i));
+            next.add(cross.get(i));
         }
 
-        for (int i = 0; i < mutate; i++) {
-            JSONObject mutate = nextGeneration.get(i);
-            nextGeneration.put(integer.getAndIncrement(), mutation(mutate));
+        // 상위 20개 중에 돌연변이 추가
+        for (int i = 0; i < hold; i++) {
+            next.add(new NeuralResult(results.get(i).neural().mutate()));
         }
 
-        nextGeneration.forEach((key, value) -> parent.put(String.valueOf(key), value));
-
-        return parent;
+        return next;
     }
 
-    private JSONObject crossOver(JSONObject left, JSONObject right) {
-        float[][] w1 = Matrix.crossOver(JsonUtils.getFloatArray(left, "w1"), JsonUtils.getFloatArray(right, "w1"));
-        float[][] w2 = Matrix.crossOver(JsonUtils.getFloatArray(left, "w2"), JsonUtils.getFloatArray(right, "w2"));
-        float[][] w3 = Matrix.crossOver(JsonUtils.getFloatArray(left, "w3"), JsonUtils.getFloatArray(right, "w3"));
-        float[][] w4 = Matrix.crossOver(JsonUtils.getFloatArray(left, "w4"), JsonUtils.getFloatArray(right, "w4"));
-
-        return JsonUtils.createObject(w1, w2, w3, w4, 0);
-    }
-
-    private JSONObject mutation(JSONObject object) {
-        float[][] w1 = JsonUtils.getFloatArray(object, "w1");
-        float[][] w2 = JsonUtils.getFloatArray(object, "w2");
-        float[][] w3 = JsonUtils.getFloatArray(object, "w3");
-        float[][] w4 = JsonUtils.getFloatArray(object, "w4");
-
-        mutation(w1);
-        mutation(w2);
-        mutation(w3);
-        mutation(w4);
-
-        return JsonUtils.createObject(w1, w2, w3, w4, 0);
-    }
-
-    private void mutation(float[][] original) {
-        Random random = new Random();
-
-        for (int i = 0; i < original.length; i++) {
-            for (int j = 0; j < original[i].length; j++) {
-                if (random.nextFloat() < 0.1f) {
-                    original[i][j] = random.nextFloat();
-                }
-            }
-        }
-    }
-
-    private JSONObject getData(int computerId, JSONObject object) {
+    private NeuralResult getData(int computerId, SaveData data) {
         try {
-            return object.getJSONObject(String.valueOf(computerId));
+            return data.get(computerId);
         } catch (Exception e) {
-            return null;
+            return new NeuralResult(new Neural());
         }
     }
 }

@@ -1,6 +1,5 @@
 package org.se13.ai;
 
-import org.se13.game.event.AttackedTetrisBlocks;
 import org.se13.game.event.TetrisEvent;
 import org.se13.game.event.UpdateTetrisState;
 import org.se13.utils.Observer;
@@ -33,7 +32,6 @@ public class ComputerEventRepository implements TetrisEventRepository {
         ComputerInput current = observer.getValue();
         switch (event) {
             case UpdateTetrisState state -> {
-                current.nextBlock = state.nextBlock();
                 current.tetrisGrid = state.tetrisGrid();
             }
             default -> {

@@ -1,8 +1,10 @@
 package org.se13.utils;
 
+import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.se13.ai.Computer;
+import org.se13.ai.SaveData;
+import org.se13.ai.NeuralResult;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -28,46 +30,28 @@ public class JsonUtils {
         return result;
     }
 
-    public static JSONObject readJson() {
+    public static SaveData readJson() {
         try {
             String content = new String(Files.readAllBytes(Paths.get(path)));
-            return new JSONObject(content);
+            return gson.fromJson(content, SaveData.class);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
         }
     }
 
-    public static void saveJson(JSONObject object) throws IOException {
+    public static void saveJson(SaveData data) throws IOException {
         FileWriter fs = new FileWriter(path);
         BufferedWriter writer = new BufferedWriter(fs);
-        object.write(writer);
+        writer.write(gson.toJson(data));
         writer.close();
     }
 
-    public static final String path = "C:/Users/someh/Downloads/computer.json";
+    public static final String path = "./computer.json";
 
-    public static Computer.SaveComputer saver = (computerId, w1, w2, w3, w4, fitness) ->
-        new Thread(() -> {
-            try {
-                JSONObject parent = new JSONObject();
-                JSONObject object = createObject(w1, w2, w3, w4, fitness);
-                parent.put(String.valueOf(computerId), object);
-                saveJson(parent);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-    public static JSONObject createObject(float[][] w1, float[][] w2, float[][] w3, float[][] w4, float fitness) {
-        JSONObject object = new JSONObject();
-        object.put("w1", new JSONArray(w1));
-        object.put("w2", new JSONArray(w2));
-        object.put("w3", new JSONArray(w3));
-        object.put("w4", new JSONArray(w4));
-        object.put("fitness", fitness);
-
-        return object;
+    public static String createObject(NeuralResult result) {
+        return gson.toJson(result);
     }
 
+    private static Gson gson = new Gson();
 }

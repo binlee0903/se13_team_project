@@ -224,6 +224,10 @@ public class TetrisGame {
     }
 
     public void rotateBlockCW() {
+        if (currentBlock.currentRotate() == 3) {
+            invalidInputEvent();
+        }
+
         deleteCurrentBlockFromGrid();
         currentBlock.rotateCW();
 
@@ -232,6 +236,7 @@ public class TetrisGame {
         if (blockFits() == false) {
             score--;
             currentBlock.rotateCCW();
+            invalidInputEvent();
         }
     }
 
@@ -241,6 +246,7 @@ public class TetrisGame {
 
         if (blockFits() == false) {
             currentBlock.move(0, 1);
+            invalidInputEvent();
         }
     }
 
@@ -250,6 +256,7 @@ public class TetrisGame {
 
         if (blockFits() == false) {
             currentBlock.move(0, -1);
+            invalidInputEvent();
         }
     }
 
@@ -419,6 +426,7 @@ public class TetrisGame {
                     feverModeTimer.setResume();
 
                     attackingEvent(tetrisGameGrid.getAttackingBlocks(currentBlock, fullRows));
+                    lineClearedEvent(fullRows);
 
                     tetrisGameGrid.clearFullRows();
                     score += scoreWeight * fullRows;
@@ -439,6 +447,7 @@ public class TetrisGame {
                 nextBlock = nextBlock();
                 isBlockPlaced = false;
                 checkGameIsOver();
+                nextBlockEvent();
             }
         }
     }
@@ -479,6 +488,18 @@ public class TetrisGame {
 
     private void attackingEvent(CellID[][] cells) {
         events.setValue(new AttackingTetrisBlocks(cells));
+    }
+
+    private void lineClearedEvent(long cleared) {
+        events.setValue(new LineClearedEvent(cleared));
+    }
+
+    private void invalidInputEvent() {
+        events.setValue(new InvalidInputEvent());
+    }
+
+    private void nextBlockEvent() {
+        events.setValue(new NextBlockEvent());
     }
 
     private void checkGameIsOver() {

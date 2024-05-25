@@ -61,6 +61,8 @@ dependencies {
     implementation("org.slf4j:slf4j-api:2.0.6")
     implementation("ch.qos.logback:logback-classic:1.4.14")
 
+    implementation("com.google.code.gson:gson:2.11.0")
+
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.assertj:assertj-core:3.23.1")
 }
