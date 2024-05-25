@@ -33,7 +33,8 @@ public class JsonUtils {
     public static SaveData readJson() {
         try {
             String content = new String(Files.readAllBytes(Paths.get(path)));
-            return gson.fromJson(content, SaveData.class);
+            SaveData data = gson.fromJson(content, SaveData.class);
+            return new SaveData(data.neuralList());
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();

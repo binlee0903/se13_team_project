@@ -12,30 +12,38 @@ public class Neural {
     private static final int COLS = 10;
     private static final int STATE_SIZE = ROWS * COLS;
     private static final int ACTION_SIZE = 4;
-    private static final int HIDDEN_LAYER_SIZE = 3;
-    private static final double MUTATION_RATE = 0.5;
+    private static final int HIDDEN_LAYER_SIZE1 = 12;
+    private static final int HIDDEN_LAYER_SIZE2 = 8;
+    private static final int HIDDEN_LAYER_SIZE3 = 12;
+    private static final double MUTATION_RATE = 0.05;
     private static Random random = new Random();
 
     private final double[][] weightsHiddenInput;
-    private final double[][] weightsHiddenLayer;
+    private final double[][] weightsHiddenLayer1;
+    private final double[][] weightsHiddenLayer2;
     private final double[][] weightsHiddenOutput;
 
-    public Neural(double[][] weightsInputHidden, double[][] weightsHiddenLayer, double[][] weightsHiddenOutput) {
+    public Neural(double[][] weightsInputHidden, double[][] weightsHiddenLayer1, double[][] weightsHiddenLayer2, double[][] weightsHiddenOutput) {
         this.weightsHiddenInput = weightsInputHidden;
         this.weightsHiddenOutput = weightsHiddenOutput;
-        this.weightsHiddenLayer = weightsHiddenLayer;
+        this.weightsHiddenLayer1 = weightsHiddenLayer1;
+        this.weightsHiddenLayer2 = weightsHiddenLayer2;
     }
 
     public Neural() {
-        double[][] weightsInput = new double[STATE_SIZE][HIDDEN_LAYER_SIZE];
-        double[][] weightHidden = new double[HIDDEN_LAYER_SIZE][HIDDEN_LAYER_SIZE];
-        double[][] weightsOutput = new double[HIDDEN_LAYER_SIZE][ACTION_SIZE];
+        double[][] weightsInput = new double[STATE_SIZE][HIDDEN_LAYER_SIZE1];
+        double[][] weightHidden1 = new double[HIDDEN_LAYER_SIZE1][HIDDEN_LAYER_SIZE2];
+        double[][] weightHidden2 = new double[HIDDEN_LAYER_SIZE2][HIDDEN_LAYER_SIZE3];
+        double[][] weightsOutput = new double[HIDDEN_LAYER_SIZE3][ACTION_SIZE];
+
         initializeWeights(weightsInput);
-        initializeWeights(weightHidden);
+        initializeWeights(weightHidden1);
+        initializeWeights(weightHidden2);
         initializeWeights(weightsOutput);
 
         this.weightsHiddenInput = weightsInput;
-        this.weightsHiddenLayer = weightHidden;
+        this.weightsHiddenLayer1 = weightHidden1;
+        this.weightsHiddenLayer2 = weightHidden2;
         this.weightsHiddenOutput = weightsOutput;
     }
 
@@ -49,7 +57,7 @@ public class Neural {
 
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
-                state[i][j] = board[i][j].id;
+                state[i][j] = board[i][j].id > 0 ? 1 : 0;
             }
         }
 
@@ -63,36 +71,41 @@ public class Neural {
     public TetrisAction predict(double[][] state) {
         // 입력 데이터 전처리 및 신경망 연산
         double[] flatState = flatten(state);
-        double[] input = new double[HIDDEN_LAYER_SIZE];
-        for (int i = 0; i < HIDDEN_LAYER_SIZE; i++) {
-            for (int j = 0; j < STATE_SIZE; j++) {
-                input[i] += 2 * flatState[j] * weightsHiddenInput[j][i];
-            }
-        }
 
-        double[] hidden = new double[HIDDEN_LAYER_SIZE];
-        for (int i = 0; i < HIDDEN_LAYER_SIZE; i++) {
-            for (int j = 0; j < HIDDEN_LAYER_SIZE; j++) {
-                hidden[i] += 2 * input[j] * weightsHiddenLayer[j][i];
-            }
-        }
+        double[] input = new double[HIDDEN_LAYER_SIZE1];
+        matmul(input, flatState, weightsHiddenInput);
+        relu(input);
+
+        double[] hidden1 = new double[HIDDEN_LAYER_SIZE2];
+        matmul(hidden1, input, weightsHiddenLayer1);
+        relu(hidden1);
+
+        double[] hidden2 = new double[HIDDEN_LAYER_SIZE3];
+        matmul(hidden2, hidden1, weightsHiddenLayer2);
+        relu(hidden2);
 
         double[] output = new double[ACTION_SIZE];
-        for (int i = 0; i < ACTION_SIZE; i++) {
-            for (int j = 0; j < HIDDEN_LAYER_SIZE; j++) {
-                output[i] += hidden[j] * weightsHiddenOutput[j][i];
-            }
-        }
+        matmul(output, hidden2, weightsHiddenOutput);
+        relu(output);
 
         output = softmax(output);
 
-        return selectAction(output);
+        return AVAILABLE[argMax(output)];
+    }
+
+    private void matmul(double[] des, double[] src, double[][] weights) {
+        for (int i = 0; i < des.length; i++) {
+            for (int j = 0; j < src.length; j++) {
+                des[i] += src[j] * weights[j][i];
+            }
+        }
     }
 
     public Neural crossover(Neural mother) {
         return new Neural(
                 crossover(weightsHiddenInput, mother.weightsHiddenInput),
-                crossover(weightsHiddenLayer, mother.weightsHiddenLayer),
+                crossover(weightsHiddenLayer1, mother.weightsHiddenLayer1),
+                crossover(weightsHiddenLayer2, mother.weightsHiddenLayer2),
                 crossover(weightsHiddenOutput, mother.weightsHiddenOutput)
         );
     }
@@ -100,7 +113,8 @@ public class Neural {
     public Neural mutate() {
         return new Neural(
                 mutate(this.weightsHiddenInput),
-                mutate(this.weightsHiddenLayer),
+                mutate(this.weightsHiddenLayer1),
+                mutate(this.weightsHiddenLayer2),
                 mutate(this.weightsHiddenOutput)
         );
     }
@@ -110,10 +124,9 @@ public class Neural {
 
         for (int i = 0; i < d1.length; i++) {
             double[] child = new double[d1[i].length];
-            int crossoverPoint = random.nextInt(d1[i].length);
 
             for (int j = 0; j < d1[i].length; j++) {
-                if (i < crossoverPoint) {
+                if (random.nextBoolean()) {
                     child[j] = d1[i][j];
                 } else {
                     child[j] = d2[i][j];
@@ -128,15 +141,19 @@ public class Neural {
 
     private double[][] mutate(double[][] original) {
         double[][] result = new double[original.length][];
+        int mean = original.length;
 
         for (int i = 0; i < original.length; i++) {
+            int stddev = original[i].length;
             double[] o = new double[original[i].length];
 
             for (int j = 0; j < o.length; j++) {
                 if (random.nextDouble() < MUTATION_RATE) {
                     o[j] = original[i][j];
                 } else {
-                    o[j] = (random.nextDouble() - 0.5) * 2;
+                    double normalRandom = mean + stddev * random.nextGaussian();
+                    double intRandom = random.nextInt(3) - 1;
+                    o[j] = original[i][j] * normalRandom / mean * intRandom;
                 }
             }
 
@@ -149,17 +166,15 @@ public class Neural {
     private void initializeWeights(double[][] weights) {
         for (int i = 0; i < weights.length; i++) {
             for (int j = 0; j < weights[i].length; j++) {
-                weights[i][j] = (random.nextDouble() - 0.5) * 2 / Math.sqrt(weights.length);
+                weights[i][j] = (random.nextDouble() - 0.5) * 2;
             }
         }
     }
 
-    private double[] relu(double[] x) {
-        double[] result = new double[x.length];
+    private void relu(double[] x) {
         for (int i = 0; i < x.length; i++) {
-            result[i] = Math.max(0, x[i]);
+            x[i] = Math.max(0, x[i]);
         }
-        return result;
     }
 
     private double[] flatten(double[][] state) {
@@ -227,23 +242,31 @@ public class Neural {
         return result;
     }
 
-    private TetrisAction selectAction(double[] probabilities) {
-        double rand = Math.random();
-        double cumulativeProbability = 0;
-        for (int i = 0; i < probabilities.length; i++) {
-            cumulativeProbability += probabilities[i];
-            if (rand <= cumulativeProbability) {
-                return AVAILABLE[i];
-            }
-        }
-        return AVAILABLE[probabilities.length - 1];
-    }
-
     @Override
     public String toString() {
         return "Neural{" +
                 "weightsHiddenInput=" + Arrays.deepToString(weightsHiddenInput) +
                 ", weightsHiddenOutput=" + Arrays.deepToString(weightsHiddenOutput) +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Neural neural = (Neural) o;
+        return Arrays.deepEquals(weightsHiddenInput, neural.weightsHiddenInput) &&
+                Arrays.deepEquals(weightsHiddenLayer1, neural.weightsHiddenLayer1) &&
+                Arrays.deepEquals(weightsHiddenLayer2, neural.weightsHiddenLayer2) &&
+                Arrays.deepEquals(weightsHiddenOutput, neural.weightsHiddenOutput);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.deepHashCode(weightsHiddenInput);
+        result = 31 * result + Arrays.deepHashCode(weightsHiddenLayer1);
+        result = 31 * result + Arrays.deepHashCode(weightsHiddenLayer2);
+        result = 31 * result + Arrays.deepHashCode(weightsHiddenOutput);
+        return result;
     }
 }

@@ -1,7 +1,6 @@
 package org.se13.ai;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public record SaveData(List<NeuralResult> neuralList) {

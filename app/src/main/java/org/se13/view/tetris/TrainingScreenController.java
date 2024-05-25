@@ -35,10 +35,11 @@ public class TrainingScreenController extends BaseController {
 
     private boolean isEnd = false;
 
-    private int batch = 100;
-    private int hold = 10;
-    private int mutate = 30;
-    private int crossed = 40;
+    int count = 0;
+    private int batch = 200;
+    private int hold = 40;
+    private int mutate = 40;
+    private int crossed = 80;
     private ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
     private AtomicInteger integer = new AtomicInteger(0);
     private List<NeuralResult> cached = new ArrayList<>(100);
@@ -50,8 +51,9 @@ public class TrainingScreenController extends BaseController {
         if (order == batch) {
             try {
                 List<NeuralResult> neuralList = evolution(cached);
-                JsonUtils.saveJson(new SaveData(neuralList));
+                JsonUtils.saveJson(new SaveData(neuralList.stream().distinct().toList()));
                 integer.set(0);
+                cached.clear();
                 startTrainingInBackground();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -189,6 +191,7 @@ public class TrainingScreenController extends BaseController {
     }
 
     private SaveData data;
+
     private void startTraining() {
         data = JsonUtils.readJson();
 
@@ -196,7 +199,7 @@ public class TrainingScreenController extends BaseController {
             final int computerId = i;
             final NeuralResult result = getData(computerId, data);
 
-            if (computerId < hold) {
+            if (computerId < 10) {
                 log.info("computer{} fitness: {}, neural: {}", computerId, result.fitness(), result.neural());
             }
 
@@ -219,11 +222,12 @@ public class TrainingScreenController extends BaseController {
      * 나머지 20개는 버림 (데이터가 없으면 새로 만들어짐)
      */
     private List<NeuralResult> evolution(List<NeuralResult> results) {
+        Random random = new Random();
         ArrayList<NeuralResult> next = new ArrayList(200);
-        next.addAll(data.neuralList());
+        results.addAll(data.neuralList());
+        results.sort((r1, r2) -> -Integer.compare(r1.fitness(), r2.fitness()));
 
         // 상위 20개는 유지
-        results.sort((r1, r2) -> -Integer.compare(r1.fitness(), r2.fitness()));
         for (int i = 0; i < hold; i++) {
             next.add(results.get(i));
         }
@@ -243,8 +247,10 @@ public class TrainingScreenController extends BaseController {
         }
 
         // 상위 20개 중에 돌연변이 추가
-        for (int i = 0; i < hold; i++) {
-            next.add(new NeuralResult(results.get(i).neural().mutate()));
+        for (int i = 0; i < mutate; i++) {
+            int randomIndex = random.nextInt(results.size());
+            Neural neural = results.get(randomIndex).neural();
+            next.add(new NeuralResult(neural.mutate()));
         }
 
         return next;

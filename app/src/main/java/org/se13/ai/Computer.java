@@ -67,6 +67,7 @@ public class Computer extends Player {
 
     private void onEnd(TetrisGameEndData endData) {
         isEnd = true;
+
         if (saver != null) {
             saver.save(new NeuralResult(fitness, neural));
         }
@@ -121,24 +122,25 @@ public class Computer extends Player {
     private void updateTetrisState(UpdateTetrisState event) {
         CellID[][] cells = event.tetrisGrid();
 
-        int count = 0;
-        for (int i = 0; i < 8; i++) {
+        double count = 0;
+        for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
-                if (cells[i][j] != CellID.EMPTY && cells[i][j] != CellID.CBLOCK_ID) {
-                    count++;
+                if (cells[21 - i][j] != CellID.EMPTY && cells[21 - i][j] != CellID.CBLOCK_ID) {
+                    count += Math.abs(j - 5) * 1.2;
                 }
             }
         }
 
-        fitness += count / 10;
+        fitness += count / 20;
     }
 
     private void lineClearedEvent(LineClearedEvent event) {
-        fitness += event.cleared() * 100;
+        fitness += (event.cleared() + 1) * 100;
     }
 
+    private int invalid = 10;
     private void invalidInputEvent() {
-        fitness--;
+        fitness -= invalid++;
     }
 
     private void nextBlockEvent() {
