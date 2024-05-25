@@ -61,10 +61,6 @@ public class Neural {
             }
         }
 
-        for (int i = 0; i < state.length; i++) {
-            state[i] = normalize(state[i], min, max);
-        }
-
         return predict(state);
     }
 
@@ -141,19 +137,16 @@ public class Neural {
 
     private double[][] mutate(double[][] original) {
         double[][] result = new double[original.length][];
-        int mean = original.length;
 
         for (int i = 0; i < original.length; i++) {
-            int stddev = original[i].length;
             double[] o = new double[original[i].length];
 
             for (int j = 0; j < o.length; j++) {
                 if (random.nextDouble() < MUTATION_RATE) {
                     o[j] = original[i][j];
                 } else {
-                    double normalRandom = mean + stddev * random.nextGaussian();
-                    double intRandom = random.nextInt(3) - 1;
-                    o[j] = original[i][j] * normalRandom / mean * intRandom;
+                    double gaussian = random.nextGaussian() * 0.05 + (random.nextInt(5) - 2);
+                    o[j] = original[i][j] * gaussian;
                 }
             }
 

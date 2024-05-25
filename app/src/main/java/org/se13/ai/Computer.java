@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Computer extends Player {
     private static final Logger log = LoggerFactory.getLogger(Computer.class);
 
-    private int limited = 60;
+    private int limited = -30;
     private boolean isBattleMode;
     private Neural neural;
     private int fitness = 0;
@@ -80,7 +80,7 @@ public class Computer extends Player {
                 return;
             }
         } else {
-            if (limited-- <= 0) {
+            if (limited++ >= fitness / 3) {
                 actionRepository.immediateBlockPlace();
                 return;
             }
@@ -99,7 +99,7 @@ public class Computer extends Player {
 
     private void onEvent(TetrisEvent event) {
         if (isEnd) return;
-        if (limited < 0) return;
+        if (limited >= fitness / 3) return;
 
         // 라인 클리어 시 가산점
         if (event instanceof LineClearedEvent) {
@@ -138,7 +138,7 @@ public class Computer extends Player {
         fitness += (event.cleared() + 1) * 100;
     }
 
-    private int invalid = 10;
+    private int invalid = 0;
     private void invalidInputEvent() {
         fitness -= invalid++;
     }
