@@ -133,9 +133,10 @@ public class TetrisGame {
         server.responseGameOver(getScore(), isItemMode(), getDifficulty());
     }
 
-    public void stopBattleGame() {
-        this.gameStatus = GameStatus.GAMEOVER;
+    public boolean stopBattleGame() {
         this.inputManager.reset();
+
+        return this.gameStatus == GameStatus.GAMEOVER;
     }
 
     public boolean togglePauseState() {

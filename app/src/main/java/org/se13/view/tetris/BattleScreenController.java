@@ -231,10 +231,10 @@ public class BattleScreenController extends BaseController {
         SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
             List<TetrisGameEndData> endDatas = server.getEndData();
 
-            if (endDatas.getFirst().score() > endDatas.getLast().score()) {
-                controller.setArguments(new TetrisGameEndData(PLAYER1, endDatas.getFirst().score(), false, ""));
+            if (endDatas.getFirst().isGameOvered() == true) {
+                controller.setArguments(endDatas.getLast());
             } else {
-                controller.setArguments(new TetrisGameEndData(PLAYER2, endDatas.getLast().score(), false, ""));
+                controller.setArguments(endDatas.getFirst());
             }
         });
     }
