@@ -7,14 +7,15 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Neural {
-    private static final TetrisAction[] AVAILABLE = new TetrisAction[]{TetrisAction.MOVE_BLOCK_LEFT, TetrisAction.MOVE_BLOCK_RIGHT, TetrisAction.IMMEDIATE_BLOCK_PLACE, TetrisAction.ROTATE_BLOCK_CW};
+    private static final TetrisAction[] AVAILABLE = new TetrisAction[]{
+            TetrisAction.MOVE_BLOCK_LEFT, TetrisAction.MOVE_BLOCK_RIGHT, TetrisAction.ROTATE_BLOCK_CW, TetrisAction.MOVE_BLOCK_DOWN, TetrisAction.IMMEDIATE_BLOCK_PLACE};
     private static final int ROWS = 22;
     private static final int COLS = 10;
     private static final int STATE_SIZE = ROWS * COLS;
-    private static final int ACTION_SIZE = 4;
+    private static final int ACTION_SIZE = 5;
     private static final int HIDDEN_LAYER_SIZE1 = 12;
-    private static final int HIDDEN_LAYER_SIZE2 = 8;
-    private static final int HIDDEN_LAYER_SIZE3 = 12;
+    private static final int HIDDEN_LAYER_SIZE2 = 20;
+    private static final int HIDDEN_LAYER_SIZE3 = 8;
     private static final double MUTATION_RATE = 0.05;
     private static Random random = new Random();
 
@@ -122,11 +123,7 @@ public class Neural {
             double[] child = new double[d1[i].length];
 
             for (int j = 0; j < d1[i].length; j++) {
-                if (random.nextBoolean()) {
-                    child[j] = d1[i][j];
-                } else {
-                    child[j] = d2[i][j];
-                }
+                child[j] = (d1[i][j] + d2[i][j]) * random.nextDouble();
             }
 
             result[i] = child;
@@ -145,7 +142,7 @@ public class Neural {
                 if (random.nextDouble() < MUTATION_RATE) {
                     o[j] = original[i][j];
                 } else {
-                    double gaussian = random.nextGaussian() * 0.05 + (random.nextInt(5) - 2);
+                    double gaussian = (random.nextGaussian() - 0.5) * 2;
                     o[j] = original[i][j] * gaussian;
                 }
             }

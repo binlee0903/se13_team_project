@@ -1,4 +1,6 @@
 package org.se13.game.event;
 
-public class NextBlockEvent implements TetrisEvent {
+import org.se13.game.block.CellID;
+
+public record NextBlockEvent(CellID[][] tetrisGrid, CellID[][] withoutCurrentBlock) implements TetrisEvent {
 }

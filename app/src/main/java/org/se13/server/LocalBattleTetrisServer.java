@@ -156,7 +156,7 @@ public class LocalBattleTetrisServer implements TetrisServer {
                     session.pulse(nanoTime);
                 });
             }
-        }, 0, 16);
+        }, 0, 1);
     }
 
     private void broadcast(TetrisEvent event, int userId) {

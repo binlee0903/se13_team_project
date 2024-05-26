@@ -13,7 +13,6 @@ import org.se13.game.timer.*;
 import org.se13.server.TetrisServer;
 import org.se13.utils.Observer;
 import org.se13.utils.Subscriber;
-import org.se13.view.tetris.TetrisGameEndData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -463,11 +462,11 @@ public class TetrisGame {
 
     CurrentBlock nextItemBlock() {
         CellID[] list = new CellID[]{
-            CellID.FEVER_ITEM_ID,
-            CellID.WEIGHT_ITEM_ID,
-            CellID.RESET_ITEM_ID,
-            CellID.LINE_CLEAR_ITEM_ID,
-            CellID.ALL_CLEAR_ITEM_ID,
+                CellID.FEVER_ITEM_ID,
+                CellID.WEIGHT_ITEM_ID,
+                CellID.RESET_ITEM_ID,
+                CellID.LINE_CLEAR_ITEM_ID,
+                CellID.ALL_CLEAR_ITEM_ID,
         };
 
         Block block = blockQueue.nextBlock();
@@ -499,7 +498,26 @@ public class TetrisGame {
     }
 
     private void nextBlockEvent() {
-        events.setValue(new NextBlockEvent());
+        CellID[][] cells = tetrisGameGrid.getGrid();
+        CellID[][] without = new CellID[cells.length][];
+
+        for (int i = 0; i < cells.length; i++) {
+            CellID[] row = new CellID[cells[i].length];
+            for (int j = 0; j < cells[i].length; j++) {
+                row[j] = cells[i][j];
+            }
+            without[i] = row;
+        }
+
+        BlockPosition currentBlockPosition = currentBlock.getPosition();
+
+        for (BlockPosition p : currentBlock.shape()) {
+            int rowIndex = p.getRowIndex() + currentBlockPosition.getRowIndex();
+            int colIndex = p.getColIndex() + currentBlockPosition.getColIndex();
+            without[rowIndex][colIndex] = CellID.EMPTY;
+        }
+
+        events.setValue(new NextBlockEvent(cells, without));
     }
 
     private void checkGameIsOver() {
