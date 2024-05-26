@@ -1,7 +1,7 @@
 package org.se13.ai;
 
 import org.se13.game.action.TetrisAction;
-import org.se13.game.block.BlockPosition;
+import org.se13.game.block.CellID;
 import org.se13.game.block.CurrentBlock;
 import org.se13.game.event.LineClearedEvent;
 import org.se13.game.event.NextBlockEvent;
@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Computer extends Player {
@@ -59,10 +60,14 @@ public class Computer extends Player {
     private void setDelayIfBattleMode() {
         if (isBattleMode) {
             new Thread(() -> {
+                Random random = new Random();
                 try {
                     while (!isEnd) {
                         canChoose.set(true);
-                        Thread.sleep(1000);
+                        int start = random.nextInt(100, 300);
+                        int plus = (int) (Math.sqrt(fitness) * 10);
+                        int delay = Math.max(10, start - plus);
+                        Thread.sleep(delay);
                     }
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -86,14 +91,28 @@ public class Computer extends Player {
         }
 
         TetrisGrid board = input.board();
+        for (int row = 0; row < 22; row++) {
+            for (int col = 0; col < 10; col++) {
+                if (board.getCell(row, col) == CellID.CBLOCK_ID) {
+                    return;
+                }
+            }
+        }
 
         if (actions.isEmpty()) {
             CurrentBlock block = input.block();
-            BlockPosition startOffset = block.getBlock().startOffset;
-            if (block.getPosition().getRowIndex() != startOffset.getRowIndex()) return;
+            if (block.getPosition().getRowIndex() > 10) return;
 
-            actions.addAll(predict.predict(input.board(), block));
+            try {
+                actions.addAll(predict.predict(input.board(), block, isBattleMode));
+            } catch (Exception e) {
+                actions.clear();
+            }
             limited++;
+        }
+
+        if (isBattleMode && !canChoose.getAndSet(false)) {
+            return;
         }
 
         TetrisAction choose = actions.poll();

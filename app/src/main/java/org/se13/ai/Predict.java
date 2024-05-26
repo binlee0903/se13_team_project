@@ -40,7 +40,7 @@ public class Predict implements Prediction {
     }
 
     @Override
-    public List<TetrisAction> predict(TetrisGrid board, CurrentBlock block) {
+    public List<TetrisAction> predict(TetrisGrid board, CurrentBlock block, boolean isBattleMode) {
         int bestPosition = 0;
         int bestRotate = 0;
         float best = Integer.MIN_VALUE;
@@ -65,7 +65,7 @@ public class Predict implements Prediction {
             } while (shiftRight(board, clone));
         }
 
-        return createActions(board, block, bestPosition, bestRotate);
+        return createActions(board, block, bestPosition, bestRotate, isBattleMode);
     }
 
     private float fitness(TetrisGrid board, CurrentBlock block) {
@@ -87,7 +87,7 @@ public class Predict implements Prediction {
         return score;
     }
 
-    private List<TetrisAction> createActions(TetrisGrid board, CurrentBlock block, int bestPosition, int bestRotate) {
+    private List<TetrisAction> createActions(TetrisGrid board, CurrentBlock block, int bestPosition, int bestRotate, boolean isBattleMode) {
         List<TetrisAction> actions = new ArrayList<>();
         TetrisGrid boardClone = board.copy();
         CurrentBlock blockClone = block.copy();
@@ -110,13 +110,8 @@ public class Predict implements Prediction {
             shiftRight(board, blockClone);
         }
 
+
         actions.add(TetrisAction.IMMEDIATE_BLOCK_PLACE);
-
-//        while (shiftDown(boardClone, blockClone)) {
-//            actions.add(TetrisAction.MOVE_BLOCK_DOWN);
-//        }
-//        actions.add(TetrisAction.MOVE_BLOCK_DOWN);
-
         return actions;
     }
 

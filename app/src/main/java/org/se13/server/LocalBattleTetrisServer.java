@@ -1,5 +1,6 @@
 package org.se13.server;
 
+import org.se13.ai.ComputerInputEvent;
 import org.se13.game.action.TetrisAction;
 import org.se13.game.event.*;
 import org.se13.game.rule.GameLevel;
@@ -116,6 +117,7 @@ public class LocalBattleTetrisServer implements TetrisServer {
                 case AttackedTetrisBlocks state -> handleAttacked(userId, state);
                 case AttackingTetrisBlocks blocks -> handleAttacking(userId, blocks);
                 case InsertAttackBlocksEvent insertEvent -> handleInsertEvent(userId, insertEvent);
+                case ComputerInputEvent input -> broadcast(input, userId);
                 default -> {
                 }
             }

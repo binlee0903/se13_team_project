@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import org.se13.SE13Application;
 import org.se13.ai.Computer;
+import org.se13.ai.ComputerEventRepository;
 import org.se13.ai.SaveData;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
@@ -81,7 +82,7 @@ public class LevelSelectScreenController extends BaseController {
         Player player = new Player(1, new ConfigRepositoryImpl(0).getPlayerKeyCode(), new TetrisEventRepositoryImpl());
         PlayerKeycode emptyCode = new PlayerKeycode("", "", "", "", "", "", "");
         SaveData data = readJson();
-        Player computer = new Computer(0, emptyCode, new TetrisEventRepositoryImpl(), data.get(0).predict(), null, true);
+        Computer computer = new Computer(0, emptyCode, new ComputerEventRepository(new TetrisEventRepositoryImpl()), data.get(0).predict(), null, true);
         player.connectToServer(server);
         computer.connectToServer(server);
         SE13Application.navController.navigate(AppScreen.BATTLE, (controller) -> {
