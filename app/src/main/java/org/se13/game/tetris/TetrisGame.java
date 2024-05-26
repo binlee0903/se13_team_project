@@ -134,9 +134,10 @@ public class TetrisGame {
         server.responseGameOver(getScore(), isItemMode(), getDifficulty());
     }
 
-    public void stopBattleGame() {
-        this.gameStatus = GameStatus.GAMEOVER;
+    public boolean stopBattleGame() {
         this.inputManager.reset();
+
+        return this.gameStatus == GameStatus.GAMEOVER;
     }
 
     public boolean togglePauseState() {
@@ -288,7 +289,7 @@ public class TetrisGame {
     }
 
     boolean isGameOver() {
-        if (tetrisGameGrid.isRowEmpty(0) == true) {
+        if (tetrisGameGrid.isFirstRowEmpty(this.currentBlock) == true) {
             return false;
         } else {
             return true;

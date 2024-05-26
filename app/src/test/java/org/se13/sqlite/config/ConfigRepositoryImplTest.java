@@ -53,8 +53,8 @@ public class ConfigRepositoryImplTest {
 
         JSONObject json = new JSONObject();
         json.put("mode", "default");
-        json.put("screenWidth", 300);
-        json.put("screenHeight", 400);
+        json.put("screenWidth", 450);
+        json.put("screenHeight", 600);
         json.put("keyLeft", "a");
         json.put("keyRight", "d");
         json.put("keyDown", "s");
@@ -85,8 +85,8 @@ public class ConfigRepositoryImplTest {
         assertNotNull(config);
         //assertEquals(11, config.size()); 이건 어떤 테스트인가요? 이 부분에서 빌드 오류 때문에 PR 안되서 일단 주석 처리 해놓습니다.
         assertEquals("default", config.get("mode"));
-        assertEquals(300, config.get("screenWidth"));
-        assertEquals(400, config.get("screenHeight"));
+        assertEquals(450, config.get("screenWidth"));
+        assertEquals(600, config.get("screenHeight"));
         assertEquals("a", config.get("keyLeft"));
         assertEquals("d", config.get("keyRight"));
         assertEquals("s", config.get("keyDown"));
@@ -149,7 +149,7 @@ public class ConfigRepositoryImplTest {
     void getScreenSize() {
         int[] screenSizes = configRepository.getScreenSize();
 
-        assertEquals(300, screenSizes[0]);
-        assertEquals(400, screenSizes[1]);
+        assertEquals(450, screenSizes[0]);
+        assertEquals(600, screenSizes[1]);
     }
 }

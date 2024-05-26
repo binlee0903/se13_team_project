@@ -27,8 +27,8 @@ public class TetrisSession {
     }
 
     public TetrisGameEndData stopBattleGame() {
-        playerGame.stopBattleGame();
-        return new TetrisGameEndData(player.getUserId(), playerGame.getScore(), false, "");
+        boolean isGameOvered = playerGame.stopBattleGame();
+        return new TetrisGameEndData(player.getUserId(), playerGame.getScore(), false, isGameOvered,"");
     }
 
     public void response(TetrisEvent event) {

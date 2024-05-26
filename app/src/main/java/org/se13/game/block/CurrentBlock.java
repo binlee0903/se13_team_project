@@ -35,6 +35,17 @@ public class CurrentBlock {
         return this.position;
     }
 
+    public BlockPosition[] getPositions() {
+        BlockPosition[] calcBlockPositions = new BlockPosition[4];
+        BlockPosition[] currentBlockPositions = block.shape(rotate);
+
+        for (int i = 0; i < 4; i++) {
+            calcBlockPositions[i] = new BlockPosition(currentBlockPositions[i].getRowIndex() + position.getRowIndex(), currentBlockPositions[i].getColIndex() + position.getColIndex());
+        }
+
+        return calcBlockPositions;
+    }
+
     public Color getColor() {
         return block.blockColor;
     }

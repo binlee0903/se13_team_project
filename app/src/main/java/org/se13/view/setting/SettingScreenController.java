@@ -1,5 +1,7 @@
 package org.se13.view.setting;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -27,32 +29,46 @@ public class SettingScreenController extends BaseController {
     public Button pauseButton;
     public Button moveDropButton;
 
+
     @FXML
     private ChoiceBox<String> screenSizeChoiceBox;
     @FXML
     private ChoiceBox<String> screenColorBlindChoiceBox;
+    @FXML
+    public ChoiceBox<String> playerChoiceBox;
 
     private Map<String, String> keySettings;
-    private ConfigRepository configRepository;
+    private ConfigRepository[] configRepository;
+
+    private final int PLAYER1 = 0;
+    private final int PLAYER2 = 1;
 
     @Override
     public void onCreate() {
-        this.configRepository = new ConfigRepositoryImpl(0);
+        this.configRepository = new ConfigRepositoryImpl[2];
+        this.configRepository[0] = new ConfigRepositoryImpl(PLAYER1);
+        this.configRepository[1] = new ConfigRepositoryImpl(PLAYER2);
+
+        playerChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                setSettingValueToScreen();
+            }
+        });
+
         resetSettingButtons();
     }
 
     public void resetSettingButtons() {
         keySettings = new HashMap<>();
-        Map<String, Object> configs = configRepository.getConfig();
 
-        // Add options in ChoiceBox for the choice among scene size
-        int screenWidth = (Integer) configs.get("screenWidth");
-        int screenHeight = (Integer) configs.get("screenHeight");
-        String selectedScreenSize = screenWidth + "x" + screenHeight;
+        playerChoiceBox.setItems(FXCollections.observableArrayList("player1", "player2"));
+        playerChoiceBox.setValue("player1");
 
         if (isTestMode == true) {
             screenSizeChoiceBox = new ChoiceBox<>();
             screenColorBlindChoiceBox = new ChoiceBox<>();
+            playerChoiceBox = new ChoiceBox<>();
             moveLeftButton = new Button("keyLeft:");
             moveRightButton = new Button("keyRight:");
             moveDownButton = new Button("keyDown:");
@@ -62,41 +78,7 @@ public class SettingScreenController extends BaseController {
             moveDropButton = new Button("Drop");
         }
 
-        screenSizeChoiceBox.setItems(FXCollections.observableArrayList("300x400", "600x800", "1920x1080"));
-        screenSizeChoiceBox.setValue(selectedScreenSize);
-        // Add options in ChoiceBox for the choice among color mode
-        String colorMode = (String) configs.get("mode");
-        screenColorBlindChoiceBox.setItems(FXCollections.observableArrayList("default", "Red-green", "Blue-yellow"));
-        screenColorBlindChoiceBox.setValue(colorMode);
-        // Add options in buttons for the choice in the keyboard
-        String keyMoveLeft = (String)configs.get("keyLeft");
-        keySettings.put("keyLeft", keyMoveLeft);
-        moveLeftButton.setText("keyLeft: " + keyMoveLeft);
-
-        String keyMoveRight = (String)configs.get("keyRight");
-        keySettings.put("keyRight", keyMoveRight);
-        moveRightButton.setText("keyRight: " + keyMoveRight);
-
-        String keyMoveDown = (String)configs.get("keyDown");
-        keySettings.put("keyDown", keyMoveDown);
-        moveDownButton.setText("keyDown: " + keyMoveDown);
-
-        String keyExit = (String)configs.get("keyExit");
-        keySettings.put("keyExit", keyExit);
-        exitButton.setText("keyExit: " + keyExit);
-
-        String keyDrop = (String)configs.get("keyDrop");
-        keySettings.put("keyDrop", keyDrop);
-        moveDropButton.setText("keyDrop: " + keyDrop);
-
-        String keyMoveRotate = (String)configs.get("keyRotate");
-        keySettings.put("keyRotate", keyMoveRotate);
-        rotateButton.setText("keyRotate: " + keyMoveRotate);
-
-        String keyPause = (String)configs.get("keyPause");
-        keySettings.put("keyPause", keyPause);
-        pauseButton.setText("keyPause: " + keyPause);
-        // By selected scene size, the function will implement logic.
+        setSettingValueToScreen();
     }
 
     @FXML
@@ -169,7 +151,9 @@ public class SettingScreenController extends BaseController {
         indicator = exitButton.getText().split(":")[0];
         String selectedExit = keySettings.get(indicator);
 
-        configRepository.updateConfig(selectedColorMode, selectedWidth,
+        int selectedPlayerID = resolvePlayer();
+
+        configRepository[selectedPlayerID].updateConfig(selectedColorMode, selectedWidth,
                 selectedHeight, selectedMoveLeft, selectedMoveRight,
                 selectedMoveDown, selectedRotate,
                 selectedPause, selectedDrop, selectedExit);
@@ -179,16 +163,71 @@ public class SettingScreenController extends BaseController {
     }
 
     public void handleSettingClearButtonAction() {
-        configRepository.clearConfig();
-        configRepository.insertDefaultConfig();
+        int selectedPlayerID = resolvePlayer();
+        configRepository[selectedPlayerID].clearConfig();
+        configRepository[selectedPlayerID].insertDefaultConfig();
 
         resetSettingButtons();
-        SE13Application.navController.setScreenSize(configRepository.getScreenSize());
+        SE13Application.navController.setScreenSize(configRepository[selectedPlayerID].getScreenSize());
     }
 
     public void handleRankingClearButtonAction() {
         RankingRepositoryImpl rankingRepository = new RankingRepositoryImpl();
         rankingRepository.clearRanking();
         rankingRepository.createNewTableRanking();
+    }
+
+    private void setSettingValueToScreen() {
+        int selectedPlayerID = resolvePlayer();
+
+        Map<String, Object> configs = configRepository[selectedPlayerID].getConfig();
+
+        // Add options in ChoiceBox for the choice among scene size
+        int screenWidth = (Integer) configs.get("screenWidth");
+        int screenHeight = (Integer) configs.get("screenHeight");
+        String selectedScreenSize = screenWidth + "x" + screenHeight;
+
+        screenSizeChoiceBox.setItems(FXCollections.observableArrayList("450x600", "600x800", "1920x1080"));
+        screenSizeChoiceBox.setValue(selectedScreenSize);
+        // Add options in ChoiceBox for the choice among color mode
+        String colorMode = (String) configs.get("mode");
+        screenColorBlindChoiceBox.setItems(FXCollections.observableArrayList("default", "Red-green", "Blue-yellow"));
+        screenColorBlindChoiceBox.setValue(colorMode);
+
+        String keyMoveLeft = (String)configs.get("keyLeft");
+        keySettings.put("keyLeft", keyMoveLeft);
+        moveLeftButton.setText("keyLeft: " + keyMoveLeft);
+
+        String keyMoveRight = (String)configs.get("keyRight");
+        keySettings.put("keyRight", keyMoveRight);
+        moveRightButton.setText("keyRight: " + keyMoveRight);
+
+        String keyMoveDown = (String)configs.get("keyDown");
+        keySettings.put("keyDown", keyMoveDown);
+        moveDownButton.setText("keyDown: " + keyMoveDown);
+
+        String keyExit = (String)configs.get("keyExit");
+        keySettings.put("keyExit", keyExit);
+        exitButton.setText("keyExit: " + keyExit);
+
+        String keyDrop = (String)configs.get("keyDrop");
+        keySettings.put("keyDrop", keyDrop);
+        moveDropButton.setText("keyDrop: " + keyDrop);
+
+        String keyMoveRotate = (String)configs.get("keyRotate");
+        keySettings.put("keyRotate", keyMoveRotate);
+        rotateButton.setText("keyRotate: " + keyMoveRotate);
+
+        String keyPause = (String)configs.get("keyPause");
+        keySettings.put("keyPause", keyPause);
+        pauseButton.setText("keyPause: " + keyPause);
+    }
+
+    private int resolvePlayer() {
+        return switch (playerChoiceBox.getValue()) {
+            case "player1" -> PLAYER1;
+            case "player2" -> PLAYER2;
+            default -> -1;
+        };
     }
 }

@@ -17,6 +17,7 @@ import org.se13.game.block.*;
 import org.se13.game.config.Config;
 import org.se13.game.event.*;
 import org.se13.server.LocalBattleTetrisServer;
+import org.se13.server.TetrisServer;
 import org.se13.sqlite.config.PlayerKeycode;
 import org.se13.utils.Subscriber;
 import org.se13.view.base.BaseController;
@@ -73,7 +74,7 @@ public class BattleScreenController extends BaseController {
     @FXML
     public Text player2_time;
 
-    private LocalBattleTetrisServer server;
+    private TetrisServer server;
 
     private TetrisScreenViewModel player1_viewModel;
     private TetrisScreenViewModel player2_viewModel;
@@ -155,7 +156,7 @@ public class BattleScreenController extends BaseController {
     }
 
     private void setInitState() {
-        if (Config.SCREEN_WIDTH == 300) setSmallScreen();
+        if (Config.SCREEN_WIDTH == 450) setSmallScreen();
         else if (Config.SCREEN_WIDTH == 600) setMediumScreen();
         else if (Config.SCREEN_WIDTH == 1920) setLargeScreen();
 
@@ -230,27 +231,33 @@ public class BattleScreenController extends BaseController {
         SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
             List<TetrisGameEndData> endDatas = server.getEndData();
 
-            if (endDatas.getFirst().score() > endDatas.getLast().score()) {
-                controller.setArguments(new TetrisGameEndData(PLAYER1, endDatas.getFirst().score(), false, ""));
+            if (endDatas.getFirst().isGameOvered() == true) {
+                controller.setArguments(endDatas.getLast());
             } else {
-                controller.setArguments(new TetrisGameEndData(PLAYER2, endDatas.getLast().score(), false, ""));
+                controller.setArguments(endDatas.getFirst());
             }
         });
     }
 
     private void setSmallScreen() {
         gameSize = GameSize.SMALL;
-        width = 25;
-        height = 43;
-        tetrisGameScreenInterval = 2;
-        attackedScreenInterval = 2;
-        player1_tetrisGridView.setFont(new Font("Arial", 2));
-        player1_nextBlockView.setFont(new Font("Arial", 2));
-        player2_tetrisGridView.setFont(new Font("Arial", 2));
-        player2_nextBlockView.setFont(new Font("Arial", 2));
-        player1_attackedBlocksView.setFont(new Font("Arial", 2));
-        player2_attackedBlocksView.setFont(new Font("Arial", 2));
-
+        width = 100;
+        height = 210;
+        tetrisGameScreenInterval = 10;
+        attackedScreenInterval = 10;
+        player1_tetrisGridView.setFont(new Font("Arial", 12));
+        player1_nextBlockView.setFont(new Font("Arial",  12));
+        player2_tetrisGridView.setFont(new Font("Arial", 12));
+        player2_nextBlockView.setFont(new Font("Arial", 12));
+        player1_attackedBlocksView.setFont(new Font("Arial", 10));
+        player2_attackedBlocksView.setFont(new Font("Arial", 10));
+        attackedScreenWidth = 80;
+        attackedScreenHeight = 100;
+        attackedScreenStartPoint = 25;
+        player1_attackedBlocks.setWidth(attackedScreenWidth);
+        player2_attackedBlocks.setWidth(attackedScreenWidth);
+        player1_attackedBlocks.setHeight(attackedScreenHeight);
+        player2_attackedBlocks.setHeight(attackedScreenHeight);
     }
 
     private void setMediumScreen() {
