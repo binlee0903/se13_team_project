@@ -7,6 +7,7 @@ import javafx.scene.control.ChoiceBox;
 import org.se13.SE13Application;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
+import org.se13.online.OnlineBattleTetrisServer;
 import org.se13.server.LocalBattleTetrisServer;
 import org.se13.server.LocalTetrisServer;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
@@ -14,35 +15,38 @@ import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
 import org.se13.view.tetris.*;
 
+import java.io.IOException;
+
 public class LevelSelectScreenController extends BaseController {
 
     @FXML
     public void initialize() {
         modeChoiceBox.setItems(FXCollections.observableArrayList("default","item","timeLimit"));
         modeChoiceBox.setValue("default");
-        typeChoiceBox.setItems(FXCollections.observableArrayList("single", "battle"));
+        typeChoiceBox.setItems(FXCollections.observableArrayList("single", "battle", "online"));
         typeChoiceBox.setValue("single");
     }
 
     @FXML
-    private void handleEasyButtonAction() {
+    private void handleEasyButtonAction() throws IOException {
         startTetrisGame(GameLevel.EASY, setGameMode(modeChoiceBox.getValue()), typeChoiceBox.getValue());
     }
 
     @FXML
-    private void handleNormalButtonAction() {
+    private void handleNormalButtonAction() throws IOException {
         startTetrisGame(GameLevel.NORMAL, setGameMode(modeChoiceBox.getValue()), typeChoiceBox.getValue());
     }
 
     @FXML
-    private void handleHardButtonAction() {
+    private void handleHardButtonAction() throws IOException {
         startTetrisGame(GameLevel.HARD, setGameMode(modeChoiceBox.getValue()), typeChoiceBox.getValue());
     }
 
-    private void startTetrisGame(GameLevel level, GameMode gameMode, String type) {
+    private void startTetrisGame(GameLevel level, GameMode gameMode, String type) throws IOException {
         switch (type) {
             case "single" -> startLocalTetrisGame(level, gameMode);
             case "battle" -> startLocalBattleTetrisGame(level, gameMode);
+            case "online" -> startOnlineTetrisGame();
         }
     }
 
@@ -63,6 +67,17 @@ public class LevelSelectScreenController extends BaseController {
         player2.connectToServer(server);
         SE13Application.navController.navigate(AppScreen.BATTLE, (controller) -> {
             ((BattleScreenController) controller).setArguments(player1, player2, server);
+        });
+    }
+
+    private void startOnlineTetrisGame() throws IOException {
+        OnlineBattleTetrisServer onlineServer = new OnlineBattleTetrisServer("localhost", 5555);
+        Player player1 = new Player(1, new ConfigRepositoryImpl(0).getPlayerKeyCode());
+        Player player2 = new Player(2, new ConfigRepositoryImpl(1).getPlayerKeyCode());
+        player1.connectToServer(onlineServer);
+        player2.connectToServer(onlineServer);
+        SE13Application.navController.navigate(AppScreen.BATTLE, (controller) -> {
+            ((BattleScreenController) controller).setArguments(player1, player2, onlineServer);
         });
     }
 

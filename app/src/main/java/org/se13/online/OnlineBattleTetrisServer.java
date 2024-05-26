@@ -21,8 +21,7 @@ import java.io.*;
 
 // 클라이언트 전용 TetrisServer
 public class OnlineBattleTetrisServer implements TetrisServer {
-    public OnlineBattleTetrisServer(int userId, String serverAddress, int port) throws IOException {
-        this.userId = userId;
+    public OnlineBattleTetrisServer(String serverAddress, int port) throws IOException {
         this.socket = new Socket(serverAddress, port);
         this.service = Executors.newVirtualThreadPerTaskExecutor();
         this.out = new ObjectOutputStream(socket.getOutputStream());
@@ -36,7 +35,7 @@ public class OnlineBattleTetrisServer implements TetrisServer {
         this.handlers = new HashMap<>();
     }
 
-    public void write(TetrisAction action) {
+    public void write(int userId, TetrisAction action) {
         TetrisActionPacket packet = new TetrisActionPacket(userId, action);
         service.execute(() -> {
             try {
@@ -54,7 +53,7 @@ public class OnlineBattleTetrisServer implements TetrisServer {
                 OnlineEventPacket packet = (OnlineEventPacket) in.readObject();
                 if (packet.event() != null) {
                     // event 처리
-                    handlers.get(userId).handle(userId, packet.event());
+                    handlers.get(0).handle(0, packet.event());
                 } else if (packet.endData() != null) {
                     // endData 처리
                     responseGameOver(packet.endData());
@@ -102,9 +101,19 @@ public class OnlineBattleTetrisServer implements TetrisServer {
                      ROTATE_BLOCK_CW,
                      MOVE_BLOCK_LEFT,
                      MOVE_BLOCK_DOWN,
-                     MOVE_BLOCK_RIGHT -> write(packet.action());
+                     MOVE_BLOCK_RIGHT -> write(packet.userId(), packet.action());
             }
         };
+    }
+
+    private void handleInputAction(int userId, TetrisAction action) {
+        TetrisSession session = sessions.get(userId);
+        if (session == null) {
+            broadcast(new ServerErrorEvent("세션이 종료되었습니다." + userId), userId);
+            return;
+        }
+
+        session.requestInput(action);
     }
 
     @Override
@@ -208,7 +217,6 @@ public class OnlineBattleTetrisServer implements TetrisServer {
     private GameMode mode;
 
     private static final Logger log = LoggerFactory.getLogger(OnlineActionRepository.class);
-    private int userId;
     private Socket socket;
     private ExecutorService service;
     private String serverAddress;
