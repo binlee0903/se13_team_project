@@ -6,10 +6,8 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import org.se13.SE13Application;
 import org.se13.ai.*;
 import org.se13.game.block.Block;
 import org.se13.game.block.CellID;
@@ -38,18 +36,16 @@ public class TrainingScreenController extends BaseController {
 
     private boolean isEnd = false;
 
-    int count = 0;
-    private int batch = 1;
-    private int hold = 20;
-    private int crossed = 60;
-    private int mutate = 120;
+    private int batch = 100;
+    private int hold = 10;
+    private int crossed = 30;
+    private int mutate = 50;
     private ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
     private AtomicInteger integer = new AtomicInteger(0);
     private List<NeuralResult> cached = new ArrayList<>(100);
     private Computer.SaveComputer saver = (computerId, result) -> {
         cached.add(result);
         int order = integer.incrementAndGet();
-        // log.info("computer {} finished, fitness: {}, {} computers finish", result.computerId(), result.fitness(), integer.get());
 
         if (order == batch) {
             try {
@@ -88,11 +84,6 @@ public class TrainingScreenController extends BaseController {
         tetrisGridView = gameCanvas.getGraphicsContext2D();
 
         setInitState();
-
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, (keyEvent -> {
-            isEnd = true;
-            SE13Application.navController.popBackStack();
-        }));
 
         this.frame.setStyle("-fx-border-color: red;");
 
@@ -226,17 +217,17 @@ public class TrainingScreenController extends BaseController {
      */
     private List<NeuralResult> evolution(List<NeuralResult> results) {
         Random random = new Random();
-        List<NeuralResult> next = new ArrayList<>(200);
-
-        List<NeuralResult> best = new ArrayList<>(200);
         results.sort((r1, r2) -> -Integer.compare(r1.fitness(), r2.fitness()));
+
+        List<NeuralResult> next = new ArrayList<>(200);
+        List<NeuralResult> best = new ArrayList<>(hold);
 
         for (int i = 0; i < hold; i++) {
             best.add(results.get(i));
         }
 
         // crossover
-        List<NeuralResult> cross = new ArrayList<>(400);
+        List<NeuralResult> cross = new ArrayList<>(hold * hold);
         best.forEach((r1) ->
                 best.forEach((n2) ->
                         cross.add(r1.cross(n2))));

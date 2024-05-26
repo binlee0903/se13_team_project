@@ -36,13 +36,11 @@ public class TetrisGrid {
     }
 
     public TetrisGrid copy() {
-        CellID[][] newCell = new CellID[rowSize][];
+        CellID[][] newCell = new CellID[rowSize][colSize];
         for (int row = 0; row < rowSize; row++) {
-            CellID[] column = new CellID[colSize];
             for (int col = 0; col < colSize; col++) {
-                column[col] = gridCells[row][col];
+                newCell[row][col] = gridCells[row][col];
             }
-            newCell[row] = column;
         }
         return new TetrisGrid(rowSize, colSize, newCell);
     }
@@ -384,4 +382,13 @@ public class TetrisGrid {
     private final List<CellClearedListener> listeners;
     private CellID[][] attackedCells;
     private int attackedCellsRowCount;
+
+    @Override
+    public String toString() {
+        return "TetrisGrid{" +
+            "colSize=" + colSize +
+            ", rowSize=" + rowSize +
+            ", gridCells=" + Arrays.deepToString(gridCells) +
+            '}';
+    }
 }

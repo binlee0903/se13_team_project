@@ -106,6 +106,17 @@ public class CurrentBlock {
     }
 
     public CurrentBlock copy() {
-        return new CurrentBlock(block, item, position, rotate);
+        BlockPosition positionClone = new BlockPosition(position.getRowIndex(), position.getColIndex());
+        return new CurrentBlock(block, item, positionClone, rotate);
+    }
+
+    @Override
+    public String toString() {
+        return "CurrentBlock{" +
+            "rotate=" + rotate +
+            ", position=" + position +
+            ", item=" + item +
+            ", block=" + block +
+            '}';
     }
 }

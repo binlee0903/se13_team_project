@@ -6,6 +6,8 @@ import org.se13.game.block.Cell;
 import org.se13.game.block.CellID;
 import org.se13.game.block.CurrentBlock;
 import org.se13.game.grid.TetrisGrid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,21 +17,22 @@ import java.util.Random;
 import static org.se13.ai.PredictUtils.*;
 
 public class Predict implements Prediction {
+    private static final Logger log = LoggerFactory.getLogger(Predict.class);
 
-    private double heightWeight;
-    private double lineWeight;
-    private double holeWeight;
-    private double bumpinessWeight;
+    private final float heightWeight;
+    private final float lineWeight;
+    private final float holeWeight;
+    private final float bumpinessWeight;
 
     public Predict() {
         this(new Random());
     }
 
     public Predict(Random random) {
-        this(random.nextDouble(), random.nextDouble(), random.nextDouble(), random.nextDouble());
+        this(random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat());
     }
 
-    public Predict(double heightWeight, double lineWeight, double holeWeight, double bumpinessWeight) {
+    public Predict(float heightWeight, float lineWeight, float holeWeight, float bumpinessWeight) {
         this.heightWeight = heightWeight;
         this.lineWeight = lineWeight;
         this.holeWeight = holeWeight;
@@ -40,7 +43,7 @@ public class Predict implements Prediction {
     public List<TetrisAction> predict(TetrisGrid board, CurrentBlock block) {
         int bestPosition = 0;
         int bestRotate = 0;
-        double best = Integer.MIN_VALUE;
+        float best = Integer.MIN_VALUE;
 
         for (int rotation = 0; rotation < 4; rotation++) {
             CurrentBlock clone = block.copy();
@@ -52,7 +55,7 @@ public class Predict implements Prediction {
 
             int moveRight = 0;
             do {
-                double score = fitness(board, clone);
+                float score = fitness(board, clone);
                 if (score > best) {
                     best = score;
                     bestPosition = moveRight;
@@ -60,51 +63,61 @@ public class Predict implements Prediction {
                 }
                 moveRight++;
             } while (shiftRight(board, clone));
-
         }
 
-        ArrayList<TetrisAction> bestMove = new ArrayList<>();
+        return createActions(board, block, bestPosition, bestRotate);
+    }
 
-        CurrentBlock bestBlock = block.copy();
-        while (shiftLeft(board, bestBlock)) {
-            bestMove.add(TetrisAction.MOVE_BLOCK_LEFT);
+    private float fitness(TetrisGrid board, CurrentBlock block) {
+        float score = 0;
+
+        TetrisGrid cloneBoard = board.copy();
+        CurrentBlock cloneBlock = block.copy();
+
+        while (shiftDown(cloneBoard, cloneBlock)) ;
+        setCurrentBlock(cloneBoard, cloneBlock);
+
+        score -= heightWeight * aggregate(cloneBoard);
+        score += lineWeight * lines(cloneBoard);
+        score -= holeWeight * holes(cloneBoard);
+        score -= bumpinessWeight * bumpiness(cloneBoard);
+
+        deleteCurrentBlock(cloneBoard, cloneBlock);
+
+        return score;
+    }
+
+    private List<TetrisAction> createActions(TetrisGrid board, CurrentBlock block, int bestPosition, int bestRotate) {
+        List<TetrisAction> actions = new ArrayList<>();
+        TetrisGrid boardClone = board.copy();
+        CurrentBlock blockClone = block.copy();
+
+        for (int i = 0; i < bestRotate; i++) {
+            actions.add(TetrisAction.ROTATE_BLOCK_CW);
+            blockClone.rotateCW();
+        }
+
+        while (shiftLeft(boardClone, blockClone)) {
+            actions.add(TetrisAction.MOVE_BLOCK_LEFT);
         }
 
         for (int i = 0; i < bestPosition; i++) {
-            if (bestMove.contains(TetrisAction.MOVE_BLOCK_LEFT)) {
-                bestMove.removeFirst();
+            if (actions.contains(TetrisAction.MOVE_BLOCK_LEFT)) {
+                actions.remove(TetrisAction.MOVE_BLOCK_LEFT);
             } else {
-                bestMove.add(TetrisAction.MOVE_BLOCK_RIGHT);
+                actions.add(TetrisAction.MOVE_BLOCK_RIGHT);
             }
+            shiftRight(board, blockClone);
         }
 
-        for (int i = 0; i < bestRotate; i++) {
-            bestMove.add(TetrisAction.ROTATE_BLOCK_CW);
-        }
+        actions.add(TetrisAction.IMMEDIATE_BLOCK_PLACE);
 
-        for (int i = 0; i < shiftDown(board, bestBlock); i++) {
-            bestMove.add(TetrisAction.MOVE_BLOCK_DOWN);
-        }
+//        while (shiftDown(boardClone, blockClone)) {
+//            actions.add(TetrisAction.MOVE_BLOCK_DOWN);
+//        }
+//        actions.add(TetrisAction.MOVE_BLOCK_DOWN);
 
-        return bestMove;
-    }
-
-    private double fitness(TetrisGrid board, CurrentBlock block) {
-        double score = 0;
-
-        CurrentBlock attempt = block.copy();
-
-        shiftDown(board, attempt);
-        setCurrentBlock(board, block);
-
-        score -= heightWeight * aggregate(board);
-        score += lineWeight * lines(board);
-        score -= holeWeight * holes(board);
-        score -= bumpinessWeight * bumpiness(board);
-
-        deleteCurrentBlock(board, block);
-
-        return score;
+        return actions;
     }
 
     private boolean shiftLeft(TetrisGrid board, CurrentBlock block) {
@@ -127,28 +140,27 @@ public class Predict implements Prediction {
         return true;
     }
 
-    private int shiftDown(TetrisGrid board, CurrentBlock block) {
-        int count = 0;
-        for (int i = block.getPosition().getRowIndex(); i < 22; i++) {
-            block.move(1, 0);
-            if (isBlockCollapse(board, block)) {
-                block.move(-1, 0);
-                return count;
-            }
-            count++;
+    private boolean shiftDown(TetrisGrid board, CurrentBlock block) {
+        block.move(1, 0);
+        if (isBlockCollapse(board, block)) {
+            block.move(-1, 0);
+            return false;
         }
-
-        throw new RuntimeException("도달할 수 없는 코드입니다." );
+        return true;
     }
 
     private void setCurrentBlock(TetrisGrid board, CurrentBlock block) {
         BlockPosition position = block.getPosition();
 
-        for (Cell cell : block.cells()) {
-            BlockPosition p = cell.position();
-            int rowIndex = p.getRowIndex() + position.getRowIndex();
-            int colIndex = p.getColIndex() + position.getColIndex();
-            board.setCell(rowIndex, colIndex, cell.cellID());
+        try {
+            for (Cell cell : block.cells()) {
+                BlockPosition p = cell.position();
+                int rowIndex = p.getRowIndex() + position.getRowIndex();
+                int colIndex = p.getColIndex() + position.getColIndex();
+                board.setCell(rowIndex, colIndex, cell.cellID());
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new RuntimeException("IsBlockCollapse :" + isBlockCollapse(board, block));
         }
     }
 
@@ -179,35 +191,19 @@ public class Predict implements Prediction {
         return false;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Predict predict = (Predict) o;
-        return Double.compare(predict.heightWeight, heightWeight) == 0 &&
-                Double.compare(predict.lineWeight, lineWeight) == 0 &&
-                Double.compare(predict.holeWeight, holeWeight) == 0 &&
-                Double.compare(predict.bumpinessWeight, bumpinessWeight) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(heightWeight, lineWeight, holeWeight, bumpinessWeight);
-    }
-
-    public double getHeightWeight() {
+    public float getHeightWeight() {
         return heightWeight;
     }
 
-    public double getLineWeight() {
+    public float getLineWeight() {
         return lineWeight;
     }
 
-    public double getHoleWeight() {
+    public float getHoleWeight() {
         return holeWeight;
     }
 
-    public double getBumpinessWeight() {
+    public float getBumpinessWeight() {
         return bumpinessWeight;
     }
 
@@ -219,5 +215,18 @@ public class Predict implements Prediction {
                 ", holeWeight=" + holeWeight +
                 ", bumpinessWeight=" + bumpinessWeight +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Predict predict = (Predict) o;
+        return Float.compare(heightWeight, predict.heightWeight) == 0 && Float.compare(lineWeight, predict.lineWeight) == 0 && Float.compare(holeWeight, predict.holeWeight) == 0 && Float.compare(bumpinessWeight, predict.bumpinessWeight) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(heightWeight, lineWeight, holeWeight, bumpinessWeight);
     }
 }

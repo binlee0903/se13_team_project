@@ -56,7 +56,7 @@ public class PredictUtils {
             int top = 0;
             for (int row = 0; row < 22; row++) {
                 if (!board.isEmptyCell(row, col)) {
-                    top = row;
+                    top = 22 - row;
                     break;
                 }
             }
@@ -67,5 +67,21 @@ public class PredictUtils {
         }
 
         return count;
+    }
+
+    public static Predict normalize(Predict predict) {
+        float normalized = (float) Math.sqrt(
+            predict.getHeightWeight() * predict.getHeightWeight() +
+                predict.getLineWeight() * predict.getLineWeight() +
+                predict.getHoleWeight() * predict.getHoleWeight() +
+                predict.getBumpinessWeight() * predict.getBumpinessWeight()
+        );
+
+        return new Predict(
+            predict.getHeightWeight() / normalized,
+            predict.getLineWeight() / normalized,
+            predict.getHoleWeight() / normalized,
+            predict.getBumpinessWeight() / normalized
+        );
     }
 }

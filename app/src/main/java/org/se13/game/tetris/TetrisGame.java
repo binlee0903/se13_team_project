@@ -339,7 +339,9 @@ public class TetrisGame {
         BlockPosition currentBlockPosition = currentBlock.getPosition();
 
         for (BlockPosition p : currentBlock.shape()) {
-            board.setCell(p.getRowIndex() + currentBlockPosition.getRowIndex(), p.getColIndex() + currentBlockPosition.getColIndex(), CellID.EMPTY);
+            int rowIndex = p.getRowIndex() + currentBlockPosition.getRowIndex();
+            int colIndex = p.getColIndex() + currentBlockPosition.getColIndex();
+            board.setCell(rowIndex, colIndex, CellID.EMPTY);
         }
     }
 
@@ -509,8 +511,9 @@ public class TetrisGame {
 
     private void computerInputEvent() {
         TetrisGrid board = tetrisGameGrid.copy();
+        CurrentBlock block = currentBlock.copy();
         deleteCurrentBlockFromGrid(board);
-        events.setValue(new ComputerInputEvent(board, currentBlock));
+        events.setValue(new ComputerInputEvent(board, block));
     }
 
     private void checkGameIsOver() {

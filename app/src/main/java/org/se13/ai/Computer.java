@@ -1,9 +1,12 @@
 package org.se13.ai;
 
 import org.se13.game.action.TetrisAction;
+import org.se13.game.block.BlockPosition;
+import org.se13.game.block.CurrentBlock;
 import org.se13.game.event.LineClearedEvent;
 import org.se13.game.event.NextBlockEvent;
 import org.se13.game.event.TetrisEvent;
+import org.se13.game.grid.TetrisGrid;
 import org.se13.server.TetrisServer;
 import org.se13.sqlite.config.PlayerKeycode;
 import org.se13.view.tetris.Player;
@@ -19,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Computer extends Player {
     private static final Logger log = LoggerFactory.getLogger(Computer.class);
 
-    private int limited = 500;
+    private int limited = 0;
     int fitness = 0;
     private boolean isBattleMode;
     private Predict predict;
@@ -77,13 +80,20 @@ public class Computer extends Player {
     }
 
     private void choose(ComputerInputEvent input) {
-        if (limited <= 0) {
+        if (limited >= 500) {
             actionRepository.immediateBlockPlace();
             return;
         }
 
+        TetrisGrid board = input.board();
+
         if (actions.isEmpty()) {
-            actions.addAll(predict.predict(input.board(), input.block()));
+            CurrentBlock block = input.block();
+            BlockPosition startOffset = block.getBlock().startOffset;
+            if (block.getPosition().getRowIndex() != startOffset.getRowIndex()) return;
+
+            actions.addAll(predict.predict(input.board(), block));
+            limited++;
         }
 
         TetrisAction choose = actions.poll();
@@ -123,6 +133,5 @@ public class Computer extends Player {
     }
 
     void nextBlockEvent() {
-        limited--;
     }
 }
