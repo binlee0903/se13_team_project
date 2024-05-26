@@ -48,13 +48,13 @@ public class Neural {
         this.weightsHiddenOutput = weightsOutput;
     }
 
-    public TetrisAction predict(ComputerInput input) {
+    public TetrisAction predict(ComputerInputEvent input) {
         CellID[] cellIds = CellID.values();
         int min = min(cellIds);
         int max = max(cellIds);
 
         double[][] state = new double[ROWS][COLS];
-        CellID[][] board = input.tetrisGrid;
+        CellID[][] board = input.board().copy().getGrid();
 
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {

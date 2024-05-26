@@ -11,11 +11,9 @@ public class ComputerEventRepository implements TetrisEventRepository {
     private TetrisEventRepository delegate;
     private Observer<TetrisEvent> forComputer = new Observer<>();
     private Observer<TetrisGameEndData> forEnd = new Observer<>();
-    private Observer<ComputerInput> observer = new Observer<>();
 
     public ComputerEventRepository(TetrisEventRepository repository) {
         this.delegate = repository;
-        observer.setValue(new ComputerInput());
     }
 
     @Override
@@ -28,25 +26,11 @@ public class ComputerEventRepository implements TetrisEventRepository {
     public void response(TetrisEvent event) {
         delegate.response(event);
         forComputer.setValue(event);
-
-        ComputerInput current = observer.getValue();
-        switch (event) {
-            case UpdateTetrisState state -> {
-                current.tetrisGrid = state.tetrisGrid();
-            }
-            default -> {
-            }
-        }
-        observer.setValue(current);
     }
 
     @Override
     public void subscribe(Subscriber<TetrisEvent> subscriber, Subscriber<TetrisGameEndData> isGameOver) {
         delegate.subscribe(subscriber, isGameOver);
-    }
-
-    public void subscribe(Subscriber<ComputerInput> subscriber) {
-        observer.subscribe(subscriber);
     }
 
     public void subscribeEvent(Subscriber<TetrisEvent> subscriber) {

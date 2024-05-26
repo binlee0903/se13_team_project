@@ -1,6 +1,8 @@
 package org.se13.game.grid;
 
-import org.se13.game.block.*;
+import org.se13.game.block.BlockPosition;
+import org.se13.game.block.CellID;
+import org.se13.game.block.CurrentBlock;
 import org.se13.game.event.AttackingTetrisBlocks;
 import org.se13.game.item.CellClearedListener;
 
@@ -22,6 +24,27 @@ public class TetrisGrid {
         this.attackedCells = getEmptyGrid(DEFAULT_ATTACKED_ROW_SIZE, colSize);
         this.attackedCellsRowCount = 0;
         this.listeners = new ArrayList<>();
+    }
+
+    public TetrisGrid(int rowSize, int colSize, CellID[][] grid) {
+        this.rowSize = rowSize;
+        this.colSize = colSize;
+        this.gridCells = grid;
+        this.attackedCells = null;
+        this.attackedCellsRowCount = 0;
+        this.listeners = new ArrayList<>();
+    }
+
+    public TetrisGrid copy() {
+        CellID[][] newCell = new CellID[rowSize][];
+        for (int row = 0; row < rowSize; row++) {
+            CellID[] column = new CellID[colSize];
+            for (int col = 0; col < colSize; col++) {
+                column[col] = gridCells[row][col];
+            }
+            newCell[row] = column;
+        }
+        return new TetrisGrid(rowSize, colSize, newCell);
     }
 
     public CellID[][] getGrid() {

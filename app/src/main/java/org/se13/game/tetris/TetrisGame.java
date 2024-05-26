@@ -1,5 +1,6 @@
 package org.se13.game.tetris;
 
+import org.se13.ai.ComputerInputEvent;
 import org.se13.game.action.TetrisAction;
 import org.se13.game.block.*;
 import org.se13.game.event.*;
@@ -111,6 +112,7 @@ public class TetrisGame {
         }
 
         updateState(tetrisGameGrid, nextBlock, score, timeLimitModeTimer.getRemainingTime());
+        computerInputEvent();
     }
 
     public void startGame() {
@@ -330,10 +332,14 @@ public class TetrisGame {
     }
 
     void deleteCurrentBlockFromGrid() {
+        deleteCurrentBlockFromGrid(tetrisGameGrid);
+    }
+
+    void deleteCurrentBlockFromGrid(TetrisGrid board) {
         BlockPosition currentBlockPosition = currentBlock.getPosition();
 
         for (BlockPosition p : currentBlock.shape()) {
-            tetrisGameGrid.setCell(p.getRowIndex() + currentBlockPosition.getRowIndex(), p.getColIndex() + currentBlockPosition.getColIndex(), CellID.EMPTY);
+            board.setCell(p.getRowIndex() + currentBlockPosition.getRowIndex(), p.getColIndex() + currentBlockPosition.getColIndex(), CellID.EMPTY);
         }
     }
 
@@ -498,26 +504,13 @@ public class TetrisGame {
     }
 
     private void nextBlockEvent() {
-        CellID[][] cells = tetrisGameGrid.getGrid();
-        CellID[][] without = new CellID[cells.length][];
+        events.setValue(new NextBlockEvent(tetrisGameGrid, currentBlock));
+    }
 
-        for (int i = 0; i < cells.length; i++) {
-            CellID[] row = new CellID[cells[i].length];
-            for (int j = 0; j < cells[i].length; j++) {
-                row[j] = cells[i][j];
-            }
-            without[i] = row;
-        }
-
-        BlockPosition currentBlockPosition = currentBlock.getPosition();
-
-        for (BlockPosition p : currentBlock.shape()) {
-            int rowIndex = p.getRowIndex() + currentBlockPosition.getRowIndex();
-            int colIndex = p.getColIndex() + currentBlockPosition.getColIndex();
-            without[rowIndex][colIndex] = CellID.EMPTY;
-        }
-
-        events.setValue(new NextBlockEvent(cells, without));
+    private void computerInputEvent() {
+        TetrisGrid board = tetrisGameGrid.copy();
+        deleteCurrentBlockFromGrid(board);
+        events.setValue(new ComputerInputEvent(board, currentBlock));
     }
 
     private void checkGameIsOver() {

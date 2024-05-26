@@ -13,6 +13,8 @@ module org.se13 {
     exports org.se13.view.ranking;
     exports org.se13.view.difficulty;
     exports org.se13.ai;
+    exports org.se13.game.action;
+    exports org.se13.game.block;
     opens org.se13.view.difficulty to javafx.fxml;
     opens org.se13.view.ranking to javafx.fxml;
     exports org.se13.view.setting;

@@ -24,7 +24,10 @@ import org.se13.view.base.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,14 +39,14 @@ public class TrainingScreenController extends BaseController {
     private boolean isEnd = false;
 
     int count = 0;
-    private int batch = 200;
-    private int hold = 40;
-    private int mutate = 40;
-    private int crossed = 80;
+    private int batch = 1;
+    private int hold = 20;
+    private int crossed = 60;
+    private int mutate = 120;
     private ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
     private AtomicInteger integer = new AtomicInteger(0);
     private List<NeuralResult> cached = new ArrayList<>(100);
-    private Computer.SaveComputer saver = (result) -> {
+    private Computer.SaveComputer saver = (computerId, result) -> {
         cached.add(result);
         int order = integer.incrementAndGet();
         // log.info("computer {} finished, fitness: {}, {} computers finish", result.computerId(), result.fitness(), integer.get());
@@ -200,12 +203,12 @@ public class TrainingScreenController extends BaseController {
             final NeuralResult result = getData(computerId, data);
 
             if (computerId < 10) {
-                log.info("computer{} fitness: {}, neural: {}", computerId, result.fitness(), result.neural());
+                log.info("computer{} fitness: {}, predict: {}", computerId, result.fitness(), result.predict());
             }
 
             service.execute(() -> {
                 TetrisEventRepository eventRepository = new TetrisEventRepositoryImpl();
-                Computer computer = new Computer(computerId, null, new ComputerEventRepository(eventRepository), result.neural(), saver);
+                Computer computer = new Computer(computerId, null, new ComputerEventRepository(eventRepository), result.predict(), saver);
                 LocalTetrisServer server = new LocalTetrisServer(GameLevel.NORMAL, GameMode.DEFAULT);
                 observe(computer.eventRepository, computerId);
                 computer.connectToServer(server);
@@ -215,42 +218,39 @@ public class TrainingScreenController extends BaseController {
     }
 
     /**
-     * Batch 100개 기준
+     * Batch 200개 기준
      * 상위 20개는 유지
-     * 상위 20개끼리 교배해서 40개 추가
+     * 상위 20개끼리 교배해서 60개 추가
      * 상위 20개 데이터에서 부분적으로 돌연변이 추가
      * 나머지 20개는 버림 (데이터가 없으면 새로 만들어짐)
      */
     private List<NeuralResult> evolution(List<NeuralResult> results) {
         Random random = new Random();
-        ArrayList<NeuralResult> next = new ArrayList(200);
-        results.addAll(data.neuralList());
+        List<NeuralResult> next = new ArrayList<>(200);
+
+        List<NeuralResult> best = new ArrayList<>(200);
         results.sort((r1, r2) -> -Integer.compare(r1.fitness(), r2.fitness()));
 
-        // 상위 20개는 유지
         for (int i = 0; i < hold; i++) {
-            next.add(results.get(i));
+            best.add(results.get(i));
         }
 
-        // 상위 20개끼리 교배해서 40개 추가
-        ArrayList<NeuralResult> cross = new ArrayList<>(400);
-        for (NeuralResult father: next) {
-            for (NeuralResult mother: next) {
-                if (father == mother) continue;
-                cross.add(new NeuralResult(father.neural().crossover(mother.neural())));
-            }
+        // crossover
+        List<NeuralResult> cross = new ArrayList<>(400);
+        best.forEach((r1) ->
+                best.forEach((n2) ->
+                        cross.add(r1.cross(n2))));
+
+        for (int i = 0; i < mutate; i++) {
+            NeuralResult select = best.get(random.nextInt(best.size()));
+            best.add(select.mutate(random));
         }
+
+        next.addAll(best);
         Collections.shuffle(cross);
 
         for (int i = 0; i < crossed; i++) {
             next.add(cross.get(i));
-        }
-
-        // 상위 20개 중에 돌연변이 추가
-        for (int i = 0; i < mutate; i++) {
-            int randomIndex = random.nextInt(results.size());
-            Neural neural = results.get(randomIndex).neural();
-            next.add(new NeuralResult(neural.mutate()));
         }
 
         return next;
@@ -260,7 +260,7 @@ public class TrainingScreenController extends BaseController {
         try {
             return data.get(computerId);
         } catch (Exception e) {
-            return new NeuralResult(new Neural());
+            return new NeuralResult(new Predict());
         }
     }
 }
