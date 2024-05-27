@@ -18,8 +18,8 @@ public class TetrisClient {
         repository.response(state);
     }
 
-    public void gameOver(int score, boolean isItemMode, String difficulty) {
-        repository.gameOver(new TetrisGameEndData(userId, score, isItemMode, true, difficulty));
+    public void gameOver(int score, boolean isItemMode, boolean isGameOvered, String difficulty) {
+        repository.gameOver(new TetrisGameEndData(userId, score, isItemMode, isGameOvered, difficulty));
     }
 
     public int getUserId() {

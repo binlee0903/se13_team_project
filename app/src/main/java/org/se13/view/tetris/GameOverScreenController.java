@@ -9,14 +9,12 @@ import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
 import org.se13.view.ranking.RankingScreenController;
 
-import java.util.List;
-
 public class GameOverScreenController extends BaseController {
     @Override
     public void onStart() {
         super.onStart();
 
-        if (endData.winnerUserId() == -1) {
+        if (endData.userID() == -1) {
             score.setText(String.valueOf(endData.score()));
             rankingRepository = new RankingRepositoryImpl();
             rankingRepository.createNewTableRanking();
@@ -29,10 +27,10 @@ public class GameOverScreenController extends BaseController {
             rankingButton.setVisible(false);
             score.setText(String.valueOf(endData.score()));
 
-            if (endData.winnerUserId() == 1) {
-                winnerUser.setText("player1");
-            } else {
+            if (endData.userID() == 1) {
                 winnerUser.setText("player2");
+            } else {
+                winnerUser.setText("player1");
             }
         }
     }

@@ -11,6 +11,4 @@ public interface TetrisServer {
     void disconnect(TetrisClient client);
 
     void responseGameOver(int score, boolean isItemMode, String difficulty);
-
-    List<TetrisGameEndData> getEndData();
 }

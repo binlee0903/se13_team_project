@@ -25,7 +25,7 @@ public class LocalTetrisServer implements TetrisServer {
 
     @Override
     public void responseGameOver(int score, boolean isItemMode, String difficulty) {
-        this.player.gameOver(score, isItemMode, difficulty);
+        this.player.gameOver(score, isItemMode, playerGame.isGameOvered(), difficulty);
         tetrisTimer.cancel();
     }
 
@@ -54,11 +54,6 @@ public class LocalTetrisServer implements TetrisServer {
         playerGame.stopGame();
         player = null;
         playerGame = null;
-    }
-
-    @Override
-    public List<TetrisGameEndData> getEndData() {
-        return null;
     }
 
     private void startGame() {

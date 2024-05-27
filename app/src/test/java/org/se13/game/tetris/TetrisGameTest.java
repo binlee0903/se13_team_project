@@ -37,11 +37,6 @@ public class TetrisGameTest {
             }
 
             @Override
-            public List<TetrisGameEndData> getEndData() {
-                return List.of();
-            }
-
-            @Override
             public TetrisActionHandler connect(TetrisClient client) {
                 return null;
             }
