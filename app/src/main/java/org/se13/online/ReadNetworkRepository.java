@@ -46,7 +46,7 @@ public class ReadNetworkRepository {
                     log.error(e.getMessage());
                 }
             }
-        });
+        }).start();
     }
 
     public TetrisEventRepository playerEventRepository() {

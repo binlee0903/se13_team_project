@@ -104,6 +104,7 @@ public class LevelSelectScreenController extends BaseController {
         ReadNetworkRepository networkRepository = new ReadNetworkRepository(in, playerId);
         TetrisEventRepository playerEventRepository = networkRepository.playerEventRepository();
         TetrisEventRepository opponentEventRepository = networkRepository.opponentEventRepository();
+        networkRepository.read();
 
         ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
         TetrisActionRepository playerActionRepository = new ClientActionRepository(playerId, service, out);
