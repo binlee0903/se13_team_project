@@ -112,7 +112,7 @@ public class LevelSelectScreenController extends BaseController {
         PlayerKeycode emptyKeycode = new PlayerKeycode("", "", "", "", "", "", "");
 
         Player player = new Player(playerId, keycode, playerActionRepository, playerEventRepository);
-        Player opponent = new Player(opponentId, emptyKeycode, null, opponentEventRepository);
+        Player opponent = new Player(opponentId, emptyKeycode, new EmptyTetrisActionRepository(), opponentEventRepository);
 
         System.out.println("myPlayerId: " + playerId + ", opponentPlayerId: " + opponentId);
 
