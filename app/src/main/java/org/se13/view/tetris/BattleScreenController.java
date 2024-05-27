@@ -27,8 +27,6 @@ import org.se13.view.nav.AppScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 public class BattleScreenController extends BaseController {
 
     private static final Logger log = LoggerFactory.getLogger(BattleScreenController.class);
@@ -75,8 +73,6 @@ public class BattleScreenController extends BaseController {
     public Text player2_timeLimitPanel;
     @FXML
     public Text player2_time;
-
-    private TetrisServer server;
 
     private TetrisScreenViewModel player1_viewModel;
     private TetrisScreenViewModel player2_viewModel;
@@ -130,8 +126,8 @@ public class BattleScreenController extends BaseController {
 
         setInitState();
 
-        player1_viewModel.observe(observePlayerEvent(PLAYER1), null);
-        player2_viewModel.observe(observePlayerEvent(PLAYER2), null);
+        player1_viewModel.observe(observePlayerEvent(PLAYER1), bindGameEnd());
+        player2_viewModel.observe(observePlayerEvent(PLAYER2), bindGameEnd());
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
             String keyCode = key.getCode().getName().toLowerCase();
@@ -146,14 +142,13 @@ public class BattleScreenController extends BaseController {
         player2_viewModel.connect();
     }
 
-    public void setArguments(Player player1, Player player2, TetrisServer server) {
+    public void setArguments(Player player1, Player player2) {
         this.actionRepository1 = player1.getActionRepository();
         this.stateRepository1 = player1.getEventRepository();
         this.actionRepository2 = player2.getActionRepository();
         this.stateRepository2 = player2.getEventRepository();
         this.player1_keycode = player1.getPlayerKeycode();
         this.player2_keycode = player2.getPlayerKeycode();
-        this.server = server;
     }
 
 //    public void setOnlineArguments(Player player1, Player player2, OnlineBattleTetrisServer server) {
@@ -192,7 +187,6 @@ public class BattleScreenController extends BaseController {
                     case InsertAttackBlocksEvent events -> handleAttackedState(null, userID);
                     case AttackedTetrisBlocks state -> handleAttackedState(state, userID);
                     case ServerErrorEvent error -> handleServerError(error);
-                    case GameEndEvent gameEndEvent -> gameEnd();
                     default -> {}
                 }
             });
@@ -237,16 +231,16 @@ public class BattleScreenController extends BaseController {
         }
     }
 
-    private void gameEnd() {
-        SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
-            List<TetrisGameEndData> endDatas = server.getEndData();
-
-            if (endDatas.getFirst().isGameOvered()) {
-                controller.setArguments(endDatas.getLast());
-            } else {
-                controller.setArguments(endDatas.getFirst());
+    private Subscriber<TetrisGameEndData> bindGameEnd() {
+        return (endData) -> {
+            if (endData.isGameOvered() == true) {
+                Platform.runLater(() -> {
+                    SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
+                        controller.setArguments(endData);
+                    });
+                });
             }
-        });
+        };
     }
 
     private void setSmallScreen() {
