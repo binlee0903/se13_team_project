@@ -3,7 +3,9 @@ package org.se13.server;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.game.tetris.TetrisGame;
+import org.se13.view.tetris.TetrisGameEndData;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,7 +25,7 @@ public class LocalTetrisServer implements TetrisServer {
 
     @Override
     public void responseGameOver(int score, boolean isItemMode, String difficulty) {
-        this.player.gameOver(score, isItemMode, difficulty);
+        this.player.gameOver(score, isItemMode, playerGame.isGameOvered(), difficulty);
         tetrisTimer.cancel();
     }
 

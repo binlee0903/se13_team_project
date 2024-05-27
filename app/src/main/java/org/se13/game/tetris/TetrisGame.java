@@ -13,7 +13,6 @@ import org.se13.game.timer.*;
 import org.se13.server.TetrisServer;
 import org.se13.utils.Observer;
 import org.se13.utils.Subscriber;
-import org.se13.view.tetris.TetrisGameEndData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,9 +132,8 @@ public class TetrisGame {
         server.responseGameOver(getScore(), isItemMode(), getDifficulty());
     }
 
-    public void stopBattleGame() {
-        this.gameStatus = GameStatus.GAMEOVER;
-        this.inputManager.reset();
+    public boolean isGameOvered() {
+        return this.gameStatus == GameStatus.GAMEOVER;
     }
 
     public boolean togglePauseState() {
@@ -280,7 +278,7 @@ public class TetrisGame {
     }
 
     boolean isGameOver() {
-        if (tetrisGameGrid.isRowEmpty(0) == true) {
+        if (tetrisGameGrid.isFirstRowEmpty(this.currentBlock) == true) {
             return false;
         } else {
             return true;
