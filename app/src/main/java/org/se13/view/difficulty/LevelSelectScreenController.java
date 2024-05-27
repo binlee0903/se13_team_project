@@ -4,26 +4,28 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TableRow;
 import javafx.scene.control.TextInputDialog;
 import org.se13.SE13Application;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
+import org.se13.online.ClientActionRepository;
 import org.se13.online.IsFirst;
+import org.se13.online.ReadNetworkRepository;
 import org.se13.server.LocalBattleTetrisServer;
 import org.se13.server.LocalTetrisServer;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
 import org.se13.sqlite.config.PlayerKeycode;
-import org.se13.sqlite.ranking.Ranking;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
-import org.se13.view.ranking.RankingProperty;
 import org.se13.view.tetris.*;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class LevelSelectScreenController extends BaseController {
 
@@ -83,32 +85,39 @@ public class LevelSelectScreenController extends BaseController {
 //        final String host = getIpAddr();
         final String host = "localhost";
         final int port = 5555;
-        int myPlayerId = 0;
-        int opponentPlayerId = 1;
+        int playerId = 0;
+        int opponentId = 1;
 
         Socket socket = new Socket(host, port);
-        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
         try {
-            IsFirst isFirst = (IsFirst) ois.readObject();
+            IsFirst isFirst = (IsFirst) in.readObject();
             if (!isFirst.isFirst()) {
-                myPlayerId = 1;
-                opponentPlayerId = 0;
+                playerId = 1;
+                opponentId = 0;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        Player myPlayer = new Player(myPlayerId, new ConfigRepositoryImpl(0).getPlayerKeyCode(), socket);
-        myPlayer.connectToOnlineServer(server);
-        PlayerKeycode emptyKeycode = new PlayerKeycode("", "", "", "", "", "", "");
-        Player opponentPlayer = new Player(opponentPlayerId, emptyKeycode, socket);
-        opponentPlayer.connectOpponent(server);
+        ReadNetworkRepository networkRepository = new ReadNetworkRepository(in, playerId);
+        TetrisEventRepository playerEventRepository = networkRepository.playerEventRepository();
+        TetrisEventRepository opponentEventRepository = networkRepository.opponentEventRepository();
 
-        System.out.println("myPlayerId: " + myPlayerId + ", opponentPlayerId: " + opponentPlayerId);
+        ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
+        TetrisActionRepository playerActionRepository = new ClientActionRepository(playerId, service, out);
+
+        PlayerKeycode keycode = new ConfigRepositoryImpl(0).getPlayerKeyCode();
+        PlayerKeycode emptyKeycode = new PlayerKeycode("", "", "", "", "", "", "");
+
+        Player player = new Player(playerId, keycode, playerActionRepository, playerEventRepository);
+        Player opponent = new Player(opponentId, emptyKeycode, null, opponentEventRepository);
+
+        System.out.println("myPlayerId: " + playerId + ", opponentPlayerId: " + opponentId);
 
         SE13Application.navController.navigate(AppScreen.BATTLE, (controller) -> {
-            ((BattleScreenController) controller).setArguments(myPlayer, opponentPlayer);
+            ((BattleScreenController) controller).setArguments(player, opponent);
         });
     }
 

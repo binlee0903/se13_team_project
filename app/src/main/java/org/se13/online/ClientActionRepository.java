@@ -1,23 +1,18 @@
 package org.se13.online;
 
 import org.se13.game.action.TetrisAction;
-import org.se13.server.TetrisActionHandler;
 import org.se13.server.TetrisActionPacket;
 import org.se13.view.tetris.TetrisActionRepository;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 
 public class ClientActionRepository implements TetrisActionRepository {
-    public ClientActionRepository(int userId, Socket socket, ExecutorService service, ObjectOutputStream oos, ObjectInputStream ois) throws IOException {
+    public ClientActionRepository(int userId, ExecutorService service, ObjectOutputStream out) {
         this.userId = userId;
-        this.socket = socket;
         this.service = service;
-        this.out = oos;
-        this.in = ois;
+        this.out = out;
     }
 
     private void write(int userId, TetrisAction action) {
@@ -73,8 +68,6 @@ public class ClientActionRepository implements TetrisActionRepository {
     }
 
     private int userId;
-    private Socket socket;
     private ExecutorService service;
     private ObjectOutputStream out;
-    private ObjectInputStream in;
 }
