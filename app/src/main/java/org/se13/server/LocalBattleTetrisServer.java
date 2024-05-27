@@ -17,7 +17,7 @@ public class LocalBattleTetrisServer implements TetrisServer {
     private GameMode mode;
 
     private Timer tetrisTimer;
-    private Map<Integer, TetrisSession> sessions;
+    protected Map<Integer, TetrisSession> sessions;
     private Map<Integer, TetrisEventHandler> handlers;
 
     private List<TetrisGameEndData> endData;
@@ -154,7 +154,7 @@ public class LocalBattleTetrisServer implements TetrisServer {
         }, 0, 16);
     }
 
-    private void broadcast(TetrisEvent event, int userId) {
+    protected void broadcast(TetrisEvent event, int userId) {
         TetrisSession session = sessions.get(userId);
         if (session == null) return;
 

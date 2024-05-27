@@ -1,5 +1,6 @@
 package org.se13.online;
 
+import org.se13.game.event.TetrisEvent;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.server.LocalBattleTetrisServer;
@@ -10,7 +11,9 @@ import org.se13.view.tetris.TetrisEventRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -75,7 +78,14 @@ public class TetrisServerApplication {
             GameLevel level = GameLevel.NORMAL;
             GameMode mode = GameMode.ITEM;
 
-            LocalBattleTetrisServer server = new LocalBattleTetrisServer(level, mode);
+            LocalBattleTetrisServer server = new LocalBattleTetrisServer(level, mode) {
+                @Override
+                protected void broadcast(TetrisEvent event, int userId) {
+                    sessions.forEach((playerId, session) -> {
+                        session.response(event);
+                    });
+                }
+            };
 
             OnlineActionRepository handler1 = createActionRepository(player1Socket, server);
             OnlineActionRepository handler2 = createActionRepository(player2Socket, server);
