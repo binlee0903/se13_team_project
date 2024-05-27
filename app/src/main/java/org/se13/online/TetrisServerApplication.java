@@ -24,10 +24,8 @@ public class TetrisServerApplication {
     private Thread matchingThread = null;
     private ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
     private ArrayList<LocalBattleTetrisServer> servers = new ArrayList<>();
-
     private BlockingQueue<Socket> waiting = new ArrayBlockingQueue<>(2);
     private ServerSocket serverSocket;
-
     private int connectionTrys;
 
     public TetrisServerApplication() throws IOException {
@@ -44,7 +42,7 @@ public class TetrisServerApplication {
             try {
                 matching();
             } catch (InterruptedException | IOException e) {
-                log.error(e.getMessage());
+                log.error(e.getMessage(), e);
             }
         });
         matchingThread.start();

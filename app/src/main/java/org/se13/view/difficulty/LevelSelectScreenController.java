@@ -98,10 +98,11 @@ public class LevelSelectScreenController extends BaseController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Player myPlayer = new Player(myPlayerId, new ConfigRepositoryImpl(0).getPlayerKeyCode(), socket, new ObjectOutputStream(socket.getOutputStream()), new ObjectInputStream(socket.getInputStream()));
+
+        Player myPlayer = new Player(myPlayerId, new ConfigRepositoryImpl(0).getPlayerKeyCode(), socket);
         myPlayer.connectToOnlineServer(server);
         PlayerKeycode emptyKeycode = new PlayerKeycode("", "", "", "", "", "", "");
-        Player opponentPlayer = new Player(opponentPlayerId, emptyKeycode, socket, new ObjectOutputStream(socket.getOutputStream()), new ObjectInputStream(socket.getInputStream()));
+        Player opponentPlayer = new Player(opponentPlayerId, emptyKeycode, socket);
         opponentPlayer.connectOpponent(server);
 
         System.out.println("myPlayerId: " + myPlayerId + ", opponentPlayerId: " + opponentPlayerId);

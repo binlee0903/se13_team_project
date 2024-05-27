@@ -30,15 +30,6 @@ public class OnlineActionRepository {
         }
     }
 
-    public void sendAction(TetrisActionPacket packet) {
-        try {
-            out.writeObject(packet);
-            out.flush();
-        } catch (IOException e) {
-            log.error("Failed to send action: ", e);
-        }
-    }
-
     private static final Logger log = LoggerFactory.getLogger(OnlineActionRepository.class);
     private int userId;
     private TetrisActionHandler handler;

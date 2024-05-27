@@ -18,9 +18,9 @@ public class Player {
         this.client = new TetrisClient(userId, eventRepository);
     }
 
-    public Player(int userId, PlayerKeycode playerKeycode, Socket socket, ObjectOutputStream oos, ObjectInputStream ois) throws IOException {
-        this.oos = oos;
-        this.ois = ois;
+    public Player(int userId, PlayerKeycode playerKeycode, Socket socket) throws IOException {
+        this.oos = new ObjectOutputStream(socket.getOutputStream());
+        this.ois = new ObjectInputStream(socket.getInputStream());
         this.userId = userId;
         this.socket = socket;
         this.service = Executors.newVirtualThreadPerTaskExecutor();
