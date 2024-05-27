@@ -1,4 +1,6 @@
 package org.se13.game.event;
 
-public record InsertAttackBlocksEvent() implements TetrisEvent {
+import java.io.Serializable;
+
+public record InsertAttackBlocksEvent() implements TetrisEvent, Serializable {
 }

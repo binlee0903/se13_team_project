@@ -1,5 +1,9 @@
 package org.se13.server;
 
+import org.se13.view.tetris.TetrisGameEndData;
+
+import java.util.List;
+
 public interface TetrisServer {
 
     TetrisActionHandler connect(TetrisClient client);

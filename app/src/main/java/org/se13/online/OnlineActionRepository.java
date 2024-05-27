@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class OnlineActionRepository {
@@ -14,6 +15,7 @@ public class OnlineActionRepository {
         this.userId = userId;
         this.socket = socket;
         this.handler = handler;
+        this.out = new ObjectOutputStream(socket.getOutputStream());
         this.in = new ObjectInputStream(socket.getInputStream());
     }
 
@@ -32,5 +34,6 @@ public class OnlineActionRepository {
     private int userId;
     private TetrisActionHandler handler;
     private Socket socket;
+    private ObjectOutputStream out;
     private ObjectInputStream in;
 }

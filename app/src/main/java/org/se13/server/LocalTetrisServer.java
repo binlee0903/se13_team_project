@@ -23,7 +23,7 @@ public class LocalTetrisServer implements TetrisServer {
 
     @Override
     public void responseGameOver(int score, boolean isItemMode, String difficulty) {
-        this.player.gameOver(score, isItemMode, difficulty);
+        this.player.gameOver(score, isItemMode, playerGame.isGameOvered(), difficulty);
         tetrisTimer.cancel();
     }
 

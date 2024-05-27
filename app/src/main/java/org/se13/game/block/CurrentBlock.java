@@ -1,10 +1,11 @@
 package org.se13.game.block;
 
 import javafx.scene.paint.Color;
-import org.se13.game.item.FeverItem;
 import org.se13.game.item.TetrisItem;
 
-public class CurrentBlock {
+import java.io.Serializable;
+
+public class CurrentBlock implements Serializable {
     private final Block block;
     private final TetrisItem item;
     private BlockPosition position;
@@ -27,6 +28,17 @@ public class CurrentBlock {
 
     public BlockPosition getPosition() {
         return this.position;
+    }
+
+    public BlockPosition[] getPositions() {
+        BlockPosition[] calcBlockPositions = new BlockPosition[4];
+        BlockPosition[] currentBlockPositions = block.shape(rotate);
+
+        for (int i = 0; i < 4; i++) {
+            calcBlockPositions[i] = new BlockPosition(currentBlockPositions[i].getRowIndex() + position.getRowIndex(), currentBlockPositions[i].getColIndex() + position.getColIndex());
+        }
+
+        return calcBlockPositions;
     }
 
     public Color getColor() {

@@ -10,7 +10,7 @@ import org.se13.view.tetris.TetrisEventRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -24,58 +24,85 @@ public class TetrisServerApplication {
     private Thread matchingThread = null;
     private ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
     private ArrayList<LocalBattleTetrisServer> servers = new ArrayList<>();
-
     private BlockingQueue<Socket> waiting = new ArrayBlockingQueue<>(2);
-    private ServerSocket serverSocket = new ServerSocket(5555);
-
+    private ServerSocket serverSocket;
     private int connectionTrys;
 
     public TetrisServerApplication() throws IOException {
-
+        this.serverSocket = new ServerSocket(5555); // 기본 포트 번호 사용
     }
 
     public static void main(String[] args) throws IOException {
         new TetrisServerApplication().start();
     }
 
-    private void start() throws IOException {
+    private void start() {
         // Socket 2개를 LocalBattleServer로 연결해주는 매칭 쓰레드 실행
         matchingThread = new Thread(() -> {
             try {
                 matching();
             } catch (InterruptedException | IOException e) {
-                log.error(e.getMessage());
+                log.error(e.getMessage(), e);
             }
         });
         matchingThread.start();
 
         // 소켓 접속 처리
         while (true) {
-            waiting.add(serverSocket.accept());
+            try {
+                Socket clientSocket = serverSocket.accept();
+                log.info("New client connected: " + clientSocket.getInetAddress());
+                waiting.add(clientSocket);
+            } catch (IOException e) {
+                log.error("Error accepting client connection: ", e);
+            }
         }
     }
 
     private void matching() throws InterruptedException, IOException {
         while (true) {
-            // 만약 대기실이 있었다면 방장(connect1)이 게임 설정하고 접속(userId) 처리를 추가할 수 있습니다.
+            log.info("Waiting for players to connect...");
+
+            Socket player1Socket = waiting.take();
+            sendIsFirst(player1Socket, true);
+            log.info("Player 1 connected: " + player1Socket.getInetAddress());
+
+            Socket player2Socket = waiting.take();
+            sendIsFirst(player2Socket, false);
+            log.info("Player 2 connected: " + player2Socket.getInetAddress());
+
+            // Game setup
             GameLevel level = GameLevel.NORMAL;
             GameMode mode = GameMode.ITEM;
 
             LocalBattleTetrisServer server = new LocalBattleTetrisServer(level, mode);
 
-            OnlineActionRepository handler1 = createActionRepository(waiting.take(), server);
-            OnlineActionRepository handler2 = createActionRepository(waiting.take(), server);
+            OnlineActionRepository handler1 = createActionRepository(player1Socket, server);
+            OnlineActionRepository handler2 = createActionRepository(player2Socket, server);
+
+            log.info("Game started with two players.");
 
             service.execute(handler1::read);
             service.execute(handler2::read);
         }
     }
 
+    private void sendIsFirst(Socket socket, boolean isFirst) throws IOException {
+        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+        try {
+            oos.writeObject(new IsFirst(isFirst));
+            oos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private OnlineActionRepository createActionRepository(Socket connection, TetrisServer server) throws IOException {
         int playerId = connectionTrys++;
-        TetrisEventRepository eventRepository = new OnlineEventRepository(connection, service);
-        TetrisClient client = new TetrisClient(playerId, eventRepository);
+        TetrisEventRepository eventRepository = new OnlineEventRepository(playerId % 2, connection, service);
+        TetrisClient client = new TetrisClient(playerId % 2, eventRepository);
         TetrisActionHandler actionHandler = server.connect(client);
-        return new OnlineActionRepository(playerId, connection, actionHandler);
+        return new OnlineActionRepository(playerId % 2, connection, actionHandler);
     }
 }

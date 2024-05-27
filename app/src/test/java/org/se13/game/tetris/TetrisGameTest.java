@@ -17,7 +17,9 @@ import org.se13.game.timer.*;
 import org.se13.server.TetrisActionHandler;
 import org.se13.server.TetrisClient;
 import org.se13.server.TetrisServer;
+import org.se13.view.tetris.TetrisGameEndData;
 
+import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
