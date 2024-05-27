@@ -6,14 +6,18 @@ import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.game.tetris.TetrisGame;
 import org.se13.server.*;
+import org.se13.view.tetris.TetrisEventRepository;
 import org.se13.view.tetris.TetrisGameEndData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,36 +39,25 @@ public class OnlineBattleTetrisServer implements TetrisServer {
         this.handlers = new HashMap<>();
     }
 
-    public void write(int userId, TetrisAction action) {
-        TetrisActionPacket packet = new TetrisActionPacket(userId, action);
-        service.execute(() -> {
-            try {
-                out.writeObject(packet);
-                out.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+    // -------------------------------------------
+
+
+    public Socket getSocket() {
+        return socket;
     }
 
-    public void read() {
-        while (true) {
-            try {
-                OnlineEventPacket packet = (OnlineEventPacket) in.readObject();
-                if (packet.event() != null) {
-                    // event 처리
-                    handlers.get(0).handle(0, packet.event());
-                } else if (packet.endData() != null) {
-                    // endData 처리
-                    responseGameOver(packet.endData());
-                } else {
-                    throw new RuntimeException("event와 endData 중 하나는 null이 아니어야 합니다.");
-                }
-            } catch (IOException | ClassNotFoundException e) {
-                log.error(e.getMessage());
-            }
-        }
+    public ExecutorService getService() {
+        return service;
     }
+
+    public ObjectOutputStream getOut() {
+        return out;
+    }
+
+    public ObjectInputStream getIn() {
+        return in;
+    }
+
 
     @Override
     public void responseGameOver(int score, boolean isItemMode, String difficulty) {
@@ -216,9 +209,7 @@ public class OnlineBattleTetrisServer implements TetrisServer {
     private GameLevel level;
     private GameMode mode;
 
-    private static final Logger log = LoggerFactory.getLogger(OnlineActionRepository.class);
     private Socket socket;
-    private ExecutorService service;
     private String serverAddress;
     private int port;
     private TetrisGameEndData endData;
@@ -231,4 +222,7 @@ public class OnlineBattleTetrisServer implements TetrisServer {
     private Map<Integer, TetrisEventHandler> handlers;
 
     private List<TetrisGameEndData> endDatas;
+
+    private static final Logger log = LoggerFactory.getLogger(TetrisServerApplication.class);
+    private ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
 }

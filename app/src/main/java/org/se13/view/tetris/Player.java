@@ -4,9 +4,15 @@ import org.se13.server.*;
 import org.se13.sqlite.config.PlayerKeycode;
 
 public class Player {
-    public Player(int userId, PlayerKeycode playerKeycode) {
+    public Player(int userId, PlayerKeycode playerKeycode, TetrisEventRepository repository) {
         this.userId = userId;
         this.playerKeycode = playerKeycode;
+        this.eventRepository = repository;
+    }
+
+    public Player(int userId) {
+        this.userId = userId;
+        this.playerKeycode = new PlayerKeycode("", "", "", "", "", "", "");
         this.eventRepository = new TetrisEventRepositoryImpl();
         this.client = new TetrisClient(userId, eventRepository);
     }
@@ -22,17 +28,17 @@ public class Player {
         return playerKeycode;
     }
 
-    public TetrisEventRepositoryImpl getEventRepository() {
+    public TetrisEventRepository getEventRepository() {
         return eventRepository;
     }
 
-    public TetrisActionRepositoryImpl getActionRepository() {
+    public TetrisActionRepository getActionRepository() {
         return actionRepository;
     }
 
     private int userId;
-    private TetrisEventRepositoryImpl eventRepository;
-    private TetrisActionRepositoryImpl actionRepository;
+    private TetrisEventRepository eventRepository;
+    private TetrisActionRepository actionRepository;
     private TetrisClient client;
     private TetrisServer server;
     private TetrisActionHandler actionHandler;

@@ -1,5 +1,6 @@
 package org.se13.online;
 
+import org.se13.game.event.GameEndEvent;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.server.LocalBattleTetrisServer;
@@ -10,7 +11,7 @@ import org.se13.view.tetris.TetrisEventRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -26,12 +27,13 @@ public class TetrisServerApplication {
     private ArrayList<LocalBattleTetrisServer> servers = new ArrayList<>();
 
     private BlockingQueue<Socket> waiting = new ArrayBlockingQueue<>(2);
-    private ServerSocket serverSocket = new ServerSocket(5555);
+    private ServerSocket serverSocket;
 
     private int connectionTrys;
 
     public TetrisServerApplication() throws IOException {
-
+        this.serverSocket = new ServerSocket(5555); // 기본 포트 번호 사용
+//        this.serverSocket.setReuseAddress(true); // 소켓 옵션 설정
     }
 
     public static void main(String[] args) throws IOException {
@@ -51,23 +53,65 @@ public class TetrisServerApplication {
 
         // 소켓 접속 처리
         while (true) {
-            waiting.add(serverSocket.accept());
+            try {
+                Socket clientSocket = serverSocket.accept();
+                log.info("New client connected: " + clientSocket.getInetAddress());
+                waiting.add(clientSocket);
+            } catch (IOException e) {
+                log.error("Error accepting client connection: ", e);
+            }
         }
     }
 
     private void matching() throws InterruptedException, IOException {
         while (true) {
-            // 만약 대기실이 있었다면 방장(connect1)이 게임 설정하고 접속(userId) 처리를 추가할 수 있습니다.
+            log.info("Waiting for players to connect...");
+
+            Socket player1Socket = waiting.take();
+            sendIsFirst(player1Socket, true);
+            log.info("Player 1 connected: " + player1Socket.getInetAddress());
+
+            Socket player2Socket = waiting.take();
+            sendIsFirst(player2Socket, false);
+            log.info("Player 2 connected: " + player2Socket.getInetAddress());
+
+            // Game setup
             GameLevel level = GameLevel.NORMAL;
             GameMode mode = GameMode.ITEM;
 
             LocalBattleTetrisServer server = new LocalBattleTetrisServer(level, mode);
 
-            OnlineActionRepository handler1 = createActionRepository(waiting.take(), server);
-            OnlineActionRepository handler2 = createActionRepository(waiting.take(), server);
+            OnlineActionRepository handler1 = createActionRepository(player1Socket, server);
+            OnlineActionRepository handler2 = createActionRepository(player2Socket, server);
+
+            log.info("Game started with two players.");
+            sendGameInfo(player1Socket, level, mode, null);
+            sendGameInfo(player2Socket, level, mode, null);
 
             service.execute(handler1::read);
             service.execute(handler2::read);
+        }
+    }
+
+    private void sendIsFirst(Socket socket, boolean isFirst) throws IOException {
+        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+        try {
+            out.writeObject(new IsFirst(isFirst));
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendGameInfo(Socket socket, GameLevel level, GameMode mode, GameEndEvent gameEndEvent) throws IOException {
+        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+        try {
+            out.writeObject(new GameInfo(level, mode, gameEndEvent));
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
