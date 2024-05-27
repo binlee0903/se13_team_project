@@ -1,4 +1,6 @@
 package org.se13.game.event;
 
-public record ServerErrorEvent(String message) implements TetrisEvent {
+import java.io.Serializable;
+
+public record ServerErrorEvent(String message) implements TetrisEvent, Serializable {
 }
