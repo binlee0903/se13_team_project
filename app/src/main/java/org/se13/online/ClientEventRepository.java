@@ -15,10 +15,9 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 
 public class ClientEventRepository implements TetrisEventRepository {
-    public ClientEventRepository(Socket socket, ExecutorService service) throws IOException {
-        this.out = new ObjectOutputStream(socket.getOutputStream());
-        this.in = new ObjectInputStream(socket.getInputStream());
-        this.service = service;
+    public ClientEventRepository(ObjectOutputStream oos, ObjectInputStream ois) {
+        this.out = oos;
+        this.in = ois;
         this.observer = new Observer<>();
         this.isGameOver = new Observer<>();
     }
@@ -60,7 +59,6 @@ public class ClientEventRepository implements TetrisEventRepository {
 
     private static final Logger log = LoggerFactory.getLogger(OnlineActionRepository.class);
     private int userId;
-    private ExecutorService service;
     private ObjectOutputStream out;
     private ObjectInputStream in;
 }

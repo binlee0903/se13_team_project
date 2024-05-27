@@ -16,10 +16,6 @@ import org.se13.SE13Application;
 import org.se13.game.block.*;
 import org.se13.game.config.Config;
 import org.se13.game.event.*;
-import org.se13.online.OnlineActionRepository;
-import org.se13.online.OnlineBattleTetrisServer;
-import org.se13.server.LocalBattleTetrisServer;
-import org.se13.server.TetrisServer;
 import org.se13.sqlite.config.PlayerKeycode;
 import org.se13.utils.Subscriber;
 import org.se13.view.base.BaseController;
@@ -132,7 +128,7 @@ public class BattleScreenController extends BaseController {
         scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
             String keyCode = key.getCode().getName().toLowerCase();
             handleKeyEvent(keyCode, player1_viewModel, player1_keycode);
-//            handleKeyEvent(keyCode, player2_viewModel, player2_keycode);
+            handleKeyEvent(keyCode, player2_viewModel, player2_keycode);
         });
 
         this.player1_frame.setStyle("-fx-border-color: red;");
@@ -150,15 +146,6 @@ public class BattleScreenController extends BaseController {
         this.player1_keycode = player1.getPlayerKeycode();
         this.player2_keycode = player2.getPlayerKeycode();
     }
-
-//    public void setOnlineArguments(Player player1, Player player2, OnlineBattleTetrisServer server) {
-//        this.actionRepository1 = player1.getActionRepository();
-//        this.stateRepository1 = player1.getEventRepository();
-//        this.actionRepository2 = player2.getActionRepository();
-//        this.stateRepository2 = player2.getEventRepository();
-//        this.player1_keycode = player1.getPlayerKeycode();
-//        this.server = server;
-//    }
 
     private void setInitState() {
         if (Config.SCREEN_WIDTH == 450) setSmallScreen();

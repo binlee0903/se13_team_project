@@ -1,6 +1,5 @@
 package org.se13.online;
 
-import org.se13.game.event.GameEndEvent;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.server.LocalBattleTetrisServer;
@@ -33,14 +32,13 @@ public class TetrisServerApplication {
 
     public TetrisServerApplication() throws IOException {
         this.serverSocket = new ServerSocket(5555); // 기본 포트 번호 사용
-//        this.serverSocket.setReuseAddress(true); // 소켓 옵션 설정
     }
 
     public static void main(String[] args) throws IOException {
         new TetrisServerApplication().start();
     }
 
-    private void start() throws IOException {
+    private void start() {
         // Socket 2개를 LocalBattleServer로 연결해주는 매칭 쓰레드 실행
         matchingThread = new Thread(() -> {
             try {
@@ -85,8 +83,6 @@ public class TetrisServerApplication {
             OnlineActionRepository handler2 = createActionRepository(player2Socket, server);
 
             log.info("Game started with two players.");
-            sendGameInfo(player1Socket, level, mode, null);
-            sendGameInfo(player2Socket, level, mode, null);
 
             service.execute(handler1::read);
             service.execute(handler2::read);
@@ -94,22 +90,11 @@ public class TetrisServerApplication {
     }
 
     private void sendIsFirst(Socket socket, boolean isFirst) throws IOException {
-        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
         try {
-            out.writeObject(new IsFirst(isFirst));
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendGameInfo(Socket socket, GameLevel level, GameMode mode, GameEndEvent gameEndEvent) throws IOException {
-        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-        try {
-            out.writeObject(new GameInfo(level, mode, gameEndEvent));
-            out.flush();
+            oos.writeObject(new IsFirst(isFirst));
+            oos.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -117,9 +102,9 @@ public class TetrisServerApplication {
 
     private OnlineActionRepository createActionRepository(Socket connection, TetrisServer server) throws IOException {
         int playerId = connectionTrys++;
-        TetrisEventRepository eventRepository = new OnlineEventRepository(connection, service);
-        TetrisClient client = new TetrisClient(playerId, eventRepository);
+        TetrisEventRepository eventRepository = new OnlineEventRepository(playerId % 2, connection, service);
+        TetrisClient client = new TetrisClient(playerId % 2, eventRepository);
         TetrisActionHandler actionHandler = server.connect(client);
-        return new OnlineActionRepository(playerId, connection, actionHandler);
+        return new OnlineActionRepository(playerId % 2, connection, actionHandler);
     }
 }

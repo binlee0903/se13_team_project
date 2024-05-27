@@ -12,14 +12,15 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 
 public class ClientActionRepository implements TetrisActionRepository {
-    public ClientActionRepository(int userId, Socket socket) throws IOException {
+    public ClientActionRepository(int userId, Socket socket, ExecutorService service, ObjectOutputStream oos, ObjectInputStream ois) throws IOException {
         this.userId = userId;
         this.socket = socket;
-        this.out = new ObjectOutputStream(socket.getOutputStream());
-        this.in = new ObjectInputStream(socket.getInputStream());
+        this.service = service;
+        this.out = oos;
+        this.in = ois;
     }
 
-    public void write(int userId, TetrisAction action) {
+    private void write(int userId, TetrisAction action) {
         TetrisActionPacket packet = new TetrisActionPacket(userId, action);
         service.execute(() -> {
             try {
