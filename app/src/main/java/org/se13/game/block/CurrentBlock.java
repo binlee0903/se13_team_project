@@ -1,10 +1,11 @@
 package org.se13.game.block;
 
 import javafx.scene.paint.Color;
-import org.se13.game.item.FeverItem;
 import org.se13.game.item.TetrisItem;
 
-public class CurrentBlock {
+import java.io.Serializable;
+
+public class CurrentBlock implements Serializable {
     private final Block block;
     private final TetrisItem item;
     private BlockPosition position;

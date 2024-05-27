@@ -1,10 +1,12 @@
 package org.se13.game.block;
 
+import java.io.Serializable;
+
 /**
  * for tetris's abstracted block position, we have to separate block's position class
  * and block class
  */
-public class BlockPosition {
+public class BlockPosition implements Serializable {
     public BlockPosition(int rowIndex, int colIndex) {
         this.rowIndex = rowIndex;
         this.colIndex = colIndex;
