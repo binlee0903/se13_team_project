@@ -105,6 +105,8 @@ public class BattleScreenController extends BaseController {
     private final char ALL_CLEAR_BLOCK_TEXT = 'A';
     private final char LINE_CLEAR_BLOCK_TEXT = 'L';
 
+    private TetrisGameEndData tempGameEndData;
+
     @Override
     public void onCreate() {
         Scene scene = player1_gameCanvas.getScene();
@@ -119,6 +121,8 @@ public class BattleScreenController extends BaseController {
 
         player1_attackedBlocksView = player1_attackedBlocks.getGraphicsContext2D();
         player2_attackedBlocksView = player2_attackedBlocks.getGraphicsContext2D();
+
+        tempGameEndData = null;
 
         setInitState();
 
@@ -227,6 +231,24 @@ public class BattleScreenController extends BaseController {
                     });
                 });
             }
+
+            if (tempGameEndData != null) {
+                if (endData.score() < tempGameEndData.score()) {
+                    Platform.runLater(() -> {
+                        SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
+                            controller.setArguments(tempGameEndData);
+                        });
+                    });
+                } else {
+                    Platform.runLater(() -> {
+                        SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
+                            controller.setArguments(endData);
+                        });
+                    });
+                }
+            }
+
+            tempGameEndData = endData;
         };
     }
 
