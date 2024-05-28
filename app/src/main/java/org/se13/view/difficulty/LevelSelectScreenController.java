@@ -86,7 +86,7 @@ public class LevelSelectScreenController extends BaseController {
         player.connectToServer(server);
         computer.connectToServer(server);
         SE13Application.navController.navigate(AppScreen.BATTLE, (controller) -> {
-            ((BattleScreenController) controller).setArguments(player, computer, server);
+            ((BattleScreenController) controller).setArguments(player, computer);
         });
     }
     private GameMode setGameMode(String gameMode) {
