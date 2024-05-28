@@ -10,20 +10,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 
 public class ReadNetworkRepository {
     private static final Logger log = LoggerFactory.getLogger(ReadNetworkRepository.class);
-    private ObjectInputStream in;
     private int playerId;
+    private TetrisClientSocket socket;
     private Observer<TetrisEvent> player;
     private Observer<TetrisEvent> opponent;
 
     private Observer<TetrisGameEndData> playerGameEnd;
     private Observer<TetrisGameEndData> opponentGameEnd;
 
-    public ReadNetworkRepository(ObjectInputStream in, int playerId) {
-        this.in = in;
+    public ReadNetworkRepository(TetrisClientSocket client, int playerId) {
+        this.socket = client;
         this.playerId = playerId;
         this.player = new Observer<>();
         this.opponent = new Observer<>();
@@ -35,14 +34,14 @@ public class ReadNetworkRepository {
         new Thread(() -> {
             while (true) {
                 try {
-                    OnlineEventPacket packet = (OnlineEventPacket) in.readObject();
+                    TetrisEventPacket packet = socket.read();
                     if (packet.userId() == playerId) {
                         player.setValue(packet.event());
                     } else {
                         player.setValue(packet.event());
                     }
 
-                } catch (IOException | ClassNotFoundException e) {
+                } catch (IOException e) {
                     log.error(e.getMessage());
                 }
             }

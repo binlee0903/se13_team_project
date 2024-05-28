@@ -1,8 +1,12 @@
-package org.se13.online;
+package org.se13;
 
+import org.se13.game.event.ReadyForMatching;
 import org.se13.game.event.TetrisEvent;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
+import org.se13.online.OnlineActionRepository;
+import org.se13.online.OnlineEventRepository;
+import org.se13.online.TetrisServerSocket;
 import org.se13.server.LocalBattleTetrisServer;
 import org.se13.server.TetrisActionHandler;
 import org.se13.server.TetrisClient;
@@ -12,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -66,13 +68,18 @@ public class TetrisServerApplication {
         while (true) {
             log.info("Waiting for players to connect...");
 
-            Socket player1Socket = waiting.take();
-            sendIsFirst(player1Socket, true);
-            log.info("Player 1 connected: " + player1Socket.getInetAddress());
+            TetrisServerSocket player1Socket = new TetrisServerSocket(waiting.take());
+            int player1Id = connectionTrys++;
+            player1Socket.setUserId(player1Id);
+            log.info("Player {} connected: ", player1Id);
 
-            Socket player2Socket = waiting.take();
-            sendIsFirst(player2Socket, false);
-            log.info("Player 2 connected: " + player2Socket.getInetAddress());
+            TetrisServerSocket player2Socket = new TetrisServerSocket(waiting.take());
+            int player2Id = connectionTrys++;
+            player2Socket.setUserId(player2Id);
+            log.info("Player {} connected: ", player2Id);
+
+            player1Socket.write(new ReadyForMatching(player1Id, player2Id));
+            player2Socket.write(new ReadyForMatching(player2Id, player1Id));
 
             // Game setup
             GameLevel level = GameLevel.NORMAL;
@@ -97,22 +104,11 @@ public class TetrisServerApplication {
         }
     }
 
-    private void sendIsFirst(Socket socket, boolean isFirst) throws IOException {
-        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-        try {
-            oos.writeObject(new IsFirst(isFirst));
-            oos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private OnlineActionRepository createActionRepository(Socket connection, TetrisServer server) throws IOException {
+    private OnlineActionRepository createActionRepository(TetrisServerSocket socket, TetrisServer server) throws IOException {
         int playerId = connectionTrys++;
-        TetrisEventRepository eventRepository = new OnlineEventRepository(playerId % 2, connection, service);
+        TetrisEventRepository eventRepository = new OnlineEventRepository(socket, service);
         TetrisClient client = new TetrisClient(playerId % 2, eventRepository);
         TetrisActionHandler actionHandler = server.connect(client);
-        return new OnlineActionRepository(playerId % 2, connection, actionHandler);
+        return new OnlineActionRepository(socket, actionHandler);
     }
 }

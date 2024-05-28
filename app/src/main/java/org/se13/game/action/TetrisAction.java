@@ -33,4 +33,8 @@ public enum TetrisAction {
     public static TetrisAction fromCode(int code) {
         return codeMap.get(code);
     }
+
+    public int getCode() {
+        return code;
+    }
 }

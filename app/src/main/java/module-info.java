@@ -4,6 +4,7 @@ module org.se13 {
     requires java.sql;
     requires org.json;
     requires org.slf4j;
+    requires com.google.gson;
 
     opens org.se13 to javafx.fxml;
     exports org.se13;

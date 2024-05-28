@@ -6,10 +6,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextInputDialog;
 import org.se13.SE13Application;
+import org.se13.game.event.ReadyForMatching;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.online.ClientActionRepository;
-import org.se13.online.IsFirst;
+import org.se13.online.TetrisClientSocket;
 import org.se13.online.ReadNetworkRepository;
 import org.se13.server.LocalBattleTetrisServer;
 import org.se13.server.LocalTetrisServer;
@@ -20,8 +21,6 @@ import org.se13.view.nav.AppScreen;
 import org.se13.view.tetris.*;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -89,25 +88,19 @@ public class LevelSelectScreenController extends BaseController {
         int opponentId = 1;
 
         Socket socket = new Socket(host, port);
-        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-        try {
-            IsFirst isFirst = (IsFirst) in.readObject();
-            if (!isFirst.isFirst()) {
-                playerId = 1;
-                opponentId = 0;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        TetrisClientSocket client = new TetrisClientSocket(socket);
+        ReadyForMatching matching = (ReadyForMatching) client.read().event();
 
-        ReadNetworkRepository networkRepository = new ReadNetworkRepository(in, playerId);
+        playerId = matching.playerId();
+        opponentId = matching.opponentId();
+
+        ReadNetworkRepository networkRepository = new ReadNetworkRepository(client, playerId);
         TetrisEventRepository playerEventRepository = networkRepository.playerEventRepository();
         TetrisEventRepository opponentEventRepository = networkRepository.opponentEventRepository();
         networkRepository.read();
 
         ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
-        TetrisActionRepository playerActionRepository = new ClientActionRepository(playerId, service, out);
+        TetrisActionRepository playerActionRepository = new ClientActionRepository(service, client);
 
         PlayerKeycode keycode = new ConfigRepositoryImpl(0).getPlayerKeyCode();
         PlayerKeycode emptyKeycode = new PlayerKeycode("", "", "", "", "", "", "");

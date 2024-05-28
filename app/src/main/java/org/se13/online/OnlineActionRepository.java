@@ -6,34 +6,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 
 public class OnlineActionRepository {
-    public OnlineActionRepository(int userId, Socket socket, TetrisActionHandler handler) throws IOException {
-        this.userId = userId;
+    public OnlineActionRepository(TetrisServerSocket socket, TetrisActionHandler handler) throws IOException {
         this.socket = socket;
         this.handler = handler;
-        this.out = new ObjectOutputStream(socket.getOutputStream());
-        this.in = new ObjectInputStream(socket.getInputStream());
     }
 
     public void read() {
         while (true) {
             try {
-                TetrisActionPacket packet = (TetrisActionPacket) in.readObject();
+                TetrisActionPacket packet = socket.read();
                 handler.request(packet);
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (IOException e) {
                 log.error(e.getMessage());
             }
         }
     }
 
     private static final Logger log = LoggerFactory.getLogger(OnlineActionRepository.class);
-    private int userId;
     private TetrisActionHandler handler;
-    private Socket socket;
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
+    private TetrisServerSocket socket;
 }
