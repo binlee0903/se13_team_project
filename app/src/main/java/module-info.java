@@ -6,6 +6,8 @@ module org.se13 {
     requires org.slf4j;
     requires com.google.gson;
 
+    opens org.se13.game.block to com.google.gson;
+
     opens org.se13 to javafx.fxml;
     exports org.se13;
     exports org.se13.view.base;
