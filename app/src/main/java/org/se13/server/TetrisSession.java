@@ -3,7 +3,6 @@ package org.se13.server;
 import org.se13.game.action.TetrisAction;
 import org.se13.game.event.*;
 import org.se13.game.tetris.TetrisGame;
-import org.se13.view.tetris.TetrisGameEndData;
 
 public class TetrisSession {
 
@@ -22,13 +21,8 @@ public class TetrisSession {
         playerGame.startGame();
     }
 
-    public void stopGame() {
-        player.response(new GameEndEvent());
-    }
-
-    public TetrisGameEndData stopBattleGame() {
-        boolean isGameOvered = playerGame.stopBattleGame();
-        return new TetrisGameEndData(player.getUserId(), playerGame.getScore(), false, isGameOvered,"");
+    public void stopBattleGame() {
+        player.gameOver(playerGame.getScore(), playerGame.isItemMode(), playerGame.isGameOvered(), playerGame.getDifficulty());
     }
 
     public void response(TetrisEvent event) {

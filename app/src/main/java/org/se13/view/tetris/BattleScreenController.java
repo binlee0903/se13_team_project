@@ -16,16 +16,12 @@ import org.se13.SE13Application;
 import org.se13.game.block.*;
 import org.se13.game.config.Config;
 import org.se13.game.event.*;
-import org.se13.server.LocalBattleTetrisServer;
-import org.se13.server.TetrisServer;
 import org.se13.sqlite.config.PlayerKeycode;
 import org.se13.utils.Subscriber;
 import org.se13.view.base.BaseController;
 import org.se13.view.nav.AppScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 public class BattleScreenController extends BaseController {
 
@@ -74,8 +70,6 @@ public class BattleScreenController extends BaseController {
     @FXML
     public Text player2_time;
 
-    private TetrisServer server;
-
     private TetrisScreenViewModel player1_viewModel;
     private TetrisScreenViewModel player2_viewModel;
     private TetrisActionRepository actionRepository1;
@@ -111,6 +105,8 @@ public class BattleScreenController extends BaseController {
     private final char ALL_CLEAR_BLOCK_TEXT = 'A';
     private final char LINE_CLEAR_BLOCK_TEXT = 'L';
 
+    private TetrisGameEndData tempGameEndData;
+
     @Override
     public void onCreate() {
         Scene scene = player1_gameCanvas.getScene();
@@ -126,10 +122,12 @@ public class BattleScreenController extends BaseController {
         player1_attackedBlocksView = player1_attackedBlocks.getGraphicsContext2D();
         player2_attackedBlocksView = player2_attackedBlocks.getGraphicsContext2D();
 
+        tempGameEndData = null;
+
         setInitState();
 
-        player1_viewModel.observe(observePlayerEvent(PLAYER1), null);
-        player2_viewModel.observe(observePlayerEvent(PLAYER2), null);
+        player1_viewModel.observe(observePlayerEvent(PLAYER1), bindGameEnd());
+        player2_viewModel.observe(observePlayerEvent(PLAYER2), bindGameEnd());
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
             String keyCode = key.getCode().getName().toLowerCase();
@@ -141,18 +139,16 @@ public class BattleScreenController extends BaseController {
         this.player2_frame.setStyle("-fx-border-color: red;");
 
         player1_viewModel.connect();
-        // TODO: 플레이어 별 ViewModel 관리 방법 생각하기
         player2_viewModel.connect();
     }
 
-    public void setArguments(Player player1, Player player2, LocalBattleTetrisServer server) {
+    public void setArguments(Player player1, Player player2) {
         this.actionRepository1 = player1.getActionRepository();
         this.stateRepository1 = player1.getEventRepository();
         this.actionRepository2 = player2.getActionRepository();
         this.stateRepository2 = player2.getEventRepository();
         this.player1_keycode = player1.getPlayerKeycode();
         this.player2_keycode = player2.getPlayerKeycode();
-        this.server = server;
     }
 
     private void setInitState() {
@@ -182,7 +178,6 @@ public class BattleScreenController extends BaseController {
                     case InsertAttackBlocksEvent events -> handleAttackedState(null, userID);
                     case AttackedTetrisBlocks state -> handleAttackedState(state, userID);
                     case ServerErrorEvent error -> handleServerError(error);
-                    case GameEndEvent gameEndEvent -> gameEnd();
                     default -> {}
                 }
             });
@@ -227,16 +222,34 @@ public class BattleScreenController extends BaseController {
         }
     }
 
-    private void gameEnd() {
-        SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
-            List<TetrisGameEndData> endDatas = server.getEndData();
-
-            if (endDatas.getFirst().isGameOvered() == true) {
-                controller.setArguments(endDatas.getLast());
-            } else {
-                controller.setArguments(endDatas.getFirst());
+    private Subscriber<TetrisGameEndData> bindGameEnd() {
+        return (endData) -> {
+            if (endData.isGameOvered() == true) {
+                Platform.runLater(() -> {
+                    SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
+                        controller.setArguments(endData);
+                    });
+                });
             }
-        });
+
+            if (tempGameEndData != null) {
+                if (endData.score() < tempGameEndData.score()) {
+                    Platform.runLater(() -> {
+                        SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
+                            controller.setArguments(tempGameEndData);
+                        });
+                    });
+                } else {
+                    Platform.runLater(() -> {
+                        SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
+                            controller.setArguments(endData);
+                        });
+                    });
+                }
+            }
+
+            tempGameEndData = endData;
+        };
     }
 
     private void setSmallScreen() {

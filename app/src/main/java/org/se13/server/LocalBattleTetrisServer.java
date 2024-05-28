@@ -33,16 +33,11 @@ public class LocalBattleTetrisServer implements TetrisServer {
 
     @Override
     public void responseGameOver(int score, boolean isItemMode, String difficulty) {
-        endData = new LinkedList<>();
-        sessions.forEach((playerId, session) -> {
-            endData.add(session.stopBattleGame());
-            session.stopGame();
-        });
         tetrisTimer.cancel();
-    }
 
-    public List<TetrisGameEndData> getEndData() {
-        return this.endData;
+        sessions.forEach((playerId, session) -> {
+            session.stopBattleGame();
+        });
     }
 
     @Override
