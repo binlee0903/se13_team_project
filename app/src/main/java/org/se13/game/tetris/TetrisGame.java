@@ -472,7 +472,9 @@ public class TetrisGame {
     }
 
     private void updateState(TetrisGrid newTetrisGird, CurrentBlock newNextBlock, int newScore, int newRemainingTime) {
-        events.setValue(new UpdateTetrisState(newTetrisGird.getGrid(), newNextBlock, newScore, newRemainingTime));
+        UpdateTetrisState event = new UpdateTetrisState(newTetrisGird.getGrid(), newNextBlock, newScore, newRemainingTime);
+        log.info("Game Event: ", event);
+        events.setValue(event);
     }
 
     private void attackingEvent(CellID[][] cells) {

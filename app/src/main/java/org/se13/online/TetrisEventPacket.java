@@ -35,7 +35,7 @@ public record TetrisEventPacket(int userId, TetrisEvent event) {
                     event = gson.fromJson(response, UpdateTetrisState.class);
                 }
                 default -> {
-                    event = new ServerErrorEvent("알 수 없는 코드: " + eventCode + " 데이터: " + response);
+                    event = new ServerErrorEvent("Unknown Code: " + eventCode + " Response: " + response);
                 }
             }
 

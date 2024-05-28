@@ -6,11 +6,14 @@ import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.game.tetris.TetrisGame;
 import org.se13.view.tetris.TetrisGameEndData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LocalBattleTetrisServer implements TetrisServer {
+    private static final Logger log = LoggerFactory.getLogger(LocalBattleTetrisServer.class);
     private final int maxUser = 2;
 
     private GameLevel level;
@@ -59,7 +62,7 @@ public class LocalBattleTetrisServer implements TetrisServer {
     private void handleInputAction(int userId, TetrisAction action) {
         TetrisSession session = sessions.get(userId);
         if (session == null) {
-            broadcast(new ServerErrorEvent("세션이 종료되었습니다." + userId));
+            broadcast(new ServerErrorEvent("Session closed: " + userId));
             return;
         }
 
@@ -75,16 +78,17 @@ public class LocalBattleTetrisServer implements TetrisServer {
         {
             TetrisSession session = sessions.get(userId);
             if (session == null) {
-                broadcast(new ServerErrorEvent("세션이 종료되었습니다."), userId);
+                broadcast(new ServerErrorEvent("Session closed"), userId);
                 return;
             }
 
             if (session.isPlayerReady()) {
-                broadcast(new ServerErrorEvent("이미 레디중입니다."), userId);
+                broadcast(new ServerErrorEvent("You are already started"), userId);
                 return;
             }
 
             session.setReady(true);
+            log.info("Player{} Ready", userId);
         }
 
         AtomicBoolean isAllPlayerReady = new AtomicBoolean(true);
@@ -96,6 +100,8 @@ public class LocalBattleTetrisServer implements TetrisServer {
         });
 
         if (isAllPlayerReady.get()) {
+            log.info("게임을 시작합니다.");
+
             sessions.forEach((playerId, session) -> {
                 session.startGame(handlers.get(playerId));
             });

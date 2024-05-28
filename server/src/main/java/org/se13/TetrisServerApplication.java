@@ -78,9 +78,6 @@ public class TetrisServerApplication {
             player2Socket.setUserId(player2Id);
             log.info("Player {} connected: ", player2Id);
 
-            player1Socket.write(new ReadyForMatching(player1Id, player2Id));
-            player2Socket.write(new ReadyForMatching(player2Id, player1Id));
-
             // Game setup
             GameLevel level = GameLevel.NORMAL;
             GameMode mode = GameMode.ITEM;
@@ -94,20 +91,22 @@ public class TetrisServerApplication {
                 }
             };
 
-            OnlineActionRepository handler1 = createActionRepository(player1Socket, server);
-            OnlineActionRepository handler2 = createActionRepository(player2Socket, server);
+            OnlineActionRepository handler1 = createActionRepository(player1Id, player1Socket, server);
+            OnlineActionRepository handler2 = createActionRepository(player2Id, player2Socket, server);
 
             log.info("Game started with two players.");
 
             service.execute(handler1::read);
             service.execute(handler2::read);
+
+            player1Socket.write(new ReadyForMatching(player1Id, player2Id));
+            player2Socket.write(new ReadyForMatching(player2Id, player1Id));
         }
     }
 
-    private OnlineActionRepository createActionRepository(TetrisServerSocket socket, TetrisServer server) throws IOException {
-        int playerId = connectionTrys++;
+    private OnlineActionRepository createActionRepository(int playerId, TetrisServerSocket socket, TetrisServer server) throws IOException {
         TetrisEventRepository eventRepository = new OnlineEventRepository(socket, service);
-        TetrisClient client = new TetrisClient(playerId % 2, eventRepository);
+        TetrisClient client = new TetrisClient(playerId, eventRepository);
         TetrisActionHandler actionHandler = server.connect(client);
         return new OnlineActionRepository(socket, actionHandler);
     }
