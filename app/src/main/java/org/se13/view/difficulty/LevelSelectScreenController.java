@@ -10,8 +10,8 @@ import org.se13.game.event.ReadyForMatching;
 import org.se13.game.rule.GameLevel;
 import org.se13.game.rule.GameMode;
 import org.se13.online.ClientActionRepository;
-import org.se13.online.TetrisClientSocket;
 import org.se13.online.ReadNetworkRepository;
+import org.se13.online.TetrisClientSocket;
 import org.se13.server.LocalBattleTetrisServer;
 import org.se13.server.LocalTetrisServer;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
@@ -84,15 +84,14 @@ public class LevelSelectScreenController extends BaseController {
 //        final String host = getIpAddr();
         final String host = "localhost";
         final int port = 5555;
-        int playerId = 0;
-        int opponentId = 1;
 
         Socket socket = new Socket(host, port);
         TetrisClientSocket client = new TetrisClientSocket(socket);
         ReadyForMatching matching = (ReadyForMatching) client.read().event();
 
-        playerId = matching.playerId();
-        opponentId = matching.opponentId();
+        int playerId = matching.playerId();
+        int opponentId = matching.opponentId();
+        client.setUserId(playerId);
 
         ReadNetworkRepository networkRepository = new ReadNetworkRepository(client, playerId);
         TetrisEventRepository playerEventRepository = networkRepository.playerEventRepository();

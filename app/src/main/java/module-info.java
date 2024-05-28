@@ -12,6 +12,14 @@ module org.se13 {
     exports org.se13.view.lifecycle;
     exports org.se13.view.ranking;
     exports org.se13.view.difficulty;
+    exports org.se13.game.event;
+    exports org.se13.game.block;
+    exports org.se13.game.action;
+    exports org.se13.game.item;
+    exports org.se13.game.tetris;
+    exports org.se13.game.input;
+    exports org.se13.game.rule;
+    exports org.se13.game.grid;
     opens org.se13.view.difficulty to javafx.fxml;
     opens org.se13.view.ranking to javafx.fxml;
     exports org.se13.view.setting;
@@ -24,6 +32,5 @@ module org.se13 {
     opens org.se13.view.nav to javafx.fxml;
     exports org.se13.sqlite.ranking;
     opens org.se13.sqlite.ranking to javafx.fxml;
-    exports org.se13.game.event;
     opens org.se13.game.event to javafx.fxml;
 }
