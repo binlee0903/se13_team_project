@@ -16,7 +16,7 @@ public class TetrisEventRepositoryImpl implements TetrisEventRepository {
     }
 
     @Override
-    public void response(TetrisEvent event) {
+    public void response(TetrisEvent event, int userId) {
         this.observer.setValue(event);
     }
 

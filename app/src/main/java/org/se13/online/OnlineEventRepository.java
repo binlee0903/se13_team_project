@@ -37,17 +37,6 @@ public class OnlineEventRepository implements TetrisEventRepository {
     }
 
     @Override
-    public void response(TetrisEvent event) {
-        service.execute(() -> {
-            try {
-                socket.write(event);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    @Override
     public void subscribe(Subscriber<TetrisEvent> subscriber, Subscriber<TetrisGameEndData> isGameOver) {
         throw new UnsupportedOperationException("클라이언트가 서버의 OnlineEventRepository에 구독할 수 없습니다.");
     }

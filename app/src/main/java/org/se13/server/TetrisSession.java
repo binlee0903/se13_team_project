@@ -25,10 +25,6 @@ public class TetrisSession {
         player.gameOver(playerGame.getScore(), playerGame.isItemMode(), playerGame.isGameOvered(), playerGame.getDifficulty());
     }
 
-    public void response(TetrisEvent event) {
-        player.response(event);
-    }
-
     public void response(TetrisEvent event, int userId) {
         player.response(event, userId);
     }

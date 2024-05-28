@@ -164,7 +164,7 @@ public class LocalBattleTetrisServer implements TetrisServer {
         TetrisSession session = sessions.get(userId);
         if (session == null) return;
 
-        session.response(event);
+        session.response(event, userId);
     }
 
     private void broadcast(TetrisEvent event) {

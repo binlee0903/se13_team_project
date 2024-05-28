@@ -15,7 +15,7 @@ public class TetrisClient {
     }
 
     public void response(TetrisEvent state) {
-        repository.response(state);
+        repository.response(state, userId);
     }
 
     public void response(TetrisEvent state, int userId) {

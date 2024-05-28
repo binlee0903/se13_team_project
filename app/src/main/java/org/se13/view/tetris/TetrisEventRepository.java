@@ -7,11 +7,7 @@ public interface TetrisEventRepository {
 
     public void gameOver(TetrisGameEndData endData);
 
-    public void response(TetrisEvent event);
-
-    default void response(TetrisEvent event, int userId) {
-        response(event);
-    }
+    public void response(TetrisEvent event, int userId);
 
     public void subscribe(Subscriber<TetrisEvent> subscriber, Subscriber<TetrisGameEndData> isGameOver);
 }
