@@ -86,7 +86,7 @@ public class TetrisServerApplication {
                 @Override
                 protected void broadcast(TetrisEvent event, int userId) {
                     sessions.forEach((playerId, session) -> {
-                        session.response(event);
+                        session.response(event, userId);
                     });
                 }
             };

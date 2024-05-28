@@ -1,6 +1,7 @@
 package org.se13.online;
 
 import org.se13.game.event.TetrisEvent;
+import org.se13.game.event.UpdateTetrisState;
 import org.se13.utils.Observer;
 import org.se13.utils.Subscriber;
 import org.se13.view.tetris.TetrisEventRepository;
@@ -44,6 +45,9 @@ public class ReadNetworkRepository {
                         break;
                     } else {
                         TetrisEventPacket packet = (TetrisEventPacket) input;
+                        if (packet.event() instanceof UpdateTetrisState) {
+                            log.info("packet user: {}", packet.userId());
+                        }
                         if (packet.userId() == playerId) {
                             player.setValue(packet.event());
                         } else {

@@ -26,6 +26,17 @@ public class OnlineEventRepository implements TetrisEventRepository {
     }
 
     @Override
+    public void response(TetrisEvent event, int userId) {
+        service.execute(() -> {
+            try {
+                socket.write(event, userId);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
     public void response(TetrisEvent event) {
         service.execute(() -> {
             try {

@@ -29,6 +29,10 @@ public class TetrisSession {
         player.response(event);
     }
 
+    public void response(TetrisEvent event, int userId) {
+        player.response(event, userId);
+    }
+
     public void setReady(boolean isPlayerReady) {
         this.isPlayerReady = isPlayerReady;
     }

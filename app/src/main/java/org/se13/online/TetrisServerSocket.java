@@ -32,7 +32,7 @@ public class TetrisServerSocket {
         this.userId = userId;
     }
 
-    public void write(TetrisEvent event) throws IOException {
+    public void write(TetrisEvent event, int userId) throws IOException {
         log.info("Player{} event {}", userId, event);
         String json = gson.toJson(event);
         int capacity = 4 + 4 + json.getBytes().length; // userId = int = 4byte, eventCode = int = 4byte
@@ -45,6 +45,10 @@ public class TetrisServerSocket {
 
         out.write(buffer.array());
         out.flush();
+    }
+
+    public void write(TetrisEvent event) throws IOException {
+        write(event, userId);
     }
 
     public void gameOver(int endUserId) throws IOException {
