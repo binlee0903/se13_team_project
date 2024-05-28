@@ -12,7 +12,7 @@
            xmlns="http://javafx.com/javafx/17.0.2-ea"
            fx:controller="org.se13.view.ranking.RankingScreenController">
     <ImageView>
-        <Image url="Screen2.png" />
+        <Image url="@Screen2.png" />
     </ImageView>
     <VBox alignment="CENTER" spacing="10.0">
         <Text styleClass="gameTitle" text="RANKING"/>
