@@ -16,8 +16,6 @@ import org.se13.SE13Application;
 import org.se13.game.block.*;
 import org.se13.game.config.Config;
 import org.se13.game.event.*;
-import org.se13.server.LocalBattleTetrisServer;
-import org.se13.server.TetrisServer;
 import org.se13.sqlite.config.PlayerKeycode;
 import org.se13.utils.Subscriber;
 import org.se13.view.base.BaseController;
@@ -107,6 +105,8 @@ public class BattleScreenController extends BaseController {
     private final char ALL_CLEAR_BLOCK_TEXT = 'A';
     private final char LINE_CLEAR_BLOCK_TEXT = 'L';
 
+    private TetrisGameEndData tempGameEndData;
+
     @Override
     public void onCreate() {
         Scene scene = player1_gameCanvas.getScene();
@@ -121,6 +121,8 @@ public class BattleScreenController extends BaseController {
 
         player1_attackedBlocksView = player1_attackedBlocks.getGraphicsContext2D();
         player2_attackedBlocksView = player2_attackedBlocks.getGraphicsContext2D();
+
+        tempGameEndData = null;
 
         setInitState();
 
@@ -229,6 +231,24 @@ public class BattleScreenController extends BaseController {
                     });
                 });
             }
+
+            if (tempGameEndData != null) {
+                if (endData.score() < tempGameEndData.score()) {
+                    Platform.runLater(() -> {
+                        SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
+                            controller.setArguments(tempGameEndData);
+                        });
+                    });
+                } else {
+                    Platform.runLater(() -> {
+                        SE13Application.navController.navigate(AppScreen.GAMEOVER, (GameOverScreenController controller) -> {
+                            controller.setArguments(endData);
+                        });
+                    });
+                }
+            }
+
+            tempGameEndData = endData;
         };
     }
 
