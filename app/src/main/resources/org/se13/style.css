@@ -3,9 +3,12 @@
 }
 
 .gameTitle {
-    -fx-font-size: 24px;
+    -fx-font-size: 48px;
+    -fx-font-family: 'Arial';
     -fx-fill: white;
     -fx-font-weight: bold;
+    -fx-stroke: black;
+    -fx-stroke-width: 1px;
 }
 
 .menuButton {
