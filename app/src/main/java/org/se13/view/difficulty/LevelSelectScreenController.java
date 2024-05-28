@@ -12,6 +12,7 @@ import org.se13.game.rule.GameMode;
 import org.se13.online.ClientActionRepository;
 import org.se13.online.ReadNetworkRepository;
 import org.se13.online.TetrisClientSocket;
+import org.se13.online.TetrisEventPacket;
 import org.se13.server.LocalBattleTetrisServer;
 import org.se13.server.LocalTetrisServer;
 import org.se13.sqlite.config.ConfigRepositoryImpl;
@@ -79,7 +80,7 @@ public class LevelSelectScreenController extends BaseController {
         });
     }
 
-    private void startOnlineTetrisGame(GameLevel level, GameMode mode) throws IOException, ClassNotFoundException {
+    private void startOnlineTetrisGame(GameLevel level, GameMode mode) throws IOException {
         LocalBattleTetrisServer server = new LocalBattleTetrisServer(level, mode);
 //        final String host = getIpAddr();
         final String host = "localhost";
@@ -87,7 +88,7 @@ public class LevelSelectScreenController extends BaseController {
 
         Socket socket = new Socket(host, port);
         TetrisClientSocket client = new TetrisClientSocket(socket);
-        ReadyForMatching matching = (ReadyForMatching) client.read().event();
+        ReadyForMatching matching = (ReadyForMatching) ((TetrisEventPacket) client.read()).event();
 
         int playerId = matching.playerId();
         int opponentId = matching.opponentId();

@@ -33,6 +33,12 @@ public class GameOverScreenController extends BaseController {
                 } else {
                     winnerUser.setText("player1");
                 }
+            } else if (endData.score() == -1) {
+                if (endData.userID() == 1) {
+                    winnerUser.setText("Opponent...");
+                } else {
+                    winnerUser.setText("You!");
+                }
             } else {
                 if (endData.userID() == 1) {
                     winnerUser.setText("player2");

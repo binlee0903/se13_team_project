@@ -2,6 +2,7 @@ package org.se13.online;
 
 import com.google.gson.Gson;
 import org.se13.game.action.TetrisAction;
+import org.se13.view.tetris.TetrisGameEndData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +43,11 @@ public class TetrisClientSocket {
         out.flush();
     }
 
-    public TetrisEventPacket read() throws IOException {
+    public Object read() throws IOException {
         int length = in.readInt(); // 몇 바이트만큼 읽어야 하는지 체크
+        if (length == 4) {
+            return in.readInt();
+        }
         byte[] data = new byte[length];
         int readed = 0;
         while ((readed = readed + in.read(data, readed, data.length - readed)) != data.length) ;

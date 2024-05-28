@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 public class BattleScreenController extends BaseController {
 
     private static final Logger log = LoggerFactory.getLogger(BattleScreenController.class);
-    private static final int PLAYER1 = 1;
-    private static final int PLAYER2 = 2;
+    private int PLAYER1;
+    private int PLAYER2;
 
     public enum GameSize {
         SMALL,
@@ -143,6 +143,8 @@ public class BattleScreenController extends BaseController {
     }
 
     public void setArguments(Player player1, Player player2) {
+        this.PLAYER1 = player1.getUserId();
+        this.PLAYER2 = player2.getUserId();
         this.actionRepository1 = player1.getActionRepository();
         this.stateRepository1 = player1.getEventRepository();
         this.actionRepository2 = player2.getActionRepository();
@@ -211,11 +213,11 @@ public class BattleScreenController extends BaseController {
         setTetrisState(state.tetrisGrid(), userID);
 
         switch (userID) {
-            case PLAYER1:
+            case 1:
                 player1_score.setText(String.valueOf(state.score()));
                 player1_time.setText(String.valueOf(state.remainingTime()));
                 break;
-            case PLAYER2:
+            case 2:
                 player2_score.setText(String.valueOf(state.score()));
                 player2_time.setText(String.valueOf(state.remainingTime()));
                 break;

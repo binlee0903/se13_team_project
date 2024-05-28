@@ -17,7 +17,11 @@ public class OnlineEventRepository implements TetrisEventRepository {
     @Override
     public void gameOver(TetrisGameEndData endData) {
         service.execute(() -> {
-            // TODO
+            try {
+                socket.gameOver(endData.userID());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
     }
 

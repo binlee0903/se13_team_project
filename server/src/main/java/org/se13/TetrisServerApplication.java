@@ -31,7 +31,7 @@ public class TetrisServerApplication {
     private ArrayList<LocalBattleTetrisServer> servers = new ArrayList<>();
     private BlockingQueue<Socket> waiting = new ArrayBlockingQueue<>(2);
     private ServerSocket serverSocket;
-    private int connectionTrys;
+    private int connectionTrys = 1;
 
     public TetrisServerApplication() throws IOException {
         this.serverSocket = new ServerSocket(5555); // 기본 포트 번호 사용
@@ -80,7 +80,7 @@ public class TetrisServerApplication {
 
             // Game setup
             GameLevel level = GameLevel.NORMAL;
-            GameMode mode = GameMode.ITEM;
+            GameMode mode = GameMode.DEFAULT;
 
             LocalBattleTetrisServer server = new LocalBattleTetrisServer(level, mode) {
                 @Override
