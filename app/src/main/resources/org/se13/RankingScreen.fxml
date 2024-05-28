@@ -5,19 +5,27 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
-
-<VBox alignment="CENTER" spacing="10.0" stylesheets="@style.css" xmlns:fx="http://javafx.com/fxml/1"
-      xmlns="http://javafx.com/javafx/17.0.2-ea" fx:controller="org.se13.view.ranking.RankingScreenController">
-    <Text styleClass="gameTitle" text="RANKING"/>
-    <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0">
-        <columns>
-            <TableColumn fx:id="positionColumn" prefWidth="50.0" text="순위"/>
-            <TableColumn fx:id="nameColumn" prefWidth="75.0" text="이름"/>
-            <TableColumn fx:id="scoreColumn" prefWidth="75.0" text="점수"/>
-            <TableColumn fx:id="isItemColumn" prefWidth="75.0" text="아이템"/>
-            <TableColumn fx:id="diffColumn" prefWidth="75.0" text="난이도"/>
-        </columns>
-    </TableView>
-    <Button fx:id="tetrisButton" onAction="#handleTetrisButtonAction" styleClass="menuButton" text="TETRIS"/>
-    <Button fx:id="homeButton" onAction="#handleHomeButtonAction" styleClass="menuButton" text="HOME"/>
-</VBox>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<StackPane stylesheets="@style.css" xmlns:fx="http://javafx.com/fxml/1"
+           xmlns="http://javafx.com/javafx/17.0.2-ea"
+           fx:controller="org.se13.view.ranking.RankingScreenController">
+    <ImageView>
+        <Image url="Screen2.png" />
+    </ImageView>
+    <VBox alignment="CENTER" spacing="10.0">
+        <Text styleClass="gameTitle" text="RANKING"/>
+        <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0">
+            <columns>
+                <TableColumn fx:id="positionColumn" prefWidth="50.0" text="순위"/>
+                <TableColumn fx:id="nameColumn" prefWidth="75.0" text="이름"/>
+                <TableColumn fx:id="scoreColumn" prefWidth="75.0" text="점수"/>
+                <TableColumn fx:id="isItemColumn" prefWidth="75.0" text="아이템"/>
+                <TableColumn fx:id="diffColumn" prefWidth="75.0" text="난이도"/>
+            </columns>
+        </TableView>
+        <Button fx:id="tetrisButton" onAction="#handleTetrisButtonAction" styleClass="menuButton" text="TETRIS"/>
+        <Button fx:id="homeButton" onAction="#handleHomeButtonAction" styleClass="menuButton" text="HOME"/>
+    </VBox>
+</StackPane>

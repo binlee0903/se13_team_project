@@ -5,19 +5,29 @@
 <?import javafx.scene.text.*?>
 
 <?import javafx.collections.FXCollections?>
-<VBox alignment="CENTER" spacing="10.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.se13.view.difficulty.LevelSelectScreenController">
-    <Text text="DIFFICULTY" styleClass="gameTitle"/>
-    <Button fx:id="easyButton" text="EASY" styleClass="menuButton" onAction="#handleEasyButtonAction"/>
-    <Button fx:id="normalButton" text="NORMAL" styleClass="menuButton" onAction="#handleNormalButtonAction"/>
-    <Button fx:id="hardButton" text="HARD" styleClass="menuButton" onAction="#handleHardButtonAction"/>
-    <ChoiceBox fx:id="modeChoiceBox" styleClass="choiceBox">
-        <items>
-            <FXCollections fx:factory="observableArrayList" />
-        </items>
-    </ChoiceBox>
-    <ChoiceBox fx:id="typeChoiceBox" styleClass="choiceBox">
-        <items>
-            <FXCollections fx:factory="observableArrayList" />
-        </items>
-    </ChoiceBox>
-</VBox>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<StackPane stylesheets="@style.css"
+           xmlns="http://javafx.com/javafx/17.0.2-ea"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="org.se13.view.difficulty.LevelSelectScreenController">
+    <ImageView>
+        <Image url="@Screen1.png" />
+    </ImageView>
+    <VBox alignment="CENTER" spacing="10.0">
+        <Text text="DIFFICULTY" styleClass="gameTitle"/>
+        <Button fx:id="easyButton" text="EASY" styleClass="menuButton" onAction="#handleEasyButtonAction"/>
+        <Button fx:id="normalButton" text="NORMAL" styleClass="menuButton" onAction="#handleNormalButtonAction"/>
+        <Button fx:id="hardButton" text="HARD" styleClass="menuButton" onAction="#handleHardButtonAction"/>
+        <ChoiceBox fx:id="modeChoiceBox" styleClass="choiceBox">
+            <items>
+                <FXCollections fx:factory="observableArrayList" />
+            </items>
+        </ChoiceBox>
+        <ChoiceBox fx:id="typeChoiceBox" styleClass="choiceBox">
+            <items>
+                <FXCollections fx:factory="observableArrayList" />
+            </items>
+        </ChoiceBox>
+    </VBox>
+</StackPane>

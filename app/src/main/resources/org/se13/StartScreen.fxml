@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.text.Text?>
-<VBox alignment="CENTER"
-      spacing="10.0"
-      stylesheets="@style.css"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.se13.view.start.StartScreenController">
-    <Text text="Tetris" styleClass="gameTitle"/>
-    <Button fx:id="startButton" text="Start" styleClass="menuButton" onAction="#handleTetrisButtonAction"/>
-    <Button fx:id="settingsButton" text="SETTINGS" styleClass="menuButton" onAction="#handleSettingsButtonAction"/>
-    <Button fx:id="scoreButton" text="SCORE" styleClass="menuButton" onAction="#handleScoreButtonAction"/>
-    <Button fx:id="quitButton" text="QUIT" styleClass="menuButton" onAction="#handleQuitButtonAction"/>
-</VBox>
+
+<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.se13.view.start.StartScreenController"
+           stylesheets="@style.css">
+    <ImageView>
+        <Image url="@Screen1.png"/>
+    </ImageView>
+    <VBox alignment="CENTER" spacing="10">
+        <Text text="Tetris" styleClass="gameTitle"/>
+        <Button fx:id="startButton" text="Start" styleClass="menuButton" onAction="#handleTetrisButtonAction"/>
+        <Button fx:id="settingsButton" text="Settings" styleClass="menuButton" onAction="#handleSettingsButtonAction"/>
+        <Button fx:id="scoreButton" text="Score" styleClass="menuButton" onAction="#handleScoreButtonAction"/>
+        <Button fx:id="quitButton" text="Quit" styleClass="menuButton" onAction="#handleQuitButtonAction"/>
+    </VBox>
+</StackPane>

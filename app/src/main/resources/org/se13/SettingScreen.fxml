@@ -4,51 +4,58 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-
-<VBox fx:id="settingsContainer" alignment="CENTER" spacing="20.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.se13.view.setting.SettingScreenController">
-    <Text styleClass="settingsTitle" text="SETTINGS" />
-    <HBox alignment="CENTER" spacing="10">
-        <Label styleClass="settingsLabel" text="Scene Size:" textFill="WHITE" />
-        <ChoiceBox fx:id="screenSizeChoiceBox" styleClass="choiceBox">
-            <items>
-                <FXCollections fx:factory="observableArrayList" />
-            </items>
-        </ChoiceBox>
-    </HBox>
-    <HBox alignment="CENTER" spacing="10">
-        <Label styleClass="colorBlind" text="Color Blind Mode" textFill="WHITE" />
-        <ChoiceBox fx:id="screenColorBlindChoiceBox" styleClass="choiceBox">
-            <items>
-                <FXCollections fx:factory="observableArrayList" />
-            </items>
-        </ChoiceBox>
-    </HBox>
-   <HBox alignment="CENTER" spacing="10">
-      <children>
-         <Label styleClass="settingsLabel" text="Player: " textFill="WHITE" />
-         <ChoiceBox fx:id="playerChoiceBox" styleClass="choiceBox"/>
-      </children>
-   </HBox>
-    <VBox alignment="CENTER" spacing="10">
-        <Text styleClass="keySettingTitle" text="Key settings" />
-        <HBox alignment="TOP_CENTER" spacing="10">
-            <Button fx:id="moveLeftButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
-            <Button fx:id="moveDownButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
-            <Button fx:id="moveRightButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.se13.view.setting.SettingScreenController"
+           stylesheets="@style.css">
+    <ImageView>
+        <Image url="@Screen1.png" />
+    </ImageView>
+    <VBox fx:id="settingsContainer" alignment="CENTER" spacing="20.0" >
+        <Text styleClass="settingsTitle" text="SETTINGS" />
+        <HBox alignment="CENTER" spacing="10">
+            <Label styleClass="settingsLabel" text="Scene Size:" textFill="WHITE" />
+            <ChoiceBox fx:id="screenSizeChoiceBox" styleClass="choiceBox">
+                <items>
+                    <FXCollections fx:factory="observableArrayList" />
+                </items>
+            </ChoiceBox>
         </HBox>
-        <HBox alignment="TOP_CENTER" spacing="10">
-            <Button fx:id="exitButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
-            <Button fx:id="moveDropButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
-            <Button fx:id="rotateButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
-            <Button fx:id="pauseButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
+        <HBox alignment="CENTER" spacing="10">
+            <Label styleClass="colorBlind" text="Color Blind Mode" textFill="WHITE" />
+            <ChoiceBox fx:id="screenColorBlindChoiceBox" styleClass="choiceBox">
+                <items>
+                    <FXCollections fx:factory="observableArrayList" />
+                </items>
+            </ChoiceBox>
+        </HBox>
+       <HBox alignment="CENTER" spacing="10">
+          <children>
+             <Label styleClass="settingsLabel" text="Player: " textFill="WHITE" />
+             <ChoiceBox fx:id="playerChoiceBox" styleClass="choiceBox"/>
+          </children>
+       </HBox>
+        <VBox alignment="CENTER" spacing="10">
+            <Text styleClass="keySettingTitle" text="Key settings" />
+            <HBox alignment="TOP_CENTER" spacing="10">
+                <Button fx:id="moveLeftButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
+                <Button fx:id="moveDownButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
+                <Button fx:id="moveRightButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
+            </HBox>
+            <HBox alignment="TOP_CENTER" spacing="10">
+                <Button fx:id="exitButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
+                <Button fx:id="moveDropButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
+                <Button fx:id="rotateButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
+                <Button fx:id="pauseButton" onAction="#keySaveButtonAction" styleClass="keyButton" />
+            </HBox>
+        </VBox>
+        <HBox alignment="CENTER" spacing="20">
+            <Button onAction="#handleSettingClearButtonAction" styleClass="menuButton" text="초기화" />
+            <Button onAction="#handleSaveButtonAction" styleClass="menuButton" text="저장" />
+        </HBox>
+        <HBox alignment="CENTER" spacing="20">
+            <Button onAction="#handleBackButtonAction" styleClass="menuButton" text="←" />
+            <Button onAction="#handleRankingClearButtonAction" styleClass="menuButton" text="스코어 초기화" />
         </HBox>
     </VBox>
-    <HBox alignment="CENTER" spacing="20">
-        <Button onAction="#handleSettingClearButtonAction" styleClass="menuButton" text="초기화" />
-        <Button onAction="#handleSaveButtonAction" styleClass="menuButton" text="저장" />
-    </HBox>
-    <HBox alignment="CENTER" spacing="20">
-        <Button onAction="#handleBackButtonAction" styleClass="menuButton" text="←" />
-        <Button onAction="#handleRankingClearButtonAction" styleClass="menuButton" text="스코어 초기화" />
-    </HBox>
-</VBox>
+</StackPane>
