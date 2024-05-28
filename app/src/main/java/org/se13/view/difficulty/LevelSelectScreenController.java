@@ -38,25 +38,25 @@ public class LevelSelectScreenController extends BaseController {
     }
 
     @FXML
-    private void handleEasyButtonAction() throws IOException, ClassNotFoundException {
+    private void handleEasyButtonAction() throws IOException {
         startTetrisGame(GameLevel.EASY, setGameMode(modeChoiceBox.getValue()), typeChoiceBox.getValue());
     }
 
     @FXML
-    private void handleNormalButtonAction() throws IOException, ClassNotFoundException {
+    private void handleNormalButtonAction() throws IOException {
         startTetrisGame(GameLevel.NORMAL, setGameMode(modeChoiceBox.getValue()), typeChoiceBox.getValue());
     }
 
     @FXML
-    private void handleHardButtonAction() throws IOException, ClassNotFoundException {
+    private void handleHardButtonAction() throws IOException {
         startTetrisGame(GameLevel.HARD, setGameMode(modeChoiceBox.getValue()), typeChoiceBox.getValue());
     }
 
-    private void startTetrisGame(GameLevel level, GameMode gameMode, String type) throws IOException, ClassNotFoundException {
+    private void startTetrisGame(GameLevel level, GameMode gameMode, String type) throws IOException {
         switch (type) {
             case "single" -> startLocalTetrisGame(level, gameMode);
             case "battle" -> startLocalBattleTetrisGame(level, gameMode);
-            case "online" -> startOnlineTetrisGame(level, gameMode);
+            case "online" -> startOnlineTetrisGame();
         }
     }
 
@@ -80,10 +80,9 @@ public class LevelSelectScreenController extends BaseController {
         });
     }
 
-    private void startOnlineTetrisGame(GameLevel level, GameMode mode) throws IOException {
-        LocalBattleTetrisServer server = new LocalBattleTetrisServer(level, mode);
-//        final String host = getIpAddr();
-        final String host = "localhost";
+    private void startOnlineTetrisGame() throws IOException {
+        final String host = getIpAddr();
+//        final String host = "localhost";
         final int port = 5555;
 
         Socket socket = new Socket(host, port);
