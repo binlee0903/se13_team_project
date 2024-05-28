@@ -37,10 +37,11 @@ public class ReadNetworkRepository {
                 try {
                     Object input = socket.read();
                     if (input instanceof Integer) {
-                        int loserId = (int) input;
-                        System.out.println(loserId);
-                        if (loserId == playerId) {
-                            playerGameEnd.setValue(new TetrisGameEndData(playerId, -1, false, true, ""));
+                        int isGameOver = (int) input;
+                        if (isGameOver == 0) {
+                            playerGameEnd.setValue(new TetrisGameEndData(0, -1, false, true, ""));
+                        } else {
+                            opponentGameEnd.setValue(new TetrisGameEndData(1, -1, false, true, ""));
                         }
                         break;
                     } else {
