@@ -27,10 +27,24 @@ public class GameOverScreenController extends BaseController {
             rankingButton.setVisible(false);
             score.setText(String.valueOf(endData.score()));
 
-            if (endData.userID() == 1) {
-                winnerUser.setText("player2");
+            if (endData.isGameOvered() == false) {
+                if (endData.userID() == 2) {
+                    winnerUser.setText("player2");
+                } else {
+                    winnerUser.setText("player1");
+                }
+            } else if (endData.score() == -1) {
+                if (endData.userID() == 1) {
+                    winnerUser.setText("Opponent...");
+                } else {
+                    winnerUser.setText("You!");
+                }
             } else {
-                winnerUser.setText("player1");
+                if (endData.userID() == 1) {
+                    winnerUser.setText("player2");
+                } else {
+                    winnerUser.setText("player1");
+                }
             }
         }
     }

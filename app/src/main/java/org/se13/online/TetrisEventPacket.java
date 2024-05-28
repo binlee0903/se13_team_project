@@ -34,6 +34,15 @@ public record TetrisEventPacket(int userId, TetrisEvent event) {
                 case TetrisEventCode.EVENT_CODE_UPDATE_TETRIS_STATE -> {
                     event = gson.fromJson(response, UpdateTetrisState.class);
                 }
+                case TetrisEventCode.EVENT_CODE_ATTACKED_TETRIS_BLOCKS -> {
+                    event = gson.fromJson(response, AttackedTetrisBlocks.class);
+                }
+                case TetrisEventCode.EVENT_CODE_ATTACKING_TETRIS_BLOCKS -> {
+                    event = gson.fromJson(response, AttackingTetrisBlocks.class);
+                }
+                case TetrisEventCode.EVENT_CODE_INSERT_ATTACK_BLOCKS -> {
+                    event = gson.fromJson(response, InsertAttackBlocksEvent.class);
+                }
                 default -> {
                     event = new ServerErrorEvent("Unknown Code: " + eventCode + " Response: " + response);
                 }

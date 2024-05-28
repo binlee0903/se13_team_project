@@ -127,7 +127,6 @@ public class TetrisGame {
     }
 
     public void stopGame() {
-        this.gameStatus = GameStatus.GAMEOVER;
         this.inputManager.reset();
         server.responseGameOver(getScore(), isItemMode(), getDifficulty());
     }
@@ -291,10 +290,6 @@ public class TetrisGame {
 
     boolean isGamePaused() {
         return this.gameStatus == GameStatus.PAUSED;
-    }
-
-    void setAttacked() {
-        this.isAttacked = true;
     }
 
     void setCurrentBlock(CurrentBlock currentBlock) {
@@ -483,6 +478,7 @@ public class TetrisGame {
 
     private void checkGameIsOver() {
         if (isGameOver() == true) {
+            this.gameStatus = GameStatus.GAMEOVER;
             stopGame();
         }
     }

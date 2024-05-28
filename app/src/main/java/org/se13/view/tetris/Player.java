@@ -20,6 +20,10 @@ public class Player {
         this.eventRepository = eventRepository;
     }
 
+    public int getUserId() {
+        return userId;
+    }
+
     public void connectToServer(TetrisServer server) {
         this.server = server;
 

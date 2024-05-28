@@ -47,6 +47,16 @@ public class TetrisServerSocket {
         out.flush();
     }
 
+    public void gameOver(int endUserId) throws IOException {
+        log.info("Player{} game over", endUserId);
+        ByteBuffer buffer = ByteBuffer.allocate(4 + 4); // packet length = int = 4byte;
+        buffer.putInt(4);
+        buffer.putInt(endUserId);
+
+        out.write(buffer.array());
+        out.flush();
+    }
+
     public TetrisActionPacket read() throws IOException {
 
         int length = 8;

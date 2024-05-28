@@ -34,11 +34,21 @@ public class ReadNetworkRepository {
         new Thread(() -> {
             while (true) {
                 try {
-                    TetrisEventPacket packet = socket.read();
-                    if (packet.userId() == playerId) {
-                        player.setValue(packet.event());
+                    Object input = socket.read();
+                    if (input instanceof Integer) {
+                        int loserId = (int) input;
+                        System.out.println(loserId);
+                        if (loserId == playerId) {
+                            playerGameEnd.setValue(new TetrisGameEndData(playerId, -1, false, true, ""));
+                        }
+                        break;
                     } else {
-                        player.setValue(packet.event());
+                        TetrisEventPacket packet = (TetrisEventPacket) input;
+                        if (packet.userId() == playerId) {
+                            player.setValue(packet.event());
+                        } else {
+                            opponent.setValue(packet.event());
+                        }
                     }
 
                 } catch (IOException e) {

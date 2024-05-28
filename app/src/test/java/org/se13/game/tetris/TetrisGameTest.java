@@ -7,8 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.se13.SE13Application;
 import org.se13.game.action.TetrisAction;
 import org.se13.game.block.Block;
+import org.se13.game.block.BlockPosition;
 import org.se13.game.block.CellID;
 import org.se13.game.block.CurrentBlock;
+import org.se13.game.event.AttackingTetrisBlocks;
 import org.se13.game.grid.TetrisGrid;
 import org.se13.game.item.*;
 import org.se13.game.rule.GameLevel;
@@ -121,6 +123,43 @@ public class TetrisGameTest {
         grid.clearWeightCol(4);
         grid.clearWeightCol(6);
         assertFalse(grid.isRowEmpty(19));
+    }
+
+    @Test
+    @DisplayName("AttackingBlocks Test")
+    void testGetAttackingBlocks() {
+        TetrisGrid tetrisGrid = new TetrisGrid(20, 10);
+        CurrentBlock currentBlock = new CurrentBlock(Block.OBlock);
+        CellID[][] attackingBlocks = new CellID[10][10];
+
+        for (int i = 0; i < attackingBlocks.length; i++) {
+            for (int j = 0; j < attackingBlocks[i].length; j++) {
+                attackingBlocks[i][j] = CellID.ATTACKED_BLOCK_ID;
+            }
+
+            if (i == 1) {
+                break;
+            }
+        }
+
+        AttackingTetrisBlocks attackingTetrisBlocks = new AttackingTetrisBlocks(attackingBlocks);
+        tetrisGrid.addToAttackedBlocks(attackingTetrisBlocks);
+
+        CellID[][] attackedBlocks = tetrisGrid.getAttackedBlocks();
+        boolean isSuccess = false;
+
+        for (int i = 10; i > 8; i--) {
+            for (int j = 0; j < attackedBlocks[i].length; j++) {
+                if (attackedBlocks[i][j] != CellID.ATTACKED_BLOCK_ID) {
+                    isSuccess = false;
+                    break;
+                } else {
+                    isSuccess = true;
+                }
+            }
+        }
+
+        assertTrue(isSuccess);
     }
 
     @Test
