@@ -38,7 +38,7 @@ public class ReadNetworkRepository {
                     if (packet.userId() == playerId) {
                         player.setValue(packet.event());
                     } else {
-                        player.setValue(packet.event());
+                        opponent.setValue(packet.event());
                     }
 
                 } catch (IOException e) {
