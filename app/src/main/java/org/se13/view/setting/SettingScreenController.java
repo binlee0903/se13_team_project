@@ -43,20 +43,32 @@ public class SettingScreenController extends BaseController {
     private final int PLAYER1 = 0;
     private final int PLAYER2 = 1;
 
+    public void testInit() {
+        isTestMode = true;
+
+        screenSizeChoiceBox = new ChoiceBox<>();
+        screenColorBlindChoiceBox = new ChoiceBox<>();
+        playerChoiceBox = new ChoiceBox<>();
+        moveLeftButton = new Button("keyLeft:");
+        moveRightButton = new Button("keyRight:");
+        moveDownButton = new Button("keyDown:");
+        exitButton = new Button("Exit");
+        rotateButton = new Button("Rotate");
+        pauseButton = new Button("Pause");
+        moveDropButton = new Button("Drop");
+
+        onCreate();
+    }
+
     @Override
     public void onCreate() {
         this.configRepository = new ConfigRepositoryImpl[2];
         this.configRepository[0] = new ConfigRepositoryImpl(PLAYER1);
         this.configRepository[1] = new ConfigRepositoryImpl(PLAYER2);
 
-        playerChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                setSettingValueToScreen();
-            }
-        });
-
         resetSettingButtons();
+
+        playerChoiceBox.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1) -> setSettingValueToScreen());
     }
 
     public void resetSettingButtons() {
@@ -64,19 +76,6 @@ public class SettingScreenController extends BaseController {
 
         playerChoiceBox.setItems(FXCollections.observableArrayList("player1", "player2"));
         playerChoiceBox.setValue("player1");
-
-        if (isTestMode == true) {
-            screenSizeChoiceBox = new ChoiceBox<>();
-            screenColorBlindChoiceBox = new ChoiceBox<>();
-            playerChoiceBox = new ChoiceBox<>();
-            moveLeftButton = new Button("keyLeft:");
-            moveRightButton = new Button("keyRight:");
-            moveDownButton = new Button("keyDown:");
-            exitButton = new Button("Exit");
-            rotateButton = new Button("Rotate");
-            pauseButton = new Button("Pause");
-            moveDropButton = new Button("Drop");
-        }
 
         setSettingValueToScreen();
     }
@@ -158,7 +157,7 @@ public class SettingScreenController extends BaseController {
                 selectedMoveDown, selectedRotate,
                 selectedPause, selectedDrop, selectedExit);
 
-        int[] size = { selectedWidth, selectedHeight };
+        int[] size = {selectedWidth, selectedHeight};
         SE13Application.navController.setScreenSize(size);
     }
 
@@ -167,8 +166,10 @@ public class SettingScreenController extends BaseController {
         configRepository[selectedPlayerID].clearConfig();
         configRepository[selectedPlayerID].insertDefaultConfig();
 
-        resetSettingButtons();
-        SE13Application.navController.setScreenSize(configRepository[selectedPlayerID].getScreenSize());
+        if (isTestMode == false) {
+            resetSettingButtons();
+            SE13Application.navController.setScreenSize(configRepository[selectedPlayerID].getScreenSize());
+        }
     }
 
     public void handleRankingClearButtonAction() {
@@ -194,33 +195,37 @@ public class SettingScreenController extends BaseController {
         screenColorBlindChoiceBox.setItems(FXCollections.observableArrayList("default", "Red-green", "Blue-yellow"));
         screenColorBlindChoiceBox.setValue(colorMode);
 
-        String keyMoveLeft = (String)configs.get("keyLeft");
+        String keyMoveLeft = (String) configs.get("keyLeft");
         keySettings.put("keyLeft", keyMoveLeft);
         moveLeftButton.setText("keyLeft: " + keyMoveLeft);
 
-        String keyMoveRight = (String)configs.get("keyRight");
+        String keyMoveRight = (String) configs.get("keyRight");
         keySettings.put("keyRight", keyMoveRight);
         moveRightButton.setText("keyRight: " + keyMoveRight);
 
-        String keyMoveDown = (String)configs.get("keyDown");
+        String keyMoveDown = (String) configs.get("keyDown");
         keySettings.put("keyDown", keyMoveDown);
         moveDownButton.setText("keyDown: " + keyMoveDown);
 
-        String keyExit = (String)configs.get("keyExit");
+        String keyExit = (String) configs.get("keyExit");
         keySettings.put("keyExit", keyExit);
         exitButton.setText("keyExit: " + keyExit);
 
-        String keyDrop = (String)configs.get("keyDrop");
+        String keyDrop = (String) configs.get("keyDrop");
         keySettings.put("keyDrop", keyDrop);
         moveDropButton.setText("keyDrop: " + keyDrop);
 
-        String keyMoveRotate = (String)configs.get("keyRotate");
+        String keyMoveRotate = (String) configs.get("keyRotate");
         keySettings.put("keyRotate", keyMoveRotate);
         rotateButton.setText("keyRotate: " + keyMoveRotate);
 
-        String keyPause = (String)configs.get("keyPause");
+        String keyPause = (String) configs.get("keyPause");
         keySettings.put("keyPause", keyPause);
         pauseButton.setText("keyPause: " + keyPause);
+    }
+
+    public Map<String, String> getKeySettings() {
+        return this.keySettings;
     }
 
     private int resolvePlayer() {
