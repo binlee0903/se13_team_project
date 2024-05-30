@@ -228,14 +228,51 @@ public class TetrisGame {
         }
 
         deleteCurrentBlockFromGrid();
-        currentBlock.rotateCW();
 
-        score++;
+        if (currentBlock.getId() == CellID.TBLOCK_ID && isBlockCollided == true) {
+            boolean tSpinSuccess = false;
+            int rotate = currentBlock.getRotateState();
 
-        if (blockFits() == false) {
-            score--;
-            currentBlock.rotateCCW();
-            invalidInputEvent();
+            moveBlockDown();
+
+            for (int j = 0; j < 3; j++) {
+                for (int i = 0; i < 4; i++) {
+                    currentBlock.rotateCW();
+
+                    if (blockFits() == true) {
+                        tSpinSuccess = true;
+                        break;
+                    }
+                }
+
+                if (tSpinSuccess == true) {
+                    break;
+                }
+
+                switch (j) {
+                    case 0, 2:
+                        moveBlockLeft();
+                        break;
+                    case 1:
+                        moveBlockRight();
+                        moveBlockRight();
+                        break;
+                }
+            }
+
+            if (tSpinSuccess == false) {
+                currentBlock.setRotateState(rotate);
+                currentBlock.move(-1, 0);
+            }
+        } else {
+            currentBlock.rotateCW();
+
+            score++;
+
+            if (blockFits() == false) {
+                score--;
+                currentBlock.rotateCCW();
+            }
         }
     }
 
@@ -245,7 +282,8 @@ public class TetrisGame {
 
         if (blockFits() == false) {
             currentBlock.move(0, 1);
-            invalidInputEvent();
+        } else {
+            isBlockCollided = false;
         }
     }
 
@@ -255,7 +293,8 @@ public class TetrisGame {
 
         if (blockFits() == false) {
             currentBlock.move(0, -1);
-            invalidInputEvent();
+        } else {
+            isBlockCollided = false;
         }
     }
 
@@ -383,14 +422,14 @@ public class TetrisGame {
         }
 
         if (isBlockCollided == true) {
+            if (collideCheckingTimer.isTimerStarted() == false) {
+                collideCheckingTimer.setFirstBlockCollideTime(l);
+            }
+
             if (collideCheckingTimer.isBlockPlaceTimeEnded() == true) {
                 isBlockPlaced = true;
                 isBlockCollided = false;
                 collideCheckingTimer.reset(l);
-            }
-
-            if (collideCheckingTimer.isTimerStarted() == false) {
-                collideCheckingTimer.setFirstBlockCollideTime(l);
             }
         } else {
             collideCheckingTimer.reset(l);

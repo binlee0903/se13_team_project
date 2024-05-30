@@ -3,9 +3,12 @@
 }
 
 .gameTitle {
-    -fx-font-size: 24px;
+    -fx-font-size: 48px;
+    -fx-font-family: 'Arial';
     -fx-fill: white;
     -fx-font-weight: bold;
+    -fx-stroke: black;
+    -fx-stroke-width: 1px;
 }
 
 .menuButton {
@@ -43,17 +46,21 @@
 }
 
 .settingsTitle {
-    -fx-font-size: 24px;
+    -fx-font-size: 36px;
+    -fx-font-family: 'Arial';
     -fx-fill: white;
     -fx-font-weight: bold;
+    -fx-stroke: black;
+    -fx-stroke-width: 1px;
 }
 
 .settingsLabel {
-    -fx-font-family: Cambria;
-}
-
-.colorBlind {
-    -fx-font-family: Cambria;
+    -fx-font-family: 'Arial';
+    -fx-font-size: 20px;
+    -fx-fill: white;
+    -fx-font-weight: bold;
+    -fx-stroke-width: 1px;
+    -fx-stroke: black;
 }
 
 .choiceBox {
@@ -61,6 +68,7 @@
 }
 
 .keySettingTitle {
+    -fx-font-family: 'Arial';
     -fx-font-size: 20px;
     -fx-fill: white;
     -fx-font-weight: bold;

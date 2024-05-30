@@ -21,8 +21,6 @@ public class LocalBattleTetrisServer implements TetrisServer {
     private Map<Integer, TetrisSession> sessions;
     private Map<Integer, TetrisEventHandler> handlers;
 
-    private List<TetrisGameEndData> endData;
-
     public LocalBattleTetrisServer(GameLevel level, GameMode mode) {
         this.level = level;
         this.mode = mode;
@@ -163,7 +161,7 @@ public class LocalBattleTetrisServer implements TetrisServer {
         session.response(event);
     }
 
-    private void broadcast(TetrisEvent event) {
+    public void broadcast(TetrisEvent event) {
         sessions.forEach((userId, _room) -> {
             broadcast(event, userId);
         });

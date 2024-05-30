@@ -255,7 +255,7 @@ public class BattleScreenController extends BaseController {
     private void setSmallScreen() {
         gameSize = GameSize.SMALL;
         width = 100;
-        height = 210;
+        height = 200;
         tetrisGameScreenInterval = 10;
         attackedScreenInterval = 10;
         player1_tetrisGridView.setFont(new Font("Arial", 12));
@@ -275,15 +275,15 @@ public class BattleScreenController extends BaseController {
 
     private void setMediumScreen() {
         gameSize = GameSize.MEDIUM;
-        width = 150;
-        height = 315;
-        tetrisGameScreenInterval = 15;
+        width = 120;
+        height = 240;
+        tetrisGameScreenInterval = 12;
         attackedScreenInterval = 8;
-        player1_tetrisGridView.setFont(new Font("Arial", 20));
-        player1_nextBlockView.setFont(new Font("Arial", 20));
+        player1_tetrisGridView.setFont(new Font("Arial", 15));
+        player1_nextBlockView.setFont(new Font("Arial", 15));
 
-        player2_tetrisGridView.setFont(new Font("Arial", 20));
-        player2_nextBlockView.setFont(new Font("Arial", 20));
+        player2_tetrisGridView.setFont(new Font("Arial", 15));
+        player2_nextBlockView.setFont(new Font("Arial", 15));
 
         player1_nextBlockCanvas.setWidth(100);
         player2_nextBlockCanvas.setWidth(100);
@@ -302,7 +302,7 @@ public class BattleScreenController extends BaseController {
     private void setLargeScreen() {
         gameSize = GameSize.LARGE;
         width = 250;
-        height = 530;
+        height = 500;
         tetrisGameScreenInterval = 25;
         attackedScreenInterval = 10;
         player1_tetrisGridView.setFont(new Font("Arial", 30));
@@ -335,12 +335,21 @@ public class BattleScreenController extends BaseController {
 
         gc.clearRect(0, 0, width, height);
 
-        for (int i = 0; i < cells.length; i++) {
+        for (int i = 0; i < cells.length - 1; i++) {
             for (int j = 0; j < cells[i].length; j++) {
-                CellID cellID = cells[i][j];
+                CellID cellID = cells[i + 1][j];
                 gc.setFill(getCellColor(cellID));
                 gc.fillText(String.valueOf(getCellCharacter(cellID)), j * tetrisGameScreenInterval, i * tetrisGameScreenInterval);
             }
+        }
+
+        gc.setStroke(Color.WHITE);
+        gc.setLineWidth(0.3);
+        for (int i = 0; i <= cells.length; i++) {
+            gc.strokeLine(0, i*tetrisGameScreenInterval, width, i*tetrisGameScreenInterval);
+        }
+        for (int i = 0; i <= cells[0].length; i++) {
+            gc.strokeLine(i*tetrisGameScreenInterval, 0, i*tetrisGameScreenInterval, height);
         }
     }
 

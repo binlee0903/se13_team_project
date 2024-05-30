@@ -25,6 +25,13 @@ import static org.se13.utils.JsonUtils.readJson;
 
 public class LevelSelectScreenController extends BaseController {
 
+    public void testInit() {
+        modeChoiceBox = new ChoiceBox<>();
+        typeChoiceBox = new ChoiceBox<>();
+        easyButton = new Button();
+        normalButton = new Button();
+        hardButton = new Button();
+    }
 
     @FXML
     public void initialize() {
