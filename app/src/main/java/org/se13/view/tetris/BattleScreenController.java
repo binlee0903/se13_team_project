@@ -342,6 +342,15 @@ public class BattleScreenController extends BaseController {
                 gc.fillText(String.valueOf(getCellCharacter(cellID)), j * tetrisGameScreenInterval, i * tetrisGameScreenInterval);
             }
         }
+
+        gc.setStroke(Color.WHITE);
+        gc.setLineWidth(0.3);
+        for (int i = 0; i <= cells.length; i++) {
+            gc.strokeLine(0, i*tetrisGameScreenInterval, width, i*tetrisGameScreenInterval);
+        }
+        for (int i = 0; i <= cells[0].length; i++) {
+            gc.strokeLine(i*tetrisGameScreenInterval, 0, i*tetrisGameScreenInterval, height);
+        }
     }
 
     private void drawAttackedBlock(CellID[][] blocks, int userID) {

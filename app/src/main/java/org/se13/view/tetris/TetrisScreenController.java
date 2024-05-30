@@ -186,6 +186,15 @@ public class TetrisScreenController extends BaseController {
                 tetrisGridView.fillText(String.valueOf(getCellCharacter(cellID)), j * interval, i * interval);
             }
         }
+
+        tetrisGridView.setStroke(Color.WHITE);
+        tetrisGridView.setLineWidth(0.3);
+        for (int i = 0; i <= cells.length; i++) {
+            tetrisGridView.strokeLine(0, i*interval, width, i*interval);
+        }
+        for (int i = 0; i <= cells[0].length; i++) {
+            tetrisGridView.strokeLine(i*interval, 0, i*interval, height);
+        }
     }
 
     private void drawNextBlock(CurrentBlock block) {
