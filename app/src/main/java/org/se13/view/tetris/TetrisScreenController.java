@@ -8,10 +8,12 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import org.se13.SE13Application;
 import org.se13.game.block.*;
 import org.se13.game.config.Config;
@@ -58,19 +60,24 @@ public class TetrisScreenController extends BaseController {
     private double height;
     private int interval;
 
+    private boolean isTest;
+
     private final char DEFAULT_BLOCK_TEXT = '0';
     private final char FEVER_BLOCK_TEXT = 'F';
     private final char WEIGHT_ITEM_BLOCK_TEXT = 'W';
-    private final char RESET_BLOCK_TEXT = 'A';
+    private final char RESET_BLOCK_TEXT = 'R';
     private final char ALL_CLEAR_BLOCK_TEXT = 'A';
     private final char LINE_CLEAR_BLOCK_TEXT = 'L';
 
     @Override
     public void onCreate() {
         Scene scene = gameCanvas.getScene();
-        viewModel = new TetrisScreenViewModel(actionRepository, stateRepository);
-        tetrisGridView = gameCanvas.getGraphicsContext2D();
-        nextBlockView = nextBlockCanvas.getGraphicsContext2D();
+
+        if (isTest == false) {
+            viewModel = new TetrisScreenViewModel(actionRepository, stateRepository);
+            tetrisGridView = gameCanvas.getGraphicsContext2D();
+            nextBlockView = nextBlockCanvas.getGraphicsContext2D();
+        }
 
         setInitState();
 
@@ -83,12 +90,25 @@ public class TetrisScreenController extends BaseController {
 
         this.frame.setStyle("-fx-border-color: red;");
 
-        viewModel.connect();
+        if (isTest == false) {
+            viewModel.connect();
+        }
     }
 
     public void setArguments(Player player) {
         this.actionRepository = player.getActionRepository();
         this.stateRepository = player.getEventRepository();
+    }
+
+    public void setTestMode(Stage stage) {
+        this.isTest = true;
+
+        nextBlockCanvas = new Canvas();
+        score = new Label();
+        frame = new BorderPane();
+        gameCanvas = new Canvas();
+        timeLimitPanel = new Text();
+        time = new Text();
     }
 
     private void setInitState() {
@@ -145,29 +165,29 @@ public class TetrisScreenController extends BaseController {
         };
     }
 
-    private void setSmallScreen() {
+    public void setSmallScreen() {
         gameSize = GameSize.SMALL;
         width = 150;
-        height = 315;
+        height = 300;
         interval = 15;
         tetrisGridView.setFont(new Font("Arial", 20));
         nextBlockView.setFont(new Font("Arial", 20));
     }
 
-    private void setMediumScreen() {
+    public void setMediumScreen() {
         gameSize = GameSize.MEDIUM;
         width = 150;
-        height = 315;
+        height = 300;
         interval = 15;
         tetrisGridView.setFont(new Font("Arial", 20));
         nextBlockView.setFont(new Font("Arial", 20));
         nextBlockCanvas.setWidth(100);
     }
 
-    private void setLargeScreen() {
+    public void setLargeScreen() {
         gameSize = GameSize.LARGE;
         width = 250;
-        height = 530;
+        height = 500;
         interval = 25;
         tetrisGridView.setFont(new Font("Arial", 30));
         nextBlockView.setFont(new Font("Arial", 30));
@@ -179,12 +199,21 @@ public class TetrisScreenController extends BaseController {
         tetrisGridView.fillRect(0, 0, width, height);
         tetrisGridView.clearRect(0, 0, width, height);
 
-        for (int i = 0; i < cells.length; i++) {
+        for (int i = 0; i < cells.length - 1; i++) {
             for (int j = 0; j < cells[i].length; j++) {
-                CellID cellID = cells[i][j];
+                CellID cellID = cells[i + 1][j];
                 tetrisGridView.setFill(getCellColor(cellID));
                 tetrisGridView.fillText(String.valueOf(getCellCharacter(cellID)), j * interval, i * interval);
             }
+        }
+
+        tetrisGridView.setStroke(Color.WHITE);
+        tetrisGridView.setLineWidth(0.3);
+        for (int i = 0; i <= cells.length; i++) {
+            tetrisGridView.strokeLine(0, i*interval, width, i*interval);
+        }
+        for (int i = 0; i <= cells[0].length; i++) {
+            tetrisGridView.strokeLine(i*interval, 0, i*interval, height);
         }
     }
 
@@ -206,7 +235,7 @@ public class TetrisScreenController extends BaseController {
         }
     }
 
-    private Color getCellColor(CellID cellID) {
+    public Color getCellColor(CellID cellID) {
         return switch (cellID) {
             case EMPTY -> null;
             case IBLOCK_ID -> Block.IBlock.blockColor;
@@ -227,7 +256,7 @@ public class TetrisScreenController extends BaseController {
         };
     }
 
-    private char getCellCharacter(CellID cellID) {
+    public char getCellCharacter(CellID cellID) {
         return switch (cellID) {
             case EMPTY -> ' ';
             case FEVER_ITEM_ID -> FEVER_BLOCK_TEXT;
@@ -247,7 +276,7 @@ public class TetrisScreenController extends BaseController {
         };
     }
 
-    private void handleKeyEvent(String keyCode) {
+    public void handleKeyEvent(String keyCode) {
         if (keyCode.compareToIgnoreCase(Config.DROP) == 0) {
             viewModel.immediateBlockPlace();
         } else if (keyCode.compareToIgnoreCase(Config.DOWN) == 0) {
@@ -259,7 +288,9 @@ public class TetrisScreenController extends BaseController {
         } else if (keyCode.compareToIgnoreCase(Config.CW_SPIN) == 0) {
             viewModel.rotateBlockCW();
         } else if (keyCode.compareToIgnoreCase(Config.PAUSE) == 0) {
-            viewModel.togglePauseState();
+            if (isTest == false) {
+                viewModel.togglePauseState();
+            }
         } else if (keyCode.compareToIgnoreCase(Config.EXIT) == 0) {
             viewModel.exitGame();
             System.exit(0);

@@ -16,6 +16,14 @@ import org.se13.view.tetris.*;
 
 public class LevelSelectScreenController extends BaseController {
 
+    public void testInit() {
+        modeChoiceBox = new ChoiceBox<>();
+        typeChoiceBox = new ChoiceBox<>();
+        easyButton = new Button();
+        normalButton = new Button();
+        hardButton = new Button();
+    }
+
     @FXML
     public void initialize() {
         modeChoiceBox.setItems(FXCollections.observableArrayList("default", "item", "timeLimit"));
@@ -66,7 +74,7 @@ public class LevelSelectScreenController extends BaseController {
         });
     }
 
-    private GameMode setGameMode(String gameMode) {
+    public GameMode setGameMode(String gameMode) {
         return switch (gameMode) {
             case "default" -> GameMode.DEFAULT;
             case "item" -> GameMode.ITEM;

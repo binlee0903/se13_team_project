@@ -130,17 +130,21 @@ public class TetrisGameTest {
     void testGetAttackingBlocks() {
         TetrisGrid tetrisGrid = new TetrisGrid(20, 10);
         CurrentBlock currentBlock = new CurrentBlock(Block.OBlock);
-        CellID[][] attackingBlocks = new CellID[10][10];
 
-        for (int i = 0; i < attackingBlocks.length; i++) {
-            for (int j = 0; j < attackingBlocks[i].length; j++) {
-                attackingBlocks[i][j] = CellID.ATTACKED_BLOCK_ID;
-            }
-
-            if (i == 1) {
-                break;
+        for (int i = 18; i < 20; i++) {
+            for (int j = 2; j < 10; j++) {
+                tetrisGrid.setCell(i, j, CellID.IBLOCK_ID);
             }
         }
+
+        for (int i = 18; i < 20; i++) {
+            for (int j = 0; j < 2; j++) {
+                tetrisGrid.setCell(i, j, CellID.OBLOCK_ID);
+            }
+        }
+
+        currentBlock.move(18, -3);
+        CellID[][] attackingBlocks = tetrisGrid.getAttackingBlocks(currentBlock, 2);
 
         AttackingTetrisBlocks attackingTetrisBlocks = new AttackingTetrisBlocks(attackingBlocks);
         tetrisGrid.addToAttackedBlocks(attackingTetrisBlocks);
@@ -149,7 +153,7 @@ public class TetrisGameTest {
         boolean isSuccess = false;
 
         for (int i = 10; i > 8; i--) {
-            for (int j = 0; j < attackedBlocks[i].length; j++) {
+            for (int j = 2; j < attackedBlocks[i].length; j++) {
                 if (attackedBlocks[i][j] != CellID.ATTACKED_BLOCK_ID) {
                     isSuccess = false;
                     break;
@@ -160,6 +164,14 @@ public class TetrisGameTest {
         }
 
         assertTrue(isSuccess);
+
+        tetrisGrid.insertAttackedBlocksToGrid();
+
+        for (int i = 16; i < 20; i++) {
+            for (int j = 2; j < 10; j++) {
+                assertNotSame(tetrisGrid.getCell(i, j), CellID.OBLOCK_ID);
+            }
+        }
     }
 
     @Test
