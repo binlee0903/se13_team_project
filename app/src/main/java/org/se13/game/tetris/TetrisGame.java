@@ -276,6 +276,8 @@ public class TetrisGame {
 
         if (blockFits() == false) {
             currentBlock.move(0, 1);
+        } else {
+            isBlockCollided = false;
         }
     }
 
@@ -285,6 +287,8 @@ public class TetrisGame {
 
         if (blockFits() == false) {
             currentBlock.move(0, -1);
+        } else {
+            isBlockCollided = false;
         }
     }
 
