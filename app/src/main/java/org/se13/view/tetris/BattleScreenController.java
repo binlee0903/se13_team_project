@@ -133,6 +133,10 @@ public class BattleScreenController extends BaseController {
             String keyCode = key.getCode().getName().toLowerCase();
             handleKeyEvent(keyCode, player1_viewModel, player1_keycode);
             handleKeyEvent(keyCode, player2_viewModel, player2_keycode);
+
+            if (keyCode.compareToIgnoreCase("ESC") == 0) {
+                SE13Application.navController.popBackStack();
+            }
         });
 
         this.player1_frame.setStyle("-fx-border-color: red;");
