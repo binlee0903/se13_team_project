@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.text.Text?>
 
 <StackPane xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="org.se13.view.start.StartScreenController"
            stylesheets="@style.css">
-    <ImageView>
-        <Image url="@Screen1.png"/>
-    </ImageView>
     <VBox alignment="CENTER" spacing="10">
         <Text text="TETRIS" styleClass="gameTitle"/>
         <Button fx:id="startButton" text="Start" styleClass="menuButton" onAction="#handleTetrisButtonAction"/>
