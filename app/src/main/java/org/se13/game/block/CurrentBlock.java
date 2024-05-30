@@ -79,6 +79,10 @@ public class CurrentBlock {
         return rotate;
     }
 
+    public void setRotateState(int rotate) {
+        this.rotate = rotate;
+    }
+
     public Cell[] cells() {
         BlockPosition[] shape = shape();
         Cell[] cells = new Cell[shape.length];
