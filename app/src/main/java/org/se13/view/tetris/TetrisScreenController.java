@@ -168,7 +168,7 @@ public class TetrisScreenController extends BaseController {
     public void setSmallScreen() {
         gameSize = GameSize.SMALL;
         width = 150;
-        height = 315;
+        height = 300;
         interval = 15;
         tetrisGridView.setFont(new Font("Arial", 20));
         nextBlockView.setFont(new Font("Arial", 20));
@@ -177,7 +177,7 @@ public class TetrisScreenController extends BaseController {
     public void setMediumScreen() {
         gameSize = GameSize.MEDIUM;
         width = 150;
-        height = 315;
+        height = 300;
         interval = 15;
         tetrisGridView.setFont(new Font("Arial", 20));
         nextBlockView.setFont(new Font("Arial", 20));
@@ -187,7 +187,7 @@ public class TetrisScreenController extends BaseController {
     public void setLargeScreen() {
         gameSize = GameSize.LARGE;
         width = 250;
-        height = 530;
+        height = 500;
         interval = 25;
         tetrisGridView.setFont(new Font("Arial", 30));
         nextBlockView.setFont(new Font("Arial", 30));
@@ -199,9 +199,9 @@ public class TetrisScreenController extends BaseController {
         tetrisGridView.fillRect(0, 0, width, height);
         tetrisGridView.clearRect(0, 0, width, height);
 
-        for (int i = 0; i < cells.length; i++) {
+        for (int i = 0; i < cells.length - 1; i++) {
             for (int j = 0; j < cells[i].length; j++) {
-                CellID cellID = cells[i][j];
+                CellID cellID = cells[i + 1][j];
                 tetrisGridView.setFill(getCellColor(cellID));
                 tetrisGridView.fillText(String.valueOf(getCellCharacter(cellID)), j * interval, i * interval);
             }
