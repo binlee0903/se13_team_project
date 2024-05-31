@@ -294,6 +294,8 @@ public class TetrisScreenController extends BaseController {
         } else if (keyCode.compareToIgnoreCase(Config.EXIT) == 0) {
             viewModel.exitGame();
             System.exit(0);
+        } else if (keyCode.compareToIgnoreCase("ESC") == 0) {
+            SE13Application.navController.popBackStack();
         }
     }
 }
